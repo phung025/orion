@@ -33,7 +33,7 @@ public class Statistics {
      * @param nextValue
      * @return
      */
-    public static Double computeMeanOnline(Integer previousCount, Double previousMean, Double nextValue) {
+    public static Double computeMeanOnline(long previousCount, Double previousMean, Double nextValue) {
         return ((previousCount / (previousCount + 1.0)) * previousMean) + (nextValue / (previousCount + 1.0));
     }
 
@@ -70,7 +70,7 @@ public class Statistics {
      * @param nextValue
      * @return
      */
-    public static DoubleMatrix computeVectorMeanOnline(Integer previousCount, DoubleMatrix previousMean, DoubleMatrix nextValue) {
+    public static DoubleMatrix computeVectorMeanOnline(long previousCount, DoubleMatrix previousMean, DoubleMatrix nextValue) {
 
         // Compute the mean using the online algorithm
         // mean_(n+1) = [n/(n+1)]*mean_(n) + [1/(n+1)]*value_(n+1)
@@ -116,7 +116,7 @@ public class Statistics {
      * @param nextPoint
      * @return
      */
-    public static DoubleMatrix computeCovarianceMatrixOnline(int prevCount, DoubleMatrix prevCov, DoubleMatrix prevMean, DoubleMatrix nextMean, DoubleMatrix nextPoint) {
+    public static DoubleMatrix computeCovarianceMatrixOnline(long prevCount, DoubleMatrix prevCov, DoubleMatrix prevMean, DoubleMatrix nextMean, DoubleMatrix nextPoint) {
 
         // Online algorithm for computing covariance matrix
         // https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance
@@ -134,6 +134,6 @@ public class Statistics {
      * @return absolute normalized deviation
      */
     public static double computeAbsoluteNormalizedDevitation(DoubleMatrix nextPoint, DoubleMatrix nextMean, DoubleMatrix nextCovariance) {
-        return nextPoint.sub(nextMean).transpose().mmul(Solve.pinv(nextCovariance)).mmul(nextPoint.sub(nextMean)).data[0];
+        return Math.sqrt(nextPoint.sub(nextMean).transpose().mmul(Solve.pinv(nextCovariance)).mmul(nextPoint.sub(nextMean)).data[0]);
     }
 }
