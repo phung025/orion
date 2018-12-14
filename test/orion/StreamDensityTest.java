@@ -8,16 +8,13 @@ package orion;
 import dataStream.DataPoint;
 import dataStream.FileReader;
 import dataStructures.Stream;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import org.jblas.DoubleMatrix;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -61,8 +58,8 @@ public class StreamDensityTest {
         stream.writeToStream(incomingData);
         LinkedList<DataPoint> window = new LinkedList();
 
-        StreamDensity instance = new StreamDensity(2, 5.4); // Stream density estimator
-        DoubleMatrix pDimension = new DoubleMatrix(new double[]{0, 1}); // Projected dimension
+        StreamDensity instance = new StreamDensity(incomingData[0].length, 5.4); // Stream density estimator
+        DoubleMatrix pDimension = new DoubleMatrix(new double[]{1, 0}); // Projected dimension
 
         while (!stream.isEmpty()) {
 
@@ -70,33 +67,7 @@ public class StreamDensityTest {
             window.add(incomingPoint);
 
             double streamDensity = instance.estimateStreamDensity(incomingPoint, window, pDimension, "uniform");
-
             System.out.println(window.size() - 1 + " --- " + streamDensity);
         }
     }
-
-    /**
-     * Test of updateDDFparameters method, of class StreamDensity.
-     */
-    @Test
-    public void testUpdateDDFparameters() {
-        System.out.println("updateDDFparameters");
-//        DataPoint dt = null;
-//        DoubleMatrix currentMean = null;
-//        DoubleMatrix currentCovariance = null;
-//        StreamDensity instance = null;
-//        instance.updateDDFparameters(dt, currentMean, currentCovariance);
-    }
-
-    /**
-     * Test of updateForgettingFactor method, of class StreamDensity.
-     */
-    @Test
-    public void testUpdateForgettingFactor() {
-//        System.out.println("updateForgettingFactor");
-//        List<DataPoint> allDataPoints = null;
-//        StreamDensity instance = null;
-//        instance.updateForgettingFactor(allDataPoints);
-    }
-
 }

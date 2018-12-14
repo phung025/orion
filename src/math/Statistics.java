@@ -21,7 +21,7 @@ public class Statistics {
      * @param values
      * @return
      */
-    public static Double computeMean(List<Double> values) {
+    public static double computeMean(List<Double> values) {
         return values.stream().mapToDouble(i -> i).sum() / values.size();
     }
 
@@ -33,7 +33,7 @@ public class Statistics {
      * @param nextValue
      * @return
      */
-    public static Double computeMeanOnline(long previousCount, Double previousMean, Double nextValue) {
+    public static double computeMeanOnline(long previousCount, double previousMean, double nextValue) {
         return ((previousCount / (previousCount + 1.0)) * previousMean) + (nextValue / (previousCount + 1.0));
     }
 
@@ -43,15 +43,31 @@ public class Statistics {
      * @param values
      * @return
      */
-    public static Double computeVariance(List<Double> values) {
+    public static double computeVariance(List<Double> values) {
 
         Double mean = Statistics.computeMean(values);
         Double variance = 0.0;
         for (Double v : values) {
-            variance = Math.pow(v - mean, 2.0) / values.size();
+            variance += Math.pow(v - mean, 2.0) / (values.size() - 1);
         }
 
         return variance;
+    }
+
+    /**
+     * Compute a running variance using an online algorithm. The documentation
+     * for the algorithm can be found at:
+     * https://www.johndcook.com/blog/standard_deviation/
+     *
+     * @param previousCount total number of values excluding the incoming point
+     * @param previousSum sum of all values excluding the incoming point
+     * @param previousSumSquared sum of all squared values excluding the
+     * incoming point
+     * @param nextValue value of the incoming point
+     * @return running variance when a new data point arrives
+     */
+    public static double computeVarianceOnline(long previousCount, double previousSum, double previousSumSquared, double nextValue) {
+        return (1.0 / ((previousCount + 1.0) * previousCount)) * ((previousCount + 1.0) * (previousSumSquared + Math.pow(nextValue, 2.0)) - Math.pow(previousSum + nextValue, 2.0));
     }
 
     /**

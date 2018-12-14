@@ -179,4 +179,38 @@ public class StatisticsTest {
         DoubleMatrix nextCovariance = Statistics.computeCovarianceMatrix(vectors);
         double result = Statistics.computeAbsoluteNormalizedDevitation(nextPoint, nextMean, nextCovariance);
     }
+
+    /**
+     * Test of computeVariance method, of class Statistics.
+     */
+    @Test
+    public void testComputeVariance() {
+        System.out.println("computeVariance");
+        List<Double> values = new LinkedList();
+        values.add(17.0);
+        values.add(15.0);
+        values.add(23.0);
+        values.add(7.0);
+        values.add(9.0);
+        values.add(13.0);
+        
+        double expResult = 33.2;
+        double result = Statistics.computeVariance(values);
+        assertEquals(expResult, result, 0.0);
+    }
+
+    /**
+     * Test of computeVarianceOnline method, of class Statistics.
+     */
+    @Test
+    public void testComputeVarianceOnline() {
+        System.out.println("computeVarianceOnline");
+        long previousCount = 5;
+        double previousSum = 71;
+        double previousSumSquared = 1173;
+        double nextValue = 13;
+        double expResult = 33.2;
+        double result = Statistics.computeVarianceOnline(previousCount, previousSum, previousSumSquared, nextValue);
+        assertEquals(expResult, result, 0.0);
+    }
 }

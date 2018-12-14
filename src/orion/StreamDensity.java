@@ -59,14 +59,8 @@ public class StreamDensity {
             case "gaussian":
                 k = (1 / Math.sqrt(2 * Math.PI)) * Math.exp(-Math.pow(x / bandwidth, 2) / 2);
                 break;
-            case "epanechnikov":
-                k = (3.0 / 4.0) * (1 - Math.pow(x, 2.0));
-                break;
             case "uniform":
                 k = 1.0 / 2.0;
-                break;
-            case "triweight":
-                k = (35.0 / 32.0) * Math.pow((1 - Math.pow(x, 2.0)), 3.0);
                 break;
             default:
                 break;
@@ -98,7 +92,7 @@ public class StreamDensity {
     public double estimateStreamDensity(DataPoint dt, List<DataPoint> allDataPoints, DoubleMatrix pDimension, String kernelType) {
 
         // Compute the standard deviation of the data points projected on the p-dimension
-        // This can be further optimized using an online algorithm
+        // THIS CAN BE FURTHER OPTIMIZED USING AN ONLINE ALGORITHM
         List<Double> tmp = allDataPoints.stream().map(i -> projectOnDimension(i, pDimension)).collect(Collectors.toList());
         double stdevation = Math.sqrt(Statistics.computeVariance(tmp));
 
