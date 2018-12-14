@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package dataStream;
+package dataStructures;
 
+import dataStream.DataPoint;
 import java.sql.Timestamp;
 import java.util.LinkedList;
 import java.util.Queue;

@@ -45,7 +45,7 @@ public class SlideTest {
     public void testAdd() {
         System.out.println("add");
         DataPoint p = new DataPoint(0, null);
-        Slide instance = new Slide(2);
+        Slide<DataPoint> instance = new Slide(2);
 
         instance.add(p);
         assertTrue(instance.size() == 1);
@@ -66,7 +66,7 @@ public class SlideTest {
 
         DataPoint expResult = new DataPoint(1, null);
 
-        Slide instance = new Slide(2);
+        Slide<DataPoint> instance = new Slide(2);
         instance.add(expResult);
 
         DataPoint result = instance.peek();
@@ -82,7 +82,7 @@ public class SlideTest {
 
         DataPoint expResult = new DataPoint(1, null);
 
-        Slide instance = new Slide(2);
+        Slide<DataPoint> instance = new Slide(2);
         instance.add(expResult);
 
         DataPoint result = instance.poll();
@@ -97,7 +97,7 @@ public class SlideTest {
     public void testIsFull() {
         System.out.println("isFull");
         DataPoint p = new DataPoint(0, null);
-        Slide instance = new Slide(2);
+        Slide<DataPoint> instance = new Slide(2);
 
         instance.add(p);
         assertTrue(instance.size() == 1);

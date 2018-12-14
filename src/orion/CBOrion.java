@@ -22,15 +22,11 @@ public class CBOrion {
 
     // Class attributes used for setting up the Orion algorithm
     private int initializationThreshold = 0;
-    private int d = 0;
     private int k = 0; // Number of neighbors k
     private double r = 0.0; // User-defined distance r
-    
-    // Parameters for data density function
-    private double forgettingFactor = 0.0;
-    private double binWidth = 0.0;
-    private double c = 0.0; // A non-zero constant c for computing vector a
-    private DoubleMatrix a = null; // Vector a for computing the bin width. The vector has same dimension as an incoming data point
+
+    // Stream density estimator
+    private StreamDensity SDEstimator = null;
 
     // Statistical variables for helping choosing set of p-dimensions
     private DoubleMatrix currentMean = null;
@@ -60,28 +56,21 @@ public class CBOrion {
      * (h+1), (h+2), ... will be computed to reveal if they are outliers or not.
      *
      * @param S slide size.
-     * @param d dimension of the data (i.e. The dimension of an incoming data
-     * point)
+     * @param h the initialization threshold used for the first stage of the
+     * algorithm
      * @param k minimum amount of neighbors for a data point to not be an
      * outlier.
      * @param r radius distance r of a data point. If data point has fewer than
      * k neighbors within the distance r, it is potentially an outlier.
-     * @param h the initialization threshold used for the first stage of the
-     * algorithm
+     *
      */
-    public CBOrion(int S, int d, int k, int r, int h) {
+    public CBOrion(int S, int h, int k, double r) {
 
         // Assign all variables
-        this.slide = new Slide(S);
-        this.d = d;
-        this.k = k;
-        this.r = r;
-        this.initializationThreshold = h;
-
-        // Initialize the default mean, covariance matrix, etc
-        this.currentMean = DoubleMatrix.zeros(d);
-        this.currentCovariance = DoubleMatrix.zeros(d, d);
-        this.a = DoubleMatrix.zeros(d); // Vector a used for computing data density
+        this.slide = new Slide(S); // Data slide of size S
+        this.initializationThreshold = h; // Initialization threshold for first stage of algorithm
+        this.k = k; // K-neighbor of a data point
+        this.r = r; // Maximum distance r of a data point
     }
 
     /**
@@ -89,6 +78,23 @@ public class CBOrion {
      * @param dt
      */
     private void initialize(DataPoint dt) {
+
+        // Initialize the default mean, covariance matrix, etc when the first
+        // data point arrives
+        if (this.currentMean == null) {
+            
+            // Get the data point dimension
+            int dimension = dt.getValues().data.length;
+            
+            // Initialize original mean
+            this.currentMean = DoubleMatrix.zeros(dimension);
+            
+            // Initialize original covariance matrix
+            this.currentCovariance = DoubleMatrix.zeros(dimension, dimension);
+            
+            // Initialize the stream density estimator
+            SDEstimator = new StreamDensity(dimension, this.r);
+        }
 
         // Decrease the threshold, once it reaches 0, start the auto regression
         // analysis to learn the forgetting factor
@@ -113,11 +119,11 @@ public class CBOrion {
                 Statistics.computeAbsoluteNormalizedDevitation(dt.getValues(), currentMean, currentCovariance));
 
         // Learn parameters for Data Density Function
-        updateDDFparameters();
-        
+        SDEstimator.updateDDFparameters(dt, currentMean, currentCovariance);
+
         // Learn the forgetting factor λ
         if (this.initializationThreshold == 0) {
-            
+
         }
     }
 
@@ -182,7 +188,4 @@ public class CBOrion {
         return false;
     }
 
-    private void updateDDFparameters() {
-        
-    }
 }

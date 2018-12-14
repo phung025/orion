@@ -5,6 +5,7 @@
  */
 package dataStream;
 
+import dataStructures.Stream;
 import java.util.LinkedList;
 import org.junit.After;
 import org.junit.AfterClass;

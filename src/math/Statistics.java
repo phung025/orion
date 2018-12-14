@@ -38,6 +38,23 @@ public class Statistics {
     }
 
     /**
+     * Compute variance of all values in a list
+     *
+     * @param values
+     * @return
+     */
+    public static Double computeVariance(List<Double> values) {
+
+        Double mean = Statistics.computeMean(values);
+        Double variance = 0.0;
+        for (Double v : values) {
+            variance = Math.pow(v - mean, 2.0) / values.size();
+        }
+
+        return variance;
+    }
+
+    /**
      * Compute the mean vector from a list of vectors
      *
      * @param vectors
@@ -125,9 +142,11 @@ public class Statistics {
 
         return lhs.add(rhs);
     }
-    
+
     /**
-     * Online algorithm for computing the absolute normalized deviation when a new data point arrives
+     * Online algorithm for computing the absolute normalized deviation when a
+     * new data point arrives
+     *
      * @param nextPoint vector contains all values of the new data point
      * @param nextMean mean value vector when a new data point arrives
      * @param nextCovariance covariance matrix when a new data point arrives
