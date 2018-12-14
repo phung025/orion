@@ -5,7 +5,7 @@
  */
 package orion;
 
-import dataStream.DataPoint;
+import dataStructures.DataPoint;
 import dataStructures.Slide;
 import java.util.LinkedList;
 import java.util.List;
@@ -82,16 +82,16 @@ public class CBOrion {
         // Initialize the default mean, covariance matrix, etc when the first
         // data point arrives
         if (this.currentMean == null) {
-            
+
             // Get the data point dimension
             int dimension = dt.getValues().data.length;
-            
+
             // Initialize original mean
             this.currentMean = DoubleMatrix.zeros(dimension);
-            
+
             // Initialize original covariance matrix
             this.currentCovariance = DoubleMatrix.zeros(dimension, dimension);
-            
+
             // Initialize the stream density estimator
             SDEstimator = new StreamDensity(dimension, this.r);
         }
@@ -118,12 +118,9 @@ public class CBOrion {
                 meanAbsoluteNormalizedDeviation,
                 Statistics.computeAbsoluteNormalizedDevitation(dt.getValues(), currentMean, currentCovariance));
 
-        // Learn parameters for Data Density Function
-        SDEstimator.updateDDFparameters(dt, currentMean, currentCovariance);
-
-        // Learn the forgetting factor λ
+        // Learn the forgetting factor λ once Orion has received enough data points
         if (this.initializationThreshold == 0) {
-
+            SDEstimator.updateForgettingFactor(slide);
         }
     }
 
@@ -170,6 +167,9 @@ public class CBOrion {
                 dt.getValues(),
                 this.currentMean,
                 this.currentCovariance);
+
+        // Learn parameters for Data Density Function
+        SDEstimator.updateDDFparameters(dt, currentMean, currentCovariance);
 
         // Select the best partition that can reveal the p-dimension for data point dt
         List<DoubleMatrix> A_t = null; // Candidate p-dimension list

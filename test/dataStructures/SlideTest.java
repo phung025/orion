@@ -5,7 +5,6 @@
  */
 package dataStructures;
 
-import dataStream.DataPoint;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

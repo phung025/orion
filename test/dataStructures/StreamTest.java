@@ -3,8 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package dataStream;
+package dataStructures;
 
+import fileIO.FileReader;
+import dataStructures.DataPoint;
 import dataStructures.Stream;
 import java.util.LinkedList;
 import org.junit.After;

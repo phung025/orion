@@ -5,7 +5,6 @@
  */
 package dataStructures;
 
-import dataStream.DataPoint;
 import java.sql.Timestamp;
 import java.util.LinkedList;
 import java.util.Queue;

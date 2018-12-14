@@ -5,10 +5,12 @@
  */
 package orion;
 
-import dataStream.DataPoint;
-import dataStream.FileReader;
+import dataStructures.DataPoint;
+import dataStructures.Slide;
+import fileIO.FileReader;
 import dataStructures.Stream;
-import java.util.LinkedList;
+import java.util.List;
+import math.Statistics;
 import org.jblas.DoubleMatrix;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -56,18 +58,70 @@ public class StreamDensityTest {
         // Data stream
         Stream stream = new Stream(false); // Create a count-based timestamp stream
         stream.writeToStream(incomingData);
-        LinkedList<DataPoint> window = new LinkedList();
+        Slide<DataPoint> slide = new Slide(200);
+        int count = 0;
+        int dimension = incomingData[0].length;
 
-        StreamDensity instance = new StreamDensity(incomingData[0].length, 5.4); // Stream density estimator
+        StreamDensity instance = new StreamDensity(dimension, 20); // Stream density estimator
+        boolean updated = false;
         DoubleMatrix pDimension = new DoubleMatrix(new double[]{1, 0}); // Projected dimension
+
+        // Initialize original mean
+        DoubleMatrix currentMean = DoubleMatrix.zeros(dimension);
+
+        // Initialize original covariance matrix
+        DoubleMatrix currentCovariance = DoubleMatrix.zeros(dimension, dimension);
 
         while (!stream.isEmpty()) {
 
             DataPoint incomingPoint = stream.readFromStream();
-            window.add(incomingPoint);
+            slide.add(incomingPoint);
 
-            double streamDensity = instance.estimateStreamDensity(incomingPoint, window, pDimension, "uniform");
-            System.out.println(window.size() - 1 + " --- " + streamDensity);
+            // Update the mean
+            DoubleMatrix previousMean = currentMean;
+            currentMean = Statistics.computeVectorMeanOnline(incomingPoint.getTimestamp() - 1, currentMean, incomingPoint.getValues());
+
+            // Update the covariance matrix
+            currentCovariance = Statistics.computeCovarianceMatrixOnline(
+                    incomingPoint.getTimestamp() - 1,
+                    currentCovariance,
+                    previousMean,
+                    currentMean,
+                    incomingPoint.getValues());
+
+            // Update parameters of the data density function and the forgetting factor lambda
+            instance.updateDDFparameters(incomingPoint, currentMean, currentCovariance);
+
+            if (slide.isFull() && !updated) { // Start update forgetting factor when the slide is full
+                instance.updateForgettingFactor(slide);
+                updated = true; // Indicate that forgetting factor has been updated
+            } else if (updated) {
+                double streamDensity = instance.estimateStreamDensity(incomingPoint, slide, pDimension, "uniform");
+                System.out.println(count + " --- " + streamDensity);
+            }
+
+            count++;
         }
+    }
+
+    /**
+     * Test of updateForgettingFactor method, of class StreamDensity.
+     */
+    @Test
+    public void testUpdateForgettingFactor() {
+        System.out.println("updateForgettingFactor");
+
+        String filePath = System.getProperty("user.dir") + "\\datasets\\random2.csv";
+        char separator = ',';
+        boolean hasHeader = false;
+        double[][] incomingData = FileReader.readCSV(filePath, separator, hasHeader);
+
+        // Data stream
+        Stream stream = new Stream(false); // Create a count-based timestamp stream
+        stream.writeToStream(incomingData);
+
+        List<DataPoint> allDataPoints = stream.readFromStream(200);
+        StreamDensity instance = new StreamDensity(incomingData[0].length, 5.4);
+        instance.updateForgettingFactor(allDataPoints);
     }
 }
