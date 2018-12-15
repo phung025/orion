@@ -46,7 +46,7 @@ public class CBOrionTest {
     public void testDetectOutlier() {
         System.out.println("detectOutlier");
 
-        String filePath = System.getProperty("user.dir") + "\\datasets\\random4.csv";
+        String filePath = System.getProperty("user.dir") + "\\datasets\\random.csv";
         char separator = ',';
         boolean hasHeader = false;
         double[][] incomingData = FileReader.readCSV(filePath, separator, hasHeader);

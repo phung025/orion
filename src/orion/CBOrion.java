@@ -7,10 +7,13 @@ package orion;
 
 import dataStructures.DataPoint;
 import dataStructures.Slide;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import math.Statistics;
 import org.jblas.DoubleMatrix;
+import org.jblas.Eigen;
 
 /**
  * Class definition and implementation of the Orion algorithm using a
@@ -34,8 +37,10 @@ public class CBOrion {
     private double meanAbsoluteNormalizedDeviation = 0.0;
 
     // Partitions of p-dimension used by genetic algorithm and outlier detection
-    private final List<DoubleMatrix> A_out = new LinkedList();
-    private final List<DoubleMatrix> A_in = new LinkedList();
+    private List<DoubleMatrix> A_out = new LinkedList();
+    private List<DoubleMatrix> A_in = new LinkedList();
+
+    private EvolutionaryComputation ea = null;
 
     // The slide containing all active data points, every data points not
     // in this slide are considered expired & shall not be used to determine
@@ -89,6 +94,33 @@ public class CBOrion {
 
         // Learn the forgetting factor λ once Orion has received enough data points
         SDEstimator.updateForgettingFactor(slide);
+
+        // Compute the initial set of p-dimensions (population set)
+        // The set of candidate p-dimenion has size of at least 10
+        List<DoubleMatrix> dimensions = new LinkedList();
+        DoubleMatrix eigen = Eigen.eigenvectors(this.currentCovariance)[0].getReal();
+        for (int i = 0; i < eigen.getRows(); ++i) {
+            dimensions.add(eigen.getRow(i).transpose());
+        }
+        for (int i = 0; i < 10 - eigen.getRows(); ++i) {
+            dimensions.add(DoubleMatrix.rand(dimension));
+        }
+
+        // Randomly partition the set of dimensions into 2 subset A_in and A_out
+        Collections.shuffle(dimensions);
+        int cutoff = (dimensions.size() / 2);
+        Iterator<DoubleMatrix> iter = dimensions.iterator();
+        while (iter.hasNext()) {
+            if (cutoff > 0) {
+                A_in.add(iter.next());
+            } else {
+                A_out.add(iter.next());
+            }
+            --cutoff;
+        }
+
+        // Initialize the evolutionary computation object
+        ea = new EvolutionaryComputation(SDEstimator);
     }
 
     public boolean detectOutlier(DataPoint dt) {
@@ -126,6 +158,16 @@ public class CBOrion {
         // not arrived at the slide
         if (this.slide.isFull()) {
 
+            // Revert the mean absolute normalized deviation (meanAD) to when the oldest point is removed from
+            // First, get the absolute normalized deviation (AD) of the oldest point, then exclude
+            // the contribution of the AD of the oldest point from the meanAD
+            double oldestAD = Statistics.computeAbsoluteNormalizedDevitation(
+                    oldestPoint.getValues(),
+                    currentMean,
+                    currentCovariance);
+            double meanAD = this.meanAbsoluteNormalizedDeviation;
+            this.meanAbsoluteNormalizedDeviation = (meanAD * ((slide.size() * 1.0) / (slide.size() * 1.0 - 1.0))) - (oldestAD / (slide.size() * 1.0 - 1.0));
+            
             // New mean after the oldest point removed from the slide
             this.currentMean = this.currentMean.mul((slide.size() * 1.0) / (slide.size() * 1.0 - 1.0)).sub(oldestPoint.getValues().div(this.slide.size() - 1.0));
 
@@ -160,19 +202,29 @@ public class CBOrion {
         SDEstimator.updateDDFparameters(dt, currentMean, currentCovariance);
 
         // Select the best partition that can reveal the p-dimension for data point dt
-        List<DoubleMatrix> A_t = null; // Candidate p-dimension list
+        DoubleMatrix pDimension = null;
+        double pDimensionDensity = 0.0;
         if (absoluteNormalizedDeviation > this.meanAbsoluteNormalizedDeviation) {
-            A_t = A_out;
+            Object[] evolved = ea.evolve(A_out, dt, slide, 10);
+            pDimension = (DoubleMatrix) evolved[0];
+            pDimensionDensity = (double) evolved[1];
+            A_out = (List<DoubleMatrix>) evolved[2];
         } else {
-            A_t = A_in;
+            Object[] evolved = ea.evolve(A_in, dt, slide, 10);
+            pDimension = (DoubleMatrix) evolved[0];
+            pDimensionDensity = (double) evolved[1];
+            A_in = (List<DoubleMatrix>) evolved[2];
         }
-        
+
+        System.out.println(pDimensionDensity);
+
         // Update the mean absolute normalized deviation
         this.meanAbsoluteNormalizedDeviation = Statistics.computeMeanOnline(
                 slide.size() - 1,
                 this.meanAbsoluteNormalizedDeviation,
                 absoluteNormalizedDeviation);
 
+        // Perform evolutionary computation to find the p-dimension for the given data point dt
         return false;
     }
 

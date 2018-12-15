@@ -80,4 +80,12 @@ public class Slide<E> extends LinkedList<E> {
     public boolean isFull() {
         return super.size() == this.slideSize;
     }
+    
+    /**
+     * Get the maximum capacity of the slide
+     * @return maximum amount of data points the slide can hold
+     */
+    public int capacity() {
+        return this.slideSize;
+    }
 }
