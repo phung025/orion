@@ -42,7 +42,7 @@ public class EvolutionaryComputation {
      * @param dimensionY
      * @return
      */
-    public DoubleMatrix crossOver(DoubleMatrix dimensionX, DoubleMatrix dimensionY) {
+    public DoubleMatrix crossover(DoubleMatrix dimensionX, DoubleMatrix dimensionY) {
 
         int cutoff = new Random().nextInt(dimensionX.data.length);
         double[] dimensionZ = new double[dimensionX.data.length];

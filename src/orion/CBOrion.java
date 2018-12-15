@@ -94,7 +94,7 @@ public class CBOrion {
     public boolean detectOutlier(DataPoint dt) {
 
         // Add incoming data point to the slide
-        DataPoint oldestPoint = this.slide.getFirst(); // The data point that will be removed if the slide is full
+        DataPoint oldestPoint = this.slide.peekFirst(); // The data point that will be removed if the slide is full
         this.slide.add(dt);
 
         /**
@@ -111,8 +111,8 @@ public class CBOrion {
             --initializationThreshold;
             return false;
         } else if (initializationThreshold == 1) {
-            // Start the initialization stage
-            this.initialize(this.slide.element().getValues().data.length);
+            this.initialize(this.slide.element().getValues().data.length); // Start the initialization stage
+            initializationThreshold = 0; // Finish the initialization stage
             return false;
         }
 
@@ -126,12 +126,8 @@ public class CBOrion {
         // not arrived at the slide
         if (this.slide.isFull()) {
 
-            // Special coefficient to compute the running mean when a point being removed from
-            // the data. Removing a point X from the data is the same as adding a special point Y
-            // that results in a mean that equals the mean value when the data point X is removed
-            double j = (2.0 * ((1.0 / (slide.size() - 1.0)) * (slide.size() / 2.0))) - 1.0;
-            DoubleMatrix p = currentMean.mul(j).add(oldestPoint.getValues().mul(oldestPoint.getValues().rsub(0).sub(oldestPoint.getValues().mul(j)).div(oldestPoint.getValues())).div(slide.size() * 1.0));
-            this.currentMean = this.currentMean.add(p); // New mean after the oldest point removed from the slide
+            // New mean after the oldest point removed from the slide
+            this.currentMean = this.currentMean.mul((slide.size() * 1.0) / (slide.size() * 1.0 - 1.0)).sub(oldestPoint.getValues().div(this.slide.size() - 1.0));
 
             // Compute the projected value vector of the data point being removed to compute the running covariance
             // after that point is removed from the slide
@@ -170,7 +166,7 @@ public class CBOrion {
         } else {
             A_t = A_in;
         }
-
+        
         // Update the mean absolute normalized deviation
         this.meanAbsoluteNormalizedDeviation = Statistics.computeMeanOnline(
                 slide.size() - 1,

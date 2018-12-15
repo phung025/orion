@@ -10,7 +10,6 @@ import dataStructures.Slide;
 import fileIO.FileReader;
 import dataStructures.Stream;
 import java.util.List;
-import jdk.internal.net.http.common.Log;
 import math.Statistics;
 import org.jblas.DoubleMatrix;
 import org.junit.After;
@@ -51,7 +50,7 @@ public class StreamDensityTest {
     public void testEstimateStreamDensity() {
         System.out.println("estimateStreamDensity");
 
-        String filePath = System.getProperty("user.dir") + "\\datasets\\random3.csv";
+        String filePath = System.getProperty("user.dir") + "\\datasets\\random2.csv";
         char separator = ',';
         boolean hasHeader = false;
         double[][] incomingData = FileReader.readCSV(filePath, separator, hasHeader);

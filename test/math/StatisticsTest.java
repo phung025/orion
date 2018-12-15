@@ -192,7 +192,7 @@ public class StatisticsTest {
         values.add(7.0);
         values.add(9.0);
         values.add(13.0);
-        
+
         double expResult = 33.2;
         double result = Statistics.computeVariance(values);
         assertEquals(expResult, result, 0.0);
