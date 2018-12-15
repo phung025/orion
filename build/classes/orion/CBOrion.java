@@ -57,7 +57,7 @@ public class CBOrion {
      *
      * @param S slide size.
      * @param h the initialization threshold used for the first stage of the
-     * algorithm. The h coefficient must be smaller than the S coefficient
+     * algorithm
      * @param k minimum amount of neighbors for a data point to not be an
      * outlier.
      * @param r radius distance r of a data point. If data point has fewer than
@@ -77,24 +77,56 @@ public class CBOrion {
      *
      * @param dt
      */
-    private void initialize(int dimension) {
-        // Initialize the mean, covariance matrix, and the stream density estimator
-        List<DoubleMatrix> allPoints = new LinkedList();
-        this.slide.forEach((p) -> {
-            allPoints.add(p.getValues());
-        });
-        this.currentMean = Statistics.computeVectorMean(allPoints);
-        this.currentCovariance = Statistics.computeCovarianceMatrix(allPoints);
-        SDEstimator = new StreamDensity(dimension, this.r);
+    private void initialize(DataPoint dt) {
+
+        // Initialize the default mean, covariance matrix, etc when the first
+        // data point arrives
+        if (this.currentMean == null) {
+
+            // Get the data point dimension
+            int dimension = dt.getValues().data.length;
+
+            // Initialize original mean
+            this.currentMean = DoubleMatrix.zeros(dimension);
+
+            // Initialize original covariance matrix
+            this.currentCovariance = DoubleMatrix.zeros(dimension, dimension);
+
+            // Initialize the stream density estimator
+            SDEstimator = new StreamDensity(dimension, this.r);
+        }
+
+        // Decrease the threshold, once it reaches 0, start the auto regression
+        // analysis to learn the forgetting factor
+        --initializationThreshold;
+
+        // Initialize the mean
+        DoubleMatrix previousMean = currentMean;
+        currentMean = Statistics.computeVectorMeanOnline(dt.getTimestamp() - 1, this.currentMean, dt.getValues());
+
+        // Initialize the covariance matrix
+        currentCovariance = Statistics.computeCovarianceMatrixOnline(
+                dt.getTimestamp() - 1,
+                currentCovariance,
+                previousMean,
+                currentMean,
+                dt.getValues());
+
+        // Initialize the mean absolute deviation
+        meanAbsoluteNormalizedDeviation = Statistics.computeMeanOnline(
+                dt.getTimestamp() - 1,
+                meanAbsoluteNormalizedDeviation,
+                Statistics.computeAbsoluteNormalizedDevitation(dt.getValues(), currentMean, currentCovariance));
 
         // Learn the forgetting factor λ once Orion has received enough data points
-        SDEstimator.updateForgettingFactor(slide);
+        if (this.initializationThreshold == 0) {
+            SDEstimator.updateForgettingFactor(slide);
+        }
     }
 
     public boolean detectOutlier(DataPoint dt) {
 
         // Add incoming data point to the slide
-        DataPoint oldestPoint = this.slide.getFirst(); // The data point that will be removed if the slide is full
         this.slide.add(dt);
 
         /**
@@ -106,50 +138,26 @@ public class CBOrion {
         // stage. Once the threshold has reached 0, the second stage of the algorithm
         // will be executed, all data points come in after that will be checked to
         // reveal their outlierness.
-        if (initializationThreshold > 1) {
-            // Decrease the threshold, once it reaches 0, start the initialization stage
-            --initializationThreshold;
-            return false;
-        } else if (initializationThreshold == 1) {
-            // Start the initialization stage
-            this.initialize(this.slide.element().getValues().data.length);
+        if (initializationThreshold > 0) {
+            this.initialize(dt);
             return false;
         }
 
         /**
          * INCREMENTAL STAGE
          */
-        // If the slide is not full, update the running mean and covariance matrix
-        // normally. However, if the slide is full, before an incoming data point arrives
-        // in the slide, the oldest data point will be removed from the slide, the mean and
-        // covariance matrix will be revert back to the state where that oldest point has
-        // not arrived at the slide
-        if (this.slide.isFull()) {
-
-            // Special coefficient to compute the running mean when a point being removed from
-            // the data. Removing a point X from the data is the same as adding a special point Y
-            // that results in a mean that equals the mean value when the data point X is removed
-            double j = (2.0 * ((1.0 / (slide.size() - 1.0)) * (slide.size() / 2.0))) - 1.0;
-            DoubleMatrix p = currentMean.mul(j).add(oldestPoint.getValues().mul(oldestPoint.getValues().rsub(0).sub(oldestPoint.getValues().mul(j)).div(oldestPoint.getValues())).div(slide.size() * 1.0));
-            this.currentMean = this.currentMean.add(p); // New mean after the oldest point removed from the slide
-
-            // Compute the projected value vector of the data point being removed to compute the running covariance
-            // after that point is removed from the slide
-            DoubleMatrix lhs = currentCovariance.mul((slide.size() * 1.0) / (slide.size() - 1.0));
-            DoubleMatrix rhs = oldestPoint.getValues().sub(this.currentMean).mmul(oldestPoint.getValues().sub(this.currentMean).transpose()).mul((1.0 * slide.size() - 1.0) / (slide.size())).div(slide.size() - 1);
-            this.currentCovariance = lhs.sub(rhs);
-        }
-
-        // Update covariance matrix when data point arrives
-        this.currentCovariance = Statistics.computeCovarianceMatrixOnline(
-                slide.size() - 1,
-                this.currentCovariance,
+        // Update mean when data point dt arrives at time t
+        DoubleMatrix previousMean = this.currentMean;
+        this.currentMean = Statistics.computeVectorMeanOnline(
+                dt.getTimestamp() - 1,
                 this.currentMean,
                 dt.getValues());
 
-        // Update mean value when data point dt arrives at time t
-        this.currentMean = Statistics.computeVectorMeanOnline(
-                slide.size() - 1,
+        // Update covariance matrix when data point arrives
+        this.currentCovariance = Statistics.computeCovarianceMatrixOnline(
+                dt.getTimestamp() - 1,
+                this.currentCovariance,
+                previousMean,
                 this.currentMean,
                 dt.getValues());
 
@@ -173,7 +181,7 @@ public class CBOrion {
 
         // Update the mean absolute normalized deviation
         this.meanAbsoluteNormalizedDeviation = Statistics.computeMeanOnline(
-                slide.size() - 1,
+                dt.getTimestamp() - 1,
                 this.meanAbsoluteNormalizedDeviation,
                 absoluteNormalizedDeviation);
 

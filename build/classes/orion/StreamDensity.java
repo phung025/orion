@@ -102,23 +102,6 @@ public class StreamDensity {
         List<Double> tmp = allDataPoints.parallelStream().map(i -> projectOnDimension(i, pDimension)).collect(Collectors.toList());
         double stdevation = Math.sqrt(Statistics.computeVariance(tmp));
 
-        return estimateStreamDensityHelper(dt, allDataPoints, stdevation, pDimension, kernelType);
-    }
-
-    /**
-     *
-     * @param dt
-     * @param allDataPoints
-     * @param stdevation
-     * @param pDimension
-     * @param kernelType
-     * @return
-     */
-    public double estimateStreamDensity(DataPoint dt, List<DataPoint> allDataPoints, double stdevation, DoubleMatrix pDimension, String kernelType) {
-        return estimateStreamDensityHelper(dt, allDataPoints, stdevation, pDimension, kernelType);
-    }
-
-    private double estimateStreamDensityHelper(DataPoint dt, List<DataPoint> allDataPoints, double stdevation, DoubleMatrix pDimension, String kernelType) {
         double scaledNeighborDist = this.r * this.binWidth; // Compute the scaled neighbor distance
         double projectedDT = projectOnDimension(dt, pDimension); // Project the incoming data point on the p-dimension
 

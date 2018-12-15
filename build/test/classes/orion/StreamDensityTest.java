@@ -10,7 +10,6 @@ import dataStructures.Slide;
 import fileIO.FileReader;
 import dataStructures.Stream;
 import java.util.List;
-import jdk.internal.net.http.common.Log;
 import math.Statistics;
 import org.jblas.DoubleMatrix;
 import org.junit.After;
@@ -51,7 +50,7 @@ public class StreamDensityTest {
     public void testEstimateStreamDensity() {
         System.out.println("estimateStreamDensity");
 
-        String filePath = System.getProperty("user.dir") + "\\datasets\\random3.csv";
+        String filePath = System.getProperty("user.dir") + "\\datasets\\random.csv";
         char separator = ',';
         boolean hasHeader = false;
         double[][] incomingData = FileReader.readCSV(filePath, separator, hasHeader);
@@ -59,7 +58,7 @@ public class StreamDensityTest {
         // Data stream
         Stream stream = new Stream(false); // Create a count-based timestamp stream
         stream.writeToStream(incomingData);
-        Slide<DataPoint> slide = new Slide(10);
+        Slide<DataPoint> slide = new Slide(200);
         int count = 0;
         int dimension = incomingData[0].length;
 
@@ -67,8 +66,10 @@ public class StreamDensityTest {
         boolean updated = false;
         DoubleMatrix pDimension = new DoubleMatrix(new double[]{1, 0}); // Projected dimension
 
-        // Initialize original mean, variance, and covariance matrix
+        // Initialize original mean
         DoubleMatrix currentMean = DoubleMatrix.zeros(dimension);
+
+        // Initialize original covariance matrix
         DoubleMatrix currentCovariance = DoubleMatrix.zeros(dimension, dimension);
 
         while (!stream.isEmpty()) {
@@ -85,6 +86,7 @@ public class StreamDensityTest {
                     incomingPoint.getTimestamp() - 1,
                     currentCovariance,
                     previousMean,
+                    currentMean,
                     incomingPoint.getValues());
 
             // Update parameters of the data density function and the forgetting factor lambda
@@ -94,16 +96,10 @@ public class StreamDensityTest {
                 instance.updateForgettingFactor(slide);
                 updated = true; // Indicate that forgetting factor has been updated
             } else if (updated) {
-                
-                // Estimate density by computing the standard deviation of all data points after they're
-                // projected on the p-dimension
                 double streamDensity = instance.estimateStreamDensity(incomingPoint, slide, pDimension, "uniform");
-                
-                // Estimate density by computing the standard deviation of all data points without projecting
-                // them on the p-dimension
-                //double streamDensity = instance.estimateStreamDensity(incomingPoint, slide, Math.sqrt(currentCovariance.sum()), pDimension, "uniform");
                 System.out.println(count + " --- " + streamDensity);
             }
+
             count++;
         }
     }

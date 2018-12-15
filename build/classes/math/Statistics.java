@@ -44,9 +44,13 @@ public class Statistics {
      * @return
      */
     public static double computeVariance(List<Double> values) {
+
         Double mean = Statistics.computeMean(values);
         Double variance = 0.0;
-        variance = values.stream().map((v) -> Math.pow(v - mean, 2.0) / (values.size() - 1)).reduce(variance, (accumulator, _item) -> accumulator + _item);
+        for (Double v : values) {
+            variance += Math.pow(v - mean, 2.0) / (values.size() - 1);
+        }
+
         return variance;
     }
 
@@ -64,21 +68,6 @@ public class Statistics {
      */
     public static double computeVarianceOnline(long previousCount, double previousSum, double previousSumSquared, double nextValue) {
         return (1.0 / ((previousCount + 1.0) * previousCount)) * ((previousCount + 1.0) * (previousSumSquared + Math.pow(nextValue, 2.0)) - Math.pow(previousSum + nextValue, 2.0));
-    }
-
-    /**
-     * Compute a running variance using Welford's Online algorithm. The
-     * documentation for the algorithm can be found at:
-     * https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance
-     *
-     * @param previousCount total number of values excluding the incoming point
-     * @param previousMean mean of all values excluding the next value
-     * @param previousVariance variance of all values excluding the next value
-     * @param nextValue value of the incoming point
-     * @return running variance when a new data point arrives
-     */
-    public static double computeVarianeOnline2(long previousCount, double previousMean, double previousVariance, double currentMean, double nextValue) {
-        return previousVariance + (((nextValue - previousMean) * (nextValue - currentMean) - previousVariance) / (previousCount + 1.0));
     }
 
     /**
@@ -156,15 +145,16 @@ public class Statistics {
      * @param prevCount
      * @param prevCov
      * @param prevMean
+     * @param nextMean
      * @param nextPoint
      * @return
      */
-    public static DoubleMatrix computeCovarianceMatrixOnline(long prevCount, DoubleMatrix prevCov, DoubleMatrix prevMean, DoubleMatrix nextPoint) {
+    public static DoubleMatrix computeCovarianceMatrixOnline(long prevCount, DoubleMatrix prevCov, DoubleMatrix prevMean, DoubleMatrix nextMean, DoubleMatrix nextPoint) {
 
         // Online algorithm for computing covariance matrix
         // https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance
-        DoubleMatrix lhs = prevCov.mul((1.0 * prevCount) / (prevCount + 1.0));
-        DoubleMatrix rhs = nextPoint.sub(prevMean).mmul(nextPoint.sub(prevMean).transpose()).mul((1.0 * prevCount) / (prevCount + 1.0)).div(prevCount + 1.0);
+        DoubleMatrix lhs = prevCov.mul(prevCount / (prevCount + 1.0));
+        DoubleMatrix rhs = nextPoint.sub(nextMean).mmul(nextPoint.sub(prevMean).transpose()).div(prevCount + 1.0);
 
         return lhs.add(rhs);
     }

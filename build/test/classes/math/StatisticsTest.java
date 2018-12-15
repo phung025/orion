@@ -5,6 +5,7 @@
  */
 package math;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import org.jblas.DoubleMatrix;
@@ -154,7 +155,7 @@ public class StatisticsTest {
             {360, 360, 0},
             {180, 0, 720}
         });
-        DoubleMatrix result = Statistics.computeCovarianceMatrixOnline(prevCount, prevCov, prevMean, nextPoint);
+        DoubleMatrix result = Statistics.computeCovarianceMatrixOnline(prevCount, prevCov, prevMean, nextMean, nextPoint);
         assertEquals(expResult, result);
     }
 
