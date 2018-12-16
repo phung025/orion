@@ -8,6 +8,7 @@ package orion;
 import dataStructures.DataPoint;
 import dataStructures.Stream;
 import fileIO.FileReader;
+import java.util.Collections;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -46,7 +47,7 @@ public class CBOrionTest {
     public void testDetectOutlier() {
         System.out.println("detectOutlier");
 
-        String filePath = System.getProperty("user.dir") + "\\datasets\\random.csv";
+        String filePath = System.getProperty("user.dir") + "\\datasets\\satellite.csv";
         char separator = ',';
         boolean hasHeader = false;
         double[][] incomingData = FileReader.readCSV(filePath, separator, hasHeader);
@@ -56,13 +57,18 @@ public class CBOrionTest {
         stream.writeToStream(incomingData);
         int count = 0;
 
-        CBOrion instance = new CBOrion(200, 100, 10, 30);
+        CBOrion instance = new CBOrion(200, 200, 20, 50);
         while (!stream.isEmpty()) {
             DataPoint dt = stream.readFromStream();
 
             System.out.print("--" + count + "-- ");
             boolean result = instance.detectOutlier(dt);
             ++count;
+        }
+        System.out.println("-------------------");
+        Collections.sort(instance.a);
+        for (int i = 0; i < instance.a.size(); i++) {
+            System.out.println(i + " ---" + instance.a.get(i));
         }
 
     }

@@ -67,13 +67,14 @@ public class Statistics {
     }
 
     /**
-     * Compute a running variance using Welford's Online algorithm. The
+     * Compute a running variance using Welford's Online algorithm.The
      * documentation for the algorithm can be found at:
      * https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance
      *
      * @param previousCount total number of values excluding the incoming point
      * @param previousMean mean of all values excluding the next value
      * @param previousVariance variance of all values excluding the next value
+     * @param currentMean
      * @param nextValue value of the incoming point
      * @return running variance when a new data point arrives
      */
@@ -180,5 +181,25 @@ public class Statistics {
      */
     public static double computeAbsoluteNormalizedDevitation(DoubleMatrix nextPoint, DoubleMatrix nextMean, DoubleMatrix nextCovariance) {
         return Math.sqrt(nextPoint.sub(nextMean).transpose().mmul(Solve.pinv(nextCovariance)).mmul(nextPoint.sub(nextMean)).data[0]);
+    }
+
+    public static DoubleMatrix revertVectorMean(DoubleMatrix removedPoint, DoubleMatrix currentMean, int currentCount) {
+        return currentMean.mul((currentCount * 1.0) / ((currentCount - 1) * 1.0)).sub(removedPoint.div((currentCount - 1) * 1.0));
+    }
+
+    public static double revertMean(double removedValue, double currentMean, int currentCount) {
+        return (currentMean * ((currentCount * 1.0) / ((currentCount - 1) * 1.0))) - (removedValue / ((currentCount - 1) * 1.0));
+    }
+
+    public static DoubleMatrix revertCovarianceMatrix(DoubleMatrix removedPoint, DoubleMatrix currentCovariance, DoubleMatrix currentMean, int currentCount) {
+        DoubleMatrix lhs = currentCovariance.mul((currentCount * 1.0) / (currentCount - 1.0));
+        DoubleMatrix rhs = removedPoint.sub(currentMean).mmul(removedPoint.sub(currentMean).transpose()).mul((1.0 * currentCount - 1.0) / (currentCount * 1.0)).div(currentCount - 1);
+        return lhs.sub(rhs);
+    }
+
+    public static double revertVariance(double removedValue, double currentVariance, double currentMean, int currentCount, double newMean) {
+        double numerator = currentVariance - (((removedValue - newMean) * (removedValue - currentMean)) / (currentCount - 1 * 1.0));
+        double denominator = 1.0 - (1.0 / (currentCount - 1 * 1.0));
+        return numerator / denominator;
     }
 }

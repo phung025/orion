@@ -185,7 +185,7 @@ public class StreamDensity {
      * @return the projected data point on the p-dimension.
      */
     public double projectOnDimension(DataPoint dt, DoubleMatrix pDimension) {
-        return dt.getValues().transpose().mmul(pDimension).data[0];
+        return dt.getValues().transpose().mmul(pDimension).sum();
     }
 
     /**

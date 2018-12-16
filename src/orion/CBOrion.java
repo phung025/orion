@@ -6,11 +6,13 @@
 package orion;
 
 import dataStructures.DataPoint;
+import dataStructures.Dimension;
 import dataStructures.Slide;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 import math.Statistics;
 import org.jblas.DoubleMatrix;
 import org.jblas.Eigen;
@@ -37,8 +39,8 @@ public class CBOrion {
     private double meanAbsoluteNormalizedDeviation = 0.0;
 
     // Partitions of p-dimension used by genetic algorithm and outlier detection
-    private List<DoubleMatrix> A_out = new LinkedList();
-    private List<DoubleMatrix> A_in = new LinkedList();
+    private List<Dimension> A_out = new LinkedList();
+    private List<Dimension> A_in = new LinkedList();
 
     private EvolutionaryComputation ea = null;
 
@@ -97,19 +99,25 @@ public class CBOrion {
 
         // Compute the initial set of p-dimensions (population set)
         // The set of candidate p-dimenion has size of at least 10
-        List<DoubleMatrix> dimensions = new LinkedList();
+        List<Dimension> dimensions = new LinkedList();
         DoubleMatrix eigen = Eigen.eigenvectors(this.currentCovariance)[0].getReal();
         for (int i = 0; i < eigen.getRows(); ++i) {
-            dimensions.add(eigen.getRow(i).transpose());
+            DoubleMatrix p = eigen.getRow(i).transpose();
+            List<Double> projected = slide.parallelStream().map(k -> SDEstimator.projectOnDimension(k, p)).collect(Collectors.toList());
+            Dimension candidate = new Dimension(p, Statistics.computeMean(projected), Statistics.computeVariance(projected));
+            dimensions.add(candidate);
         }
         for (int i = 0; i < 10 - eigen.getRows(); ++i) {
-            dimensions.add(DoubleMatrix.rand(dimension));
+            DoubleMatrix p = DoubleMatrix.rand(dimension);
+            List<Double> projected = slide.parallelStream().map(k -> SDEstimator.projectOnDimension(k, p)).collect(Collectors.toList());
+            Dimension candidate = new Dimension(p, Statistics.computeMean(projected), Statistics.computeVariance(projected));
+            dimensions.add(candidate);
         }
 
         // Randomly partition the set of dimensions into 2 subset A_in and A_out
         Collections.shuffle(dimensions);
         int cutoff = (dimensions.size() / 2);
-        Iterator<DoubleMatrix> iter = dimensions.iterator();
+        Iterator<Dimension> iter = dimensions.iterator();
         while (iter.hasNext()) {
             if (cutoff > 0) {
                 A_in.add(iter.next());
@@ -122,6 +130,7 @@ public class CBOrion {
         // Initialize the evolutionary computation object
         ea = new EvolutionaryComputation(SDEstimator);
     }
+    public LinkedList<Double> a = new LinkedList();////////////////////
 
     public boolean detectOutlier(DataPoint dt) {
 
@@ -166,16 +175,46 @@ public class CBOrion {
                     currentMean,
                     currentCovariance);
             double meanAD = this.meanAbsoluteNormalizedDeviation;
-            this.meanAbsoluteNormalizedDeviation = (meanAD * ((slide.size() * 1.0) / (slide.size() * 1.0 - 1.0))) - (oldestAD / (slide.size() * 1.0 - 1.0));
-            
-            // New mean after the oldest point removed from the slide
-            this.currentMean = this.currentMean.mul((slide.size() * 1.0) / (slide.size() * 1.0 - 1.0)).sub(oldestPoint.getValues().div(this.slide.size() - 1.0));
+            this.meanAbsoluteNormalizedDeviation = Statistics.revertMean(oldestAD, meanAD, slide.size());
 
-            // Compute the projected value vector of the data point being removed to compute the running covariance
-            // after that point is removed from the slide
-            DoubleMatrix lhs = currentCovariance.mul((slide.size() * 1.0) / (slide.size() - 1.0));
-            DoubleMatrix rhs = oldestPoint.getValues().sub(this.currentMean).mmul(oldestPoint.getValues().sub(this.currentMean).transpose()).mul((1.0 * slide.size() - 1.0) / (slide.size())).div(slide.size() - 1);
-            this.currentCovariance = lhs.sub(rhs);
+            // New mean after the oldest point removed from the slide
+            this.currentMean = Statistics.revertVectorMean(oldestPoint.getValues(), currentMean, slide.size());
+
+            // Revert the covariance matrix to not include the oldest point
+            this.currentCovariance = Statistics.revertCovarianceMatrix(oldestPoint.getValues(), currentCovariance, currentMean, slide.size());
+
+            // Revert the mean and variance of the projected dimensions and then update the variance and mean
+            // when new data point comes in
+            for (int i = 0; i < A_in.size(); ++i) {
+                Dimension p = A_in.get(i);
+                double oldMean = p.mean;
+                p.mean = Statistics.revertMean(SDEstimator.projectOnDimension(oldestPoint, p.values), p.mean, slide.size());
+                p.variance = Statistics.revertVariance(
+                        SDEstimator.projectOnDimension(oldestPoint, p.values),
+                        p.variance,
+                        oldMean,
+                        slide.size(),
+                        p.mean);
+
+                oldMean = p.mean;
+                p.mean = Statistics.computeMeanOnline(slide.size() - 1, p.mean, SDEstimator.projectOnDimension(oldestPoint, p.values));
+                p.variance = Statistics.computeVarianeOnline2(slide.size() - 1, oldMean, p.variance, p.mean, SDEstimator.projectOnDimension(oldestPoint, p.values));
+            }
+            for (int i = 0; i < A_out.size(); ++i) {
+                Dimension p = A_out.get(i);
+                double oldMean = p.mean;
+                p.mean = Statistics.revertMean(SDEstimator.projectOnDimension(oldestPoint, p.values), p.mean, slide.size());
+                p.variance = Statistics.revertVariance(
+                        SDEstimator.projectOnDimension(oldestPoint, p.values),
+                        p.variance,
+                        oldMean,
+                        slide.size(),
+                        p.mean);
+
+                oldMean = p.mean;
+                p.mean = Statistics.computeMeanOnline(slide.size() - 1, p.mean, SDEstimator.projectOnDimension(oldestPoint, p.values));
+                p.variance = Statistics.computeVarianeOnline2(slide.size() - 1, oldMean, p.variance, p.mean, SDEstimator.projectOnDimension(oldestPoint, p.values));
+            }
         }
 
         // Update covariance matrix when data point arrives
@@ -202,21 +241,23 @@ public class CBOrion {
         SDEstimator.updateDDFparameters(dt, currentMean, currentCovariance);
 
         // Select the best partition that can reveal the p-dimension for data point dt
-        DoubleMatrix pDimension = null;
+        // Perform evolutionary computation to find the p-dimension for the given data point dt
+        Dimension pDimension = null;
         double pDimensionDensity = 0.0;
         if (absoluteNormalizedDeviation > this.meanAbsoluteNormalizedDeviation) {
-            Object[] evolved = ea.evolve(A_out, dt, slide, 10);
-            pDimension = (DoubleMatrix) evolved[0];
+            Object[] evolved = ea.evolve(A_out, dt, slide, 5);
+            pDimension = (Dimension) evolved[0];
             pDimensionDensity = (double) evolved[1];
-            A_out = (List<DoubleMatrix>) evolved[2];
+            A_out = (List<Dimension>) evolved[2];
         } else {
-            Object[] evolved = ea.evolve(A_in, dt, slide, 10);
-            pDimension = (DoubleMatrix) evolved[0];
+            Object[] evolved = ea.evolve(A_in, dt, slide, 5);
+            pDimension = (Dimension) evolved[0];
             pDimensionDensity = (double) evolved[1];
-            A_in = (List<DoubleMatrix>) evolved[2];
+            A_in = (List<Dimension>) evolved[2];
         }
 
-        System.out.println(pDimensionDensity);
+        System.out.println(pDimensionDensity);///////////////////
+        a.add(pDimensionDensity); /////////////////////
 
         // Update the mean absolute normalized deviation
         this.meanAbsoluteNormalizedDeviation = Statistics.computeMeanOnline(
@@ -224,7 +265,6 @@ public class CBOrion {
                 this.meanAbsoluteNormalizedDeviation,
                 absoluteNormalizedDeviation);
 
-        // Perform evolutionary computation to find the p-dimension for the given data point dt
         return false;
     }
 

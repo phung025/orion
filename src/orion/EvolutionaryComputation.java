@@ -6,12 +6,15 @@
 package orion;
 
 import dataStructures.DataPoint;
+import dataStructures.Dimension;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
+import math.Statistics;
 import org.jblas.DoubleMatrix;
 
 /**
@@ -48,7 +51,7 @@ public class EvolutionaryComputation {
      * @param epochs
      * @return
      */
-    public Object[] evolve(List<DoubleMatrix> population, DataPoint dt, List<DataPoint> allDataPoints, int epochs) {
+    public Object[] evolve(List<Dimension> population, DataPoint dt, List<DataPoint> allDataPoints, int epochs) {
 
         // Because the ranking of the candidate dimensions is different for each incoming data point. For
         // example, given a p-dimension X, then stream density (SD) of a data point Y on X can be small, but
@@ -57,12 +60,12 @@ public class EvolutionaryComputation {
         // the offspring and removing the worst offspring will be low for each iteration due to the insert
         // sorted process of the data structure, which allow us to ignore trying to re-sort the list of
         // candidate dimensions after each evolution iteration
-        TreeSet<DoubleMatrix> candidateDimensions = new TreeSet(new Comparator<DoubleMatrix>() {
+        TreeSet<Dimension> candidateDimensions = new TreeSet(new Comparator<Dimension>() {
             @Override
-            public int compare(DoubleMatrix o1, DoubleMatrix o2) {
+            public int compare(Dimension o1, Dimension o2) {
 
-                double o1Density = sdEstimator.estimateStreamDensity(dt, allDataPoints, o1, "uniform");
-                double o2Density = sdEstimator.estimateStreamDensity(dt, allDataPoints, o2, "uniform");
+                double o1Density = sdEstimator.estimateStreamDensity(dt, allDataPoints, Math.sqrt(o1.variance), o1.values, "uniform");
+                double o2Density = sdEstimator.estimateStreamDensity(dt, allDataPoints, Math.sqrt(o2.variance), o2.values, "uniform");
 
                 // Compare the stream density of data point when projected on 2 different dimensions
                 int res = 0;
@@ -71,21 +74,20 @@ public class EvolutionaryComputation {
                 } else if (o1Density - o2Density > 0.0) {
                     res = 1;
                 }
-
                 return res;
             }
         });
-        Iterator<DoubleMatrix> iter = population.iterator();
+        Iterator<Dimension> iter = population.iterator();
         while (iter.hasNext()) {
             candidateDimensions.add(iter.next());
         }
-
+        
         // Perform evolve for some iteration
         while (epochs > 0) {
             // Pick 2 candidate dimensions
-            DoubleMatrix candidateX = null;
+            Dimension candidateX = null;
             int xIndex = 0;
-            DoubleMatrix candidateY = null;
+            Dimension candidateY = null;
             int yIndex = 0;
 
             // Pick 2 non-equal random index in range(0, population.size())
@@ -107,8 +109,11 @@ public class EvolutionaryComputation {
                 --yIndex;
             }
 
-            // Create the offspring dimension using crossover
-            DoubleMatrix offspring = this.crossover(candidateX, candidateY);
+            // Create the offspring dimension using crossover and compute the projected mean and variance
+            // of the values on that projected dimension
+            DoubleMatrix dimension = this.crossover(candidateX.values, candidateY.values);
+            List<Double> projected = allDataPoints.parallelStream().map(k -> sdEstimator.projectOnDimension(k, dimension)).collect(Collectors.toList());
+            Dimension offspring = new Dimension(dimension, Statistics.computeMean(projected), Statistics.computeVariance(projected));
 
             // Add the new off-spring to the population
             boolean wasAdded = candidateDimensions.add(offspring);
@@ -124,8 +129,8 @@ public class EvolutionaryComputation {
 
         // Return the best-fit p-dimension together with the stream density of 
         // the data point in that dimension, and the set of new p-dimension population
-        DoubleMatrix candidate = candidateDimensions.first();
-        double candidateSD = sdEstimator.estimateStreamDensity(dt, allDataPoints, candidate, "uniform");
+        Dimension candidate = candidateDimensions.first();
+        double candidateSD = sdEstimator.estimateStreamDensity(dt, allDataPoints, Math.sqrt(candidate.variance), candidate.values, "uniform");
         List<DoubleMatrix> mutatedPopulation = new LinkedList(candidateDimensions);
         return new Object[]{candidate, candidateSD, mutatedPopulation};
     }
