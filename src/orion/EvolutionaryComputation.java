@@ -7,6 +7,7 @@ package orion;
 
 import dataStructures.DataPoint;
 import dataStructures.Dimension;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -81,7 +82,7 @@ public class EvolutionaryComputation {
         while (iter.hasNext()) {
             candidateDimensions.add(iter.next());
         }
-        
+
         // Perform evolve for some iteration
         while (epochs > 0) {
             // Pick 2 candidate dimensions
@@ -132,6 +133,7 @@ public class EvolutionaryComputation {
         Dimension candidate = candidateDimensions.first();
         double candidateSD = sdEstimator.estimateStreamDensity(dt, allDataPoints, Math.sqrt(candidate.variance), candidate.values, "uniform");
         List<DoubleMatrix> mutatedPopulation = new LinkedList(candidateDimensions);
+
         return new Object[]{candidate, candidateSD, mutatedPopulation};
     }
 

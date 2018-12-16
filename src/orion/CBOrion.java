@@ -130,7 +130,6 @@ public class CBOrion {
         // Initialize the evolutionary computation object
         ea = new EvolutionaryComputation(SDEstimator);
     }
-    public LinkedList<Double> a = new LinkedList();////////////////////
 
     public boolean detectOutlier(DataPoint dt) {
 
@@ -239,7 +238,7 @@ public class CBOrion {
 
         // Learn parameters for Data Density Function
         SDEstimator.updateDDFparameters(dt, currentMean, currentCovariance);
-
+        
         // Select the best partition that can reveal the p-dimension for data point dt
         // Perform evolutionary computation to find the p-dimension for the given data point dt
         Dimension pDimension = null;
@@ -255,10 +254,7 @@ public class CBOrion {
             pDimensionDensity = (double) evolved[1];
             A_in = (List<Dimension>) evolved[2];
         }
-
-        System.out.println(pDimensionDensity);///////////////////
-        a.add(pDimensionDensity); /////////////////////
-
+        
         // Update the mean absolute normalized deviation
         this.meanAbsoluteNormalizedDeviation = Statistics.computeMeanOnline(
                 slide.size() - 1,

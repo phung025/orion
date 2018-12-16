@@ -50,7 +50,7 @@ public class StreamDensityTest {
     public void testEstimateStreamDensity() {
         System.out.println("estimateStreamDensity");
 
-        String filePath = System.getProperty("user.dir") + "\\datasets\\random2.csv";
+        String filePath = System.getProperty("user.dir") + "/datasets/random2.csv";
         char separator = ',';
         boolean hasHeader = false;
         double[][] incomingData = FileReader.readCSV(filePath, separator, hasHeader);
