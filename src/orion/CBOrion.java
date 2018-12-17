@@ -186,33 +186,52 @@ public class CBOrion {
             // when new data point comes in
             for (int i = 0; i < A_in.size(); ++i) {
                 Dimension p = A_in.get(i);
-                double oldMean = p.mean;
-                p.mean = Statistics.revertMean(SDEstimator.projectOnDimension(oldestPoint, p.values), p.mean, slide.size());
-                p.variance = Statistics.revertVariance(
-                        SDEstimator.projectOnDimension(oldestPoint, p.values),
-                        p.variance,
-                        oldMean,
-                        slide.size(),
-                        p.mean);
+                double oldMean = p.getMean();
+                p.setMean(Statistics.revertMean(
+                        SDEstimator.projectOnDimension(oldestPoint, p.getValues()),
+                        p.getMean(),
+                        slide.size()));
+                p.setVariance(
+                        Statistics.revertVariance(SDEstimator.projectOnDimension(oldestPoint, p.getValues()),
+                                p.getVariance(),
+                                oldMean,
+                                slide.size(),
+                                p.getMean()));
 
-                oldMean = p.mean;
-                p.mean = Statistics.computeMeanOnline(slide.size() - 1, p.mean, SDEstimator.projectOnDimension(oldestPoint, p.values));
-                p.variance = Statistics.computeVarianeOnline2(slide.size() - 1, oldMean, p.variance, p.mean, SDEstimator.projectOnDimension(oldestPoint, p.values));
+                oldMean = p.getMean();
+                p.setMean(Statistics.computeMeanOnline(
+                        slide.size() - 1,
+                        p.getMean(),
+                        SDEstimator.projectOnDimension(oldestPoint, p.getValues())));
+                p.setVariance(Statistics.computeVarianceOnline2(
+                        slide.size() - 1,
+                        oldMean,
+                        p.getVariance(),
+                        p.getMean(),
+                        SDEstimator.projectOnDimension(oldestPoint, p.getValues())));
             }
             for (int i = 0; i < A_out.size(); ++i) {
                 Dimension p = A_out.get(i);
-                double oldMean = p.mean;
-                p.mean = Statistics.revertMean(SDEstimator.projectOnDimension(oldestPoint, p.values), p.mean, slide.size());
-                p.variance = Statistics.revertVariance(
-                        SDEstimator.projectOnDimension(oldestPoint, p.values),
-                        p.variance,
+                double oldMean = p.getMean();
+                p.setMean(Statistics.revertMean(SDEstimator.projectOnDimension(oldestPoint, p.getValues()), p.getMean(), slide.size()));
+                p.setVariance(Statistics.revertVariance(
+                        SDEstimator.projectOnDimension(oldestPoint, p.getValues()),
+                        p.getVariance(),
                         oldMean,
                         slide.size(),
-                        p.mean);
+                        p.getMean()));
 
-                oldMean = p.mean;
-                p.mean = Statistics.computeMeanOnline(slide.size() - 1, p.mean, SDEstimator.projectOnDimension(oldestPoint, p.values));
-                p.variance = Statistics.computeVarianeOnline2(slide.size() - 1, oldMean, p.variance, p.mean, SDEstimator.projectOnDimension(oldestPoint, p.values));
+                oldMean = p.getMean();
+                p.setMean(Statistics.computeMeanOnline(
+                        slide.size() - 1,
+                        p.getMean(),
+                        SDEstimator.projectOnDimension(oldestPoint, p.getValues())));
+                p.setVariance(Statistics.computeVarianceOnline2(
+                        slide.size() - 1,
+                        oldMean,
+                        p.getVariance(),
+                        p.getMean(),
+                        SDEstimator.projectOnDimension(oldestPoint, p.getValues())));
             }
         }
 
@@ -238,7 +257,7 @@ public class CBOrion {
 
         // Learn parameters for Data Density Function
         SDEstimator.updateDDFparameters(dt, currentMean, currentCovariance);
-        
+
         // Select the best partition that can reveal the p-dimension for data point dt
         // Perform evolutionary computation to find the p-dimension for the given data point dt
         Dimension pDimension = null;
@@ -254,8 +273,10 @@ public class CBOrion {
             pDimensionDensity = (double) evolved[1];
             A_in = (List<Dimension>) evolved[2];
         }
-        
-        // Update the mean absolute normalized deviation
+
+        // Update the mean absolute normalized deviation after evolutionary step 
+        // to find a candidate p-dimension for the incoming data point and the stream 
+        // density around that data point on the selected p-dimension
         this.meanAbsoluteNormalizedDeviation = Statistics.computeMeanOnline(
                 slide.size() - 1,
                 this.meanAbsoluteNormalizedDeviation,

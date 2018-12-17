@@ -18,7 +18,7 @@ public class NewClass {
     public static void main(String[] args) {
         System.out.println("detectOutlier");
 
-        String filePath = System.getProperty("user.dir") + "/datasets/tao.txt";
+        String filePath = System.getProperty("user.dir") + "/datasets/random.csv";
         char separator = ',';
         boolean hasHeader = false;
         double[][] incomingData = FileReader.readCSV(filePath, separator, hasHeader);

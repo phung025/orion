@@ -78,7 +78,7 @@ public class Statistics {
      * @param nextValue value of the incoming point
      * @return running variance when a new data point arrives
      */
-    public static double computeVarianeOnline2(long previousCount, double previousMean, double previousVariance, double currentMean, double nextValue) {
+    public static double computeVarianceOnline2(long previousCount, double previousMean, double previousVariance, double currentMean, double nextValue) {
         return previousVariance + (((nextValue - previousMean) * (nextValue - currentMean) - previousVariance) / (previousCount + 1.0));
     }
 
@@ -197,6 +197,20 @@ public class Statistics {
         return lhs.sub(rhs);
     }
 
+    /**
+     * Revert the running variance at time N back to the variance at time (N-1)
+     * using Welford's online algorithm
+     *
+     * @param removedValue the value being removed from the data
+     * @param currentVariance current variance that the removedValue
+     * contributing to
+     * @param currentMean current mean the the removedValue contributing to
+     * @param currentCount current number of data points including the value
+     * being removed
+     * @param newMean the new mean of all data points after the value removed
+     * from the data
+     * @return
+     */
     public static double revertVariance(double removedValue, double currentVariance, double currentMean, int currentCount, double newMean) {
         double numerator = currentVariance - (((removedValue - newMean) * (removedValue - currentMean)) / (currentCount - 1 * 1.0));
         double denominator = 1.0 - (1.0 / (currentCount - 1 * 1.0));

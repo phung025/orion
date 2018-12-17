@@ -65,8 +65,8 @@ public class EvolutionaryComputation {
             @Override
             public int compare(Dimension o1, Dimension o2) {
 
-                double o1Density = sdEstimator.estimateStreamDensity(dt, allDataPoints, Math.sqrt(o1.variance), o1.values, "uniform");
-                double o2Density = sdEstimator.estimateStreamDensity(dt, allDataPoints, Math.sqrt(o2.variance), o2.values, "uniform");
+                double o1Density = sdEstimator.estimateStreamDensity(dt, allDataPoints, Math.sqrt(o1.getVariance()), o1.getValues(), "uniform");
+                double o2Density = sdEstimator.estimateStreamDensity(dt, allDataPoints, Math.sqrt(o2.getVariance()), o2.getValues(), "uniform");
 
                 // Compare the stream density of data point when projected on 2 different dimensions
                 int res = 0;
@@ -112,7 +112,7 @@ public class EvolutionaryComputation {
 
             // Create the offspring dimension using crossover and compute the projected mean and variance
             // of the values on that projected dimension
-            DoubleMatrix dimension = this.crossover(candidateX.values, candidateY.values);
+            DoubleMatrix dimension = this.crossover(candidateX.getValues(), candidateY.getValues());
             List<Double> projected = allDataPoints.parallelStream().map(k -> sdEstimator.projectOnDimension(k, dimension)).collect(Collectors.toList());
             Dimension offspring = new Dimension(dimension, Statistics.computeMean(projected), Statistics.computeVariance(projected));
 
@@ -131,7 +131,7 @@ public class EvolutionaryComputation {
         // Return the best-fit p-dimension together with the stream density of 
         // the data point in that dimension, and the set of new p-dimension population
         Dimension candidate = candidateDimensions.first();
-        double candidateSD = sdEstimator.estimateStreamDensity(dt, allDataPoints, Math.sqrt(candidate.variance), candidate.values, "uniform");
+        double candidateSD = sdEstimator.estimateStreamDensity(dt, allDataPoints, Math.sqrt(candidate.getVariance()), candidate.getValues(), "uniform");
         List<DoubleMatrix> mutatedPopulation = new LinkedList(candidateDimensions);
 
         return new Object[]{candidate, candidateSD, mutatedPopulation};
