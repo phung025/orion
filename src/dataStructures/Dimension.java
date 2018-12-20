@@ -5,6 +5,7 @@
  */
 package dataStructures;
 
+import java.util.Objects;
 import org.jblas.DoubleMatrix;
 
 /**
@@ -78,5 +79,19 @@ public class Dimension {
      */
     public double getVariance() {
         return this.variance;
+    }
+
+    @Override
+    public boolean equals(Object rhs) {
+        return (values.equals(((Dimension) rhs).values)) && (mean == ((Dimension) rhs).mean) && (variance == ((Dimension) rhs).variance);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 31 * hash + Objects.hashCode(this.values);
+        hash = 31 * hash + (int) (Double.doubleToLongBits(this.mean) ^ (Double.doubleToLongBits(this.mean) >>> 32));
+        hash = 31 * hash + (int) (Double.doubleToLongBits(this.variance) ^ (Double.doubleToLongBits(this.variance) >>> 32));
+        return hash;
     }
 }

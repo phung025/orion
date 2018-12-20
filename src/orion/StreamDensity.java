@@ -128,7 +128,11 @@ public class StreamDensity {
         long T = allDataPoints.get(allDataPoints.size() - 1).getTimestamp(); // Timestamp of the newest data point in the window
         while (iter.hasNext()) {
             DataPoint next = iter.next();
-            double projectedNext = projectOnDimension(next, pDimension); // Project the data point on the p-dimension
+            
+            // Project the data point on the p-dimension            
+            double projectedNext = projectOnDimension(next, pDimension); 
+
+            // If that projected data point is within a scaled-neighbor distance, proceed to compute the DDF
             if (projectedDT - scaledNeighborDist <= projectedNext && projectedNext <= projectedDT + scaledNeighborDist) {
                 streamDensity += DDF(projectedNext, allDataPoints, T, stdevation, kernelType);
             }

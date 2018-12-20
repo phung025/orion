@@ -9,6 +9,7 @@ import dataStructures.DataPoint;
 import dataStructures.Stream;
 import fileIO.FileReader;
 import java.util.Collections;
+import math.Statistics;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -47,7 +48,7 @@ public class CBOrionTest {
     public void testDetectOutlier() {
         System.out.println("detectOutlier");
 
-        String filePath = System.getProperty("user.dir") + "/datasets/tao.txt";
+        String filePath = System.getProperty("user.dir") + "/datasets/random2.csv";
         char separator = ',';
         boolean hasHeader = false;
         double[][] incomingData = FileReader.readCSV(filePath, separator, hasHeader);
@@ -56,15 +57,22 @@ public class CBOrionTest {
         Stream stream = new Stream(false); // Create a count-based timestamp stream
         stream.writeToStream(incomingData);
         int count = 0;
-
-        CBOrion instance = new CBOrion(100, 100, 20, 50);
+        double meanExecutionTime = 0;
+        
+        CBOrion instance = new CBOrion(200, 100, 20, 50);
         while (!stream.isEmpty()) {
             long startTime = System.nanoTime();
             DataPoint dt = stream.readFromStream();
             boolean result = instance.detectOutlier(dt);
             ++count;
             long endTime = System.nanoTime();
-            System.out.println("Execution time: " + (endTime - startTime) / 1000000 + " ms");
+            
+            // Update the mean execution time
+            double executionTime = (endTime - startTime) / 1000000;
+            meanExecutionTime = Statistics.computeMeanOnline(count-1, meanExecutionTime, executionTime);
+            
+            // Output mean execution time
+//            System.out.println("Mean execution time: " + meanExecutionTime + " ms");
         }
 
     }

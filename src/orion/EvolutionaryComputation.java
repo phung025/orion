@@ -54,14 +54,7 @@ public class EvolutionaryComputation {
      */
     public Object[] evolve(List<Dimension> population, DataPoint dt, List<DataPoint> allDataPoints, int epochs) {
 
-        // Because the ranking of the candidate dimensions is different for each incoming data point. For
-        // example, given a p-dimension X, then stream density (SD) of a data point Y on X can be small, but
-        // the SD for another data point Z on X can be very large, because of this, we maintain a sorted
-        // data structure that hold the candidate dimensions, during the evolution process, the cost of adding
-        // the offspring and removing the worst offspring will be low for each iteration due to the insert
-        // sorted process of the data structure, which allow us to ignore trying to re-sort the list of
-        // candidate dimensions after each evolution iteration
-        TreeSet<Dimension> candidateDimensions = new TreeSet(new Comparator<Dimension>() {
+        Comparator<Dimension> cmp = new Comparator<Dimension>() {
             @Override
             public int compare(Dimension o1, Dimension o2) {
 
@@ -77,38 +70,15 @@ public class EvolutionaryComputation {
                 }
                 return res;
             }
-        });
-        Iterator<Dimension> iter = population.iterator();
-        while (iter.hasNext()) {
-            candidateDimensions.add(iter.next());
-        }
+        };
+        Collections.sort(population, cmp);
 
         // Perform evolve for some iteration
-        while (epochs > 0) {
+        for (int i = 0; i < epochs; ++i) {
+
             // Pick 2 candidate dimensions
-            Dimension candidateX = null;
-            int xIndex = 0;
-            Dimension candidateY = null;
-            int yIndex = 0;
-
-            // Pick 2 non-equal random index in range(0, population.size())
-            do {
-                xIndex = new Random().nextInt(candidateDimensions.size());
-                yIndex = new Random().nextInt(candidateDimensions.size());
-            } while (xIndex == yIndex);
-
-            iter = candidateDimensions.iterator();
-            while (iter.hasNext()) {
-                if (xIndex == 0) {
-                    candidateX = iter.next();
-                } else if (yIndex == 0) {
-                    candidateY = iter.next();
-                } else {
-                    iter.next();
-                }
-                --xIndex;
-                --yIndex;
-            }
+            Dimension candidateX = population.get(new Random().nextInt(population.size()));
+            Dimension candidateY = population.get(new Random().nextInt(population.size()));
 
             // Create the offspring dimension using crossover and compute the projected mean and variance
             // of the values on that projected dimension
@@ -116,25 +86,23 @@ public class EvolutionaryComputation {
             List<Double> projected = allDataPoints.parallelStream().map(k -> sdEstimator.projectOnDimension(k, dimension)).collect(Collectors.toList());
             Dimension offspring = new Dimension(dimension, Statistics.computeMean(projected), Statistics.computeVariance(projected));
 
-            // Add the new off-spring to the population
-            boolean wasAdded = candidateDimensions.add(offspring);
+            // Add the new off-spring to the population and at then remove the
+            // offspring with highest SD from the population
+            population.add(offspring);
+        }
 
-            // Remove the offspring with highest SD from the population
-            if (wasAdded) {
-                candidateDimensions.pollLast();
-            }
-
-            // Decrement the number of iterations left for evolution process
-            --epochs;
+        // Remove the worst p-dimensions from the population
+        Collections.sort(population, cmp);
+        for (int i = 0; i < epochs; ++i) {
+            population.remove(population.size() - 1);
         }
 
         // Return the best-fit p-dimension together with the stream density of 
         // the data point in that dimension, and the set of new p-dimension population
-        Dimension candidate = candidateDimensions.first();
+        Dimension candidate = population.get(0);
         double candidateSD = sdEstimator.estimateStreamDensity(dt, allDataPoints, Math.sqrt(candidate.getVariance()), candidate.getValues(), "uniform");
-        List<DoubleMatrix> mutatedPopulation = new LinkedList(candidateDimensions);
 
-        return new Object[]{candidate, candidateSD, mutatedPopulation};
+        return new Object[]{candidate, candidateSD};
     }
 
     /**
@@ -158,19 +126,5 @@ public class EvolutionaryComputation {
             }
         }
         return new DoubleMatrix(dimensionZ);
-    }
-
-    /**
-     *
-     * @param dimension
-     * @return
-     */
-    private DoubleMatrix mutate(DoubleMatrix dimension) {
-
-        int index = new Random().nextInt(dimension.data.length);
-        double[] mutatedDimension = dimension.data;
-        mutatedDimension[index] *= (new Random().nextDouble() - 1.0) + (new Random().nextDouble());
-
-        return new DoubleMatrix(mutatedDimension);
     }
 }
