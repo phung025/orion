@@ -7,6 +7,7 @@ package orion;
 
 import dataStructures.DataPoint;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import math.Statistics;
@@ -78,7 +79,7 @@ public class StreamDensity {
      * @return
      */
     private double computeBandwidth(double stdeviation, int n) {
-        return Math.sqrt(5) * stdeviation * Math.pow(n, -1.0 / 5.0);
+        return Math.sqrt(5.0) * stdeviation * Math.pow(n, -1.0 / 5.0);
     }
 
     /**
@@ -95,7 +96,6 @@ public class StreamDensity {
      * data point
      */
     public double estimateStreamDensity(DataPoint dt, List<DataPoint> allDataPoints, DoubleMatrix pDimension, String kernelType) {
-
         // Compute the standard deviation of the data points projected on the p-dimension.
         // All data points are projected on the p-dimension to compute the standard deviation.
         // THIS MIGHT BE FURTHER OPTIMIZED USING AN ONLINE ALGORITHM
@@ -123,20 +123,25 @@ public class StreamDensity {
         double projectedDT = projectOnDimension(dt, pDimension); // Project the incoming data point on the p-dimension
 
         // Within a scaled neighbor distance from the incoming data point dt, approximate the stream density of dt
-        double streamDensity = 0.0;
-        Iterator<DataPoint> iter = allDataPoints.iterator();
-        long T = allDataPoints.get(allDataPoints.size() - 1).getTimestamp(); // Timestamp of the newest data point in the window
-        while (iter.hasNext()) {
-            DataPoint next = iter.next();
-            
+        List<DataPoint> neighbors = new LinkedList(); // List of all neighbors within the scaled distance        
+        for (Iterator<DataPoint> iter = allDataPoints.iterator(); iter.hasNext();) {
+
             // Project the data point on the p-dimension            
-            double projectedNext = projectOnDimension(next, pDimension); 
+            DataPoint next = iter.next();
+            double projectedNext = projectOnDimension(next, pDimension);
 
             // If that projected data point is within a scaled-neighbor distance, proceed to compute the DDF
             if (projectedDT - scaledNeighborDist <= projectedNext && projectedNext <= projectedDT + scaledNeighborDist) {
-                streamDensity += DDF(projectedNext, allDataPoints, T, stdevation, kernelType);
+                neighbors.add(next);
             }
         }
+
+        double streamDensity = 0.0;
+        long T = allDataPoints.get(neighbors.size() - 1).getTimestamp(); // Timestamp of the newest data point in the window        
+        for (Iterator<DataPoint> iter = neighbors.iterator(); iter.hasNext();) {
+            streamDensity += DDF(projectOnDimension(iter.next(), pDimension), neighbors, T, stdevation, kernelType);
+        }
+
         return streamDensity;
     }
 
@@ -158,8 +163,7 @@ public class StreamDensity {
         double numerator = 0.0;
         double denominator = 0.0;
 
-        Iterator<DataPoint> iter = allDataPoints.iterator();
-        while (iter.hasNext()) {
+        for (Iterator<DataPoint> iter = allDataPoints.iterator(); iter.hasNext();) {
             DataPoint next = iter.next();
 
             // Compute the weight of the data point

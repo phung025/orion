@@ -48,7 +48,7 @@ public class CBOrionTest {
     public void testDetectOutlier() {
         System.out.println("detectOutlier");
 
-        String filePath = System.getProperty("user.dir") + "/datasets/random2.csv";
+        String filePath = System.getProperty("user.dir") + "/datasets/tao.txt";
         char separator = ',';
         boolean hasHeader = false;
         double[][] incomingData = FileReader.readCSV(filePath, separator, hasHeader);
@@ -59,12 +59,11 @@ public class CBOrionTest {
         int count = 0;
         double meanExecutionTime = 0;
         
-        CBOrion instance = new CBOrion(200, 100, 20, 50);
+        CBOrion instance = new CBOrion(50, 100, 20, 50);
         while (!stream.isEmpty()) {
             long startTime = System.nanoTime();
             DataPoint dt = stream.readFromStream();
-            boolean result = instance.detectOutlier(dt);
-            ++count;
+            boolean result = instance.detectOutlier(++count, dt);
             long endTime = System.nanoTime();
             
             // Update the mean execution time
@@ -72,7 +71,7 @@ public class CBOrionTest {
             meanExecutionTime = Statistics.computeMeanOnline(count-1, meanExecutionTime, executionTime);
             
             // Output mean execution time
-//            System.out.println("Mean execution time: " + meanExecutionTime + " ms");
+            System.out.println("Mean execution time: " + meanExecutionTime + " ms");
         }
 
     }

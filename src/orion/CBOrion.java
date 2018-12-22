@@ -117,8 +117,7 @@ public class CBOrion {
         // Randomly partition the set of dimensions into 2 subset A_in and A_out
         Collections.shuffle(dimensions);
         int cutoff = (dimensions.size() / 2);
-        Iterator<Dimension> iter = dimensions.iterator();
-        while (iter.hasNext()) {
+        for (Iterator<Dimension> iter = dimensions.iterator(); iter.hasNext();) {
             if (cutoff > 0) {
                 A_in.add(iter.next());
             } else {
@@ -127,11 +126,11 @@ public class CBOrion {
             --cutoff;
         }
 
-        // Initialize the evolutionary computation object
+        // Initialize the evolutionary computation module
         ea = new EvolutionaryComputation(SDEstimator);
     }
 
-    public boolean detectOutlier(DataPoint dt) {
+    public boolean detectOutlier(int count, DataPoint dt) {
 
         // Add incoming data point to the slide
         DataPoint oldestPoint = this.slide.peekFirst(); // The data point that will be removed if the slide is full
@@ -198,7 +197,6 @@ public class CBOrion {
                                 p.getVariance(),
                                 slide.size(),
                                 p.getMean()));
-//                System.out.println("Variance " + p.getVariance());
 
                 // Update
                 p.setVariance(Statistics.computeVarianceOnline2(
@@ -226,7 +224,6 @@ public class CBOrion {
                         p.getVariance(),
                         slide.size(),
                         p.getMean()));
-//                System.out.println("Variance " + p.getVariance());
 
                 // Update
                 p.setVariance(Statistics.computeVarianceOnline2(
@@ -277,7 +274,7 @@ public class CBOrion {
             pDimension = (Dimension) evolved[0];
             pDimensionDensity = (double) evolved[1];
         }
-        System.out.println("Stream density: " + pDimensionDensity);
+//        System.out.println(count + " Stream density: " + pDimensionDensity);
 
         // Update the mean absolute normalized deviation after evolutionary step 
         // to find a candidate p-dimension for the incoming data point and the stream 
