@@ -185,10 +185,9 @@ public class CBOrion {
             // Revert the mean and variance of the projected dimensions and then update the variance and mean
             // when new data point comes in
             for (int i = 0; i < A_in.size(); ++i) {
-                
+
                 Dimension p = A_in.get(i);
-                double oldMean = p.getMean();
-                
+
                 // Revert
                 p.setMean(Statistics.revertMean(
                         SDEstimator.projectOnDimension(oldestPoint, p.getValues()),
@@ -197,50 +196,46 @@ public class CBOrion {
                 p.setVariance(
                         Statistics.revertVariance(SDEstimator.projectOnDimension(oldestPoint, p.getValues()),
                                 p.getVariance(),
-                                oldMean,
                                 slide.size(),
                                 p.getMean()));
+//                System.out.println("Variance " + p.getVariance());
 
                 // Update
-                oldMean = p.getMean();
+                p.setVariance(Statistics.computeVarianceOnline2(
+                        slide.size() - 1,
+                        p.getMean(),
+                        p.getVariance(),
+                        SDEstimator.projectOnDimension(dt, p.getValues())));
                 p.setMean(Statistics.computeMeanOnline(
                         slide.size() - 1,
                         p.getMean(),
                         SDEstimator.projectOnDimension(dt, p.getValues())));
-                p.setVariance(Statistics.computeVarianceOnline2(
-                        slide.size() - 1,
-                        oldMean,
-                        p.getVariance(),
-                        p.getMean(),
-                        SDEstimator.projectOnDimension(dt, p.getValues())));
+
             }
             for (int i = 0; i < A_out.size(); ++i) {
 
                 Dimension p = A_out.get(i);
-                double oldMean = p.getMean();
-                
+
                 // Revert
                 p.setMean(Statistics.revertMean(
-                        SDEstimator.projectOnDimension(oldestPoint, p.getValues()), 
-                        p.getMean(), 
+                        SDEstimator.projectOnDimension(oldestPoint, p.getValues()),
+                        p.getMean(),
                         slide.size()));
                 p.setVariance(Statistics.revertVariance(
                         SDEstimator.projectOnDimension(oldestPoint, p.getValues()),
                         p.getVariance(),
-                        oldMean,
                         slide.size(),
                         p.getMean()));
+//                System.out.println("Variance " + p.getVariance());
 
                 // Update
-                oldMean = p.getMean();
-                p.setMean(Statistics.computeMeanOnline(
-                        slide.size() - 1,
-                        p.getMean(),
-                        SDEstimator.projectOnDimension(dt, p.getValues())));
                 p.setVariance(Statistics.computeVarianceOnline2(
                         slide.size() - 1,
-                        oldMean,
+                        p.getMean(),
                         p.getVariance(),
+                        SDEstimator.projectOnDimension(dt, p.getValues())));
+                p.setMean(Statistics.computeMeanOnline(
+                        slide.size() - 1,
                         p.getMean(),
                         SDEstimator.projectOnDimension(dt, p.getValues())));
             }

@@ -38,7 +38,7 @@ public class Statistics {
     }
 
     /**
-     * Compute variance of all values in a list
+     * Compute sample variance of all values in a list
      *
      * @param values
      * @return
@@ -67,19 +67,18 @@ public class Statistics {
     }
 
     /**
-     * Compute a running variance using Welford's Online algorithm.The
+     * Compute a running sample variance using Welford's Online algorithm.The
      * documentation for the algorithm can be found at:
      * https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance
      *
      * @param previousCount total number of values excluding the incoming point
      * @param previousMean mean of all values excluding the next value
      * @param previousVariance variance of all values excluding the next value
-     * @param currentMean
      * @param nextValue value of the incoming point
      * @return running variance when a new data point arrives
      */
-    public static double computeVarianceOnline2(long previousCount, double previousMean, double previousVariance, double currentMean, double nextValue) {
-        return previousVariance + (((nextValue - previousMean) * (nextValue - currentMean) - previousVariance) / (previousCount + 1.0));
+    public static double computeVarianceOnline2(long previousCount, double previousMean, double previousVariance, double nextValue) {
+        return previousVariance + (Math.pow((nextValue - previousMean), 2.0) / (previousCount + 1.0)) - (previousVariance / previousCount);
     }
 
     /**
@@ -204,16 +203,15 @@ public class Statistics {
      * @param removedValue the value being removed from the data
      * @param currentVariance current variance that the removedValue
      * contributing to
-     * @param currentMean current mean the the removedValue contributing to
      * @param currentCount current number of data points including the value
      * being removed
      * @param newMean the new mean of all data points after the value removed
      * from the data
      * @return
      */
-    public static double revertVariance(double removedValue, double currentVariance, double currentMean, int currentCount, double newMean) {
-        double numerator = currentVariance - (((removedValue - newMean) * (removedValue - currentMean)) / (currentCount - 1 * 1.0));
-        double denominator = 1.0 - (1.0 / (currentCount - 1 * 1.0));
+    public static double revertVariance(double removedValue, double currentVariance, int currentCount, double newMean) {
+        double numerator = currentVariance - (Math.pow(removedValue - newMean, 2.0) / (currentCount * 1.0));
+        double denominator = 1.0 - (1.0 / ((currentCount - 1) * 1.0));
         return numerator / denominator;
     }
 }
