@@ -159,7 +159,6 @@ public class StreamDensity {
             double T,
             double stdevation,
             String kernelType) {
-
         double numerator = 0.0;
         double denominator = 0.0;
 
@@ -178,7 +177,6 @@ public class StreamDensity {
             numerator += ffactor * kza;
             denominator += ffactor;
         }
-
         return numerator / denominator;
     }
 

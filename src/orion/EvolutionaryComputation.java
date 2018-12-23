@@ -7,8 +7,10 @@ package orion;
 
 import dataStructures.DataPoint;
 import dataStructures.Dimension;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -51,25 +53,25 @@ public class EvolutionaryComputation {
      */
     public Object[] evolve(List<Dimension> population, DataPoint dt, List<DataPoint> allDataPoints, int epochs) {
 
-        Comparator<Dimension> cmp = new Comparator<Dimension>() {
-            @Override
-            public int compare(Dimension o1, Dimension o2) {
-
-                double o1Density = sdEstimator.estimateStreamDensity(dt, allDataPoints, Math.sqrt(o1.getVariance()), o1.getValues(), "uniform");
-                double o2Density = sdEstimator.estimateStreamDensity(dt, allDataPoints, Math.sqrt(o2.getVariance()), o2.getValues(), "uniform");
-
-                // Compare the stream density of data point when projected on 2 different dimensions
-                int res = 0;
-                if (o1Density - o2Density < 0.0) {
-                    res = -1;
-                } else if (o1Density - o2Density > 0.0) {
-                    res = 1;
-                }
-                return res;
+        Comparator<Dimension> cmp = (Dimension o1, Dimension o2) -> {
+            double o1Density = sdEstimator.estimateStreamDensity(dt, allDataPoints, Math.sqrt(o1.getVariance()), o1.getValues(), "uniform");
+            double o2Density = sdEstimator.estimateStreamDensity(dt, allDataPoints, Math.sqrt(o2.getVariance()), o2.getValues(), "uniform");
+            
+            // Compare the stream density of data point when projected on 2 different dimensions
+            int res = 0;
+            if (o1Density - o2Density < 0.0) {
+                res = -1;
+            } else if (o1Density - o2Density > 0.0) {
+                res = 1;
             }
+            return res;
         };
-        Collections.sort(population, cmp);
-
+        
+        // Perform parallel sorting the population list of p-dimension
+        Dimension[] copied = population.toArray(Dimension[]::new);
+        Arrays.parallelSort(copied, cmp);
+        population = new LinkedList(Arrays.asList(copied));
+        
         // Perform evolve for some iteration
         for (int i = 0; i < epochs; ++i) {
 
@@ -99,7 +101,7 @@ public class EvolutionaryComputation {
         Dimension candidate = population.get(0);
         double candidateSD = sdEstimator.estimateStreamDensity(dt, allDataPoints, Math.sqrt(candidate.getVariance()), candidate.getValues(), "uniform");
 
-        return new Object[]{candidate, candidateSD};
+        return new Object[]{candidate, candidateSD, population};
     }
 
     /**

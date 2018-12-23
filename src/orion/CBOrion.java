@@ -269,12 +269,14 @@ public class CBOrion {
             Object[] evolved = ea.evolve(A_out, dt, slide, 5);
             pDimension = (Dimension) evolved[0];
             pDimensionDensity = (double) evolved[1];
+            A_out = (LinkedList) evolved[2];
         } else {
             Object[] evolved = ea.evolve(A_in, dt, slide, 5);
             pDimension = (Dimension) evolved[0];
             pDimensionDensity = (double) evolved[1];
+            A_in = (LinkedList) evolved[2];
         }
-//        System.out.println(count + " Stream density: " + pDimensionDensity);
+//        System.out.println(" Stream density @ [" + count + "] " + pDimensionDensity);
 
         // Update the mean absolute normalized deviation after evolutionary step 
         // to find a candidate p-dimension for the incoming data point and the stream 
