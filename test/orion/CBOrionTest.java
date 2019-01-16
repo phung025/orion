@@ -8,7 +8,6 @@ package orion;
 import dataStructures.DataPoint;
 import dataStructures.Stream;
 import fileIO.FileReader;
-import java.util.Collections;
 import math.Statistics;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -47,7 +46,7 @@ public class CBOrionTest {
     @Test
     public void testDetectOutlier() {
         System.out.println("detectOutlier");
-        int[] w_size = new int[]{20, 50, 100, 150, 200, 250, 300};
+        int[] w_size = new int[]{200};
 
         for (int size : w_size) {
             String filePath = System.getProperty("user.dir") + "/datasets/random.csv";
@@ -73,7 +72,7 @@ public class CBOrionTest {
                 meanExecutionTime = Statistics.computeMeanOnline(count - 1, meanExecutionTime, executionTime);
 
                 // Output mean execution time
-//            System.out.println("Mean execution time: " + meanExecutionTime + " ms");
+                System.out.println("Mean execution time: " + meanExecutionTime + " ms");
             }
             System.out.println("Avg time " + Stats.avgEfficientESD);
         }

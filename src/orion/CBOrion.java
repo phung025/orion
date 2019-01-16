@@ -130,6 +130,11 @@ public class CBOrion {
         ea = new EvolutionaryComputation(SDEstimator);
     }
 
+    /**
+     * 
+     * @param dt
+     * @return 
+     */
     public boolean detectOutlier(int count, DataPoint dt) {
 
         // Add incoming data point to the slide
@@ -183,9 +188,8 @@ public class CBOrion {
 
             // Revert the mean and variance of the projected dimensions and then update the variance and mean
             // when new data point comes in
-            for (int i = 0; i < A_in.size(); ++i) {
-
-                Dimension p = A_in.get(i);
+            for (Iterator<Dimension> iter = A_in.iterator(); iter.hasNext();) {
+                Dimension p = iter.next();
 
                 // Revert
                 p.setMean(Statistics.revertMean(
@@ -210,9 +214,9 @@ public class CBOrion {
                         SDEstimator.projectOnDimension(dt, p.getValues())));
 
             }
-            for (int i = 0; i < A_out.size(); ++i) {
 
-                Dimension p = A_out.get(i);
+            for (Iterator<Dimension> iter = A_out.iterator(); iter.hasNext();) {
+                Dimension p = iter.next();
 
                 // Revert
                 p.setMean(Statistics.revertMean(
