@@ -5,12 +5,14 @@
  */
 package orion;
 
+import outlierMetrics.StreamDensity;
 import dataStructures.DataPoint;
 import dataStructures.Slide;
 import fileIO.FileReader;
 import dataStructures.Stream;
+import java.util.Arrays;
 import java.util.List;
-import math.Statistics;
+import utils.Statistics;
 import org.jblas.DoubleMatrix;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -62,7 +64,7 @@ public class StreamDensityTest {
         int count = 0;
         int dimension = incomingData[0].length;
 
-        StreamDensity instance = new StreamDensity(dimension, 20); // Stream density estimator
+        StreamDensity instance = new StreamDensity("uniform", dimension, 20, slide); // Stream density estimator
         boolean updated = false;
         DoubleMatrix pDimension = new DoubleMatrix(new double[]{1, 0}); // Projected dimension
 
@@ -96,7 +98,7 @@ public class StreamDensityTest {
                 
                 // Estimate density by computing the standard deviation of all data points after they're
                 // projected on the p-dimension
-                double streamDensity = instance.estimateStreamDensity(incomingPoint, slide, pDimension, "uniform");
+                double streamDensity = instance.estimateStreamDensity(incomingPoint, pDimension, "uniform");
                 
                 // Estimate density by computing the standard deviation of all data points without projecting
                 // them on the p-dimension
@@ -124,7 +126,7 @@ public class StreamDensityTest {
         stream.writeToStream(incomingData);
 
         List<DataPoint> allDataPoints = stream.readFromStream(200);
-        StreamDensity instance = new StreamDensity(incomingData[0].length, 5.4);
+        StreamDensity instance = new StreamDensity("uniform", incomingData[0].length, 5.4, allDataPoints);
         instance.updateForgettingFactor(allDataPoints);
     }
 }

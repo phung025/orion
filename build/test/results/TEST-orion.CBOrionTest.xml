@@ -1,0 +1,2342 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="0" failures="0" hostname="LAPTOP-FUGP67H3" name="orion.CBOrionTest" skipped="0" tests="1" time="54.955" timestamp="2019-02-02T06:11:11">
+  <properties>
+    <property name="libs.spring-framework300.classpath" value="C:\Program Files\Netbeans\ide\modules\org-apache-commons-logging.jar;C:\Program Files\Netbeans\java\modules\ext\cglib-2.2.jar;C:\Program Files\Netbeans\java\modules\ext\spring-3.0\spring-aop-3.2.7.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-3.0\spring-aspects-3.2.7.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-3.0\spring-beans-3.2.7.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-3.0\spring-build-src-3.2.7.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-3.0\spring-context-3.2.7.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-3.0\spring-context-support-3.2.7.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-3.0\spring-core-3.2.7.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-3.0\spring-expression-3.2.7.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-3.0\spring-framework-bom-3.2.7.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-3.0\spring-instrument-3.2.7.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-3.0\spring-instrument-tomcat-3.2.7.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-3.0\spring-jdbc-3.2.7.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-3.0\spring-jms-3.2.7.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-3.0\spring-orm-3.2.7.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-3.0\spring-oxm-3.2.7.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-3.0\spring-struts-3.2.7.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-3.0\spring-test-3.2.7.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-3.0\spring-tx-3.2.7.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-3.0\spring-web-3.2.7.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-3.0\spring-webmvc-3.2.7.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-3.0\spring-webmvc-portlet-3.2.7.RELEASE.jar" />
+    <property name="javac.includesfile.binary" value="C:\Users\phung\Documents\Repositories\outlier detection\d.umn.edu\orion\null226464956" />
+    <property name="javac.test.classpath" value="jblas-1.2.4.jar:C:\Program Files\Netbeans\platform\modules\ext\junit-4.12.jar:C:\Program Files\Netbeans\platform\modules\ext\hamcrest-core-1.3.jar:C:\Program Files\Weka-3-8\weka.jar:build/classes" />
+    <property name="java.specification.version" value="11" />
+    <property name="sun.cpu.isalist" value="amd64" />
+    <property name="jar.index.metainf" value="false" />
+    <property name="do.depend" value="false" />
+    <property name="jnlp.signing.keystore" value="" />
+    <property name="javadoc.preview" value="true" />
+    <property name="libs.spring-framework400.classpath" value="C:\Program Files\Netbeans\ide\modules\org-apache-commons-logging.jar;C:\Program Files\Netbeans\java\modules\ext\cglib-2.2.jar;C:\Program Files\Netbeans\java\modules\ext\spring-4\spring-aop-4.0.1.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-4\spring-aspects-4.0.1.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-4\spring-beans-4.0.1.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-4\spring-build-src-4.0.1.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-4\spring-context-4.0.1.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-4\spring-context-support-4.0.1.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-4\spring-core-4.0.1.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-4\spring-expression-4.0.1.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-4\spring-framework-bom-4.0.1.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-4\spring-instrument-4.0.1.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-4\spring-instrument-tomcat-4.0.1.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-4\spring-jdbc-4.0.1.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-4\spring-jms-4.0.1.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-4\spring-messaging-4.0.1.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-4\spring-orm-4.0.1.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-4\spring-oxm-4.0.1.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-4\spring-test-4.0.1.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-4\spring-tx-4.0.1.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-4\spring-web-4.0.1.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-4\spring-webmvc-4.0.1.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-4\spring-webmvc-portlet-4.0.1.RELEASE.jar;C:\Program Files\Netbeans\java\modules\ext\spring-4\spring-websocket-4.0.1.RELEASE.jar" />
+    <property name="sun.arch.data.model" value="64" />
+    <property name="jnlp.signing.alias" value="" />
+    <property name="test.binaryincludes" value="&lt;nothing&gt;" />
+    <property name="nb.show.statistics.ui" value="usageStatisticsEnabled" />
+    <property name="do.jlink" value="false" />
+    <property name="debug-transport" value="dt_shmem" />
+    <property name="java.vendor.url" value="http://java.oracle.com/" />
+    <property name="annotation.processing.enabled" value="true" />
+    <property name="libs.junit_5.src" value="C:\Program Files\Netbeans\platform\docs\junit-jupiter-api-5.3.1-sources.jar;C:\Program Files\Netbeans\platform\docs\junit-jupiter-params-5.3.1-sources.jar;C:\Program Files\Netbeans\platform\docs\junit-jupiter-engine-5.3.1-sources.jar" />
+    <property name="libs.jaxb.classpath" value="C:\Program Files\Netbeans\ide\modules\ext\jaxb\jaxb-impl-2.2.5-2.jar;C:\Program Files\Netbeans\ide\modules\ext\jaxb\jaxb-xjc-2.2.5-2.jar;C:\Program Files\Netbeans\ide\modules\ext\jaxb\jaxb1-impl-2.2.5-2.jar;C:\Program Files\Netbeans\ide\modules\ext\jaxb\activation.jar;C:\Program Files\Netbeans\ide\modules\ext\jaxb\api\jaxb-api.jar" />
+    <property name="debug.modulepath" value="" />
+    <property name="auxiliary.org-netbeans-spi-editor-hints-projects.perProjectHintSettingsFile" value="nbproject/cfg_hints.xml" />
+    <property name="libs.eclipselink.javadoc" value="" />
+    <property name="libs.JWSAntTasks.javadoc" value="" />
+    <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk-11.0.1\bin" />
+    <property name="libs.CopyLibs.src" value="" />
+    <property name="sun.java.command" value="org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner orion.CBOrionTest skipNonTests=false filtertrace=true haltOnError=false haltOnFailure=false showoutput=true outputtoformatters=true logfailedtests=true threadid=0 logtestlistenerevents=true formatter=org.apache.tools.ant.taskdefs.optional.junit.BriefJUnitResultFormatter formatter=org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter,C:\Users\phung\Documents\Repositories\outlier detection\d.umn.edu\orion\build\test\results\TEST-orion.CBOrionTest.xml crashfile=C:\Users\phung\Documents\Repositories\outlier detection\d.umn.edu\orion\build\junitvmwatcher425001629630867861.properties propsfile=C:\Users\phung\Documents\Repositories\outlier detection\d.umn.edu\orion\build\junit8006102699309434643.properties" />
+    <property name="jdk.debug" value="release" />
+    <property name="libs.spring-framework300.src" value="" />
+    <property name="java.specification.vendor" value="Oracle Corporation" />
+    <property name="javac.source" value="11" />
+    <property name="javadoc.use" value="true" />
+    <property name="libs.javac-api.maven-pom" value="" />
+    <property name="javadoc.notree" value="false" />
+    <property name="java.version.date" value="2018-10-16" />
+    <property name="java.home" value="C:\Program Files\Java\jdk-11.0.1" />
+    <property name="basedir" value="C:\Users\phung\Documents\Repositories\outlier detection\d.umn.edu\orion" />
+    <property name="application.vendor" value="Nam Phung" />
+    <property name="work.dir" value="C:\Users\phung\Documents\Repositories\outlier detection\d.umn.edu\orion" />
+    <property name="java.vm.specification.vendor" value="Oracle Corporation" />
+    <property name="jna.boot.library.name" value="jnidispatch-440" />
+    <property name="java.specification.name" value="Java Platform API Specification" />
+    <property name="javac.test.compilerargs" value="" />
+    <property name="libs.PostgreSQLDriver.classpath" value="C:\Program Files\Netbeans\ide\modules\ext\postgresql-42.2.5.jar" />
+    <property name="libs.javac-api.javadoc" value="" />
+    <property name="libs.JAXB-ENDORSED.src" value="" />
+    <property name="netbeans.extbrowser.manual_chrome_plugin_install" value="yes" />
+    <property name="manifest.encoding" value="UTF-8" />
+    <property name="user.script" value="" />
+    <property name="netbeans.default_userdir_root" value="C:\Users\phung\AppData\Roaming\NetBeans" />
+    <property name="manifest.custom.permissions" value="" />
+    <property name="libs.spring-framework400.src" value="" />
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers" />
+    <property name="jdk.home" value="C:\Program Files\Java\jdk-11.0.1" />
+    <property name="run.test.modulepath" value="" />
+    <property name="java.runtime.version" value="11.0.1+13-LTS" />
+    <property name="libs.eclipselink.maven-pom" value="" />
+    <property name="libs.JAXB-ENDORSED.javadoc" value="" />
+    <property name="debug.test.modulepath" value="" />
+    <property name="sun.java2d.noddraw" value="true" />
+    <property name="file.encoding" value="Cp1252" />
+    <property name="sun.zip.disableMemoryMapping" value="true" />
+    <property name="java.util.logging.config.class" value="org.netbeans.core.startup.TopLogging" />
+    <property name="https.nonProxyHosts" value="localhost|127.0.0.1|LAPTOP-FUGP67H3" />
+    <property name="libs.groovy-all.maven-pom" value="" />
+    <property name="java.vendor.version" value="18.9" />
+    <property name="libs.junit_5.javadoc" value="C:\Program Files\Netbeans\platform\docs\junit-jupiter-api-5.3.1-javadoc.jar;C:\Program Files\Netbeans\platform\docs\junit-jupiter-params-5.3.1-javadoc.jar;C:\Program Files\Netbeans\platform\docs\junit-jupiter-engine-5.3.1-javadoc.jar" />
+    <property name="ant.file.orion" value="C:\Users\phung\Documents\Repositories\outlier detection\d.umn.edu\orion\build.xml" />
+    <property name="jnlp.enabled" value="false" />
+    <property name="libs.absolutelayout.classpath" value="C:\Program Files\Netbeans\java\modules\ext\AbsoluteLayout.jar" />
+    <property name="dist.archive.excludes" value="" />
+    <property name="java.io.tmpdir" value="C:\Users\phung\AppData\Local\Temp\" />
+    <property name="do.archive" value="true" />
+    <property name="java.version" value="11.0.1" />
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification" />
+    <property name="java.awt.printerjob" value="sun.awt.windows.WPrinterJob" />
+    <property name="built-jar.properties" value="C:\Users\phung\Documents\Repositories\outlier detection\d.umn.edu\orion\build\built-jar.properties" />
+    <property name="nb.native.filechooser" value="false" />
+    <property name="libs.testng.src" value="" />
+    <property name="java.library.path" value="C:\Program Files\Java\jdk-11.0.1\bin;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\iCLS\;C:\Program Files\Intel\Intel(R) Management Engine Components\iCLS\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files\Intel\WiFi\bin\;C:\Program Files\Common Files\Intel\WirelessCommon\;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem;%SYSTEMROOT%\System32\WindowsPowerShell\v1.0\;%SYSTEMROOT%\System32\OpenSSH\;C:\Users\phung\Anaconda3;C:\Users\phung\Anaconda3\Library\mingw-w64\bin;C:\Users\phung\Anaconda3\Library\usr\bin;C:\Users\phung\Anaconda3\Library\bin;C:\Users\phung\Anaconda3\Scripts;C:\Users\phung\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Java\jdk-11.0.1\bin;C:\Program Files\Emacs\bin;C:\Users\phung\AppData\Local\Programs\MiKTeX 2.9\miktex\bin\x64\;." />
+    <property name="libs.hamcrest.src" value="" />
+    <property name="platform.active" value="default_platform" />
+    <property name="java.vendor" value="Oracle Corporation" />
+    <property name="manifest.file" value="manifest.mf" />
+    <property name="libs.testng.javadoc" value="C:\Program Files\Netbeans\platform\docs\testng-6.8.1-javadoc.zip" />
+    <property name="libs.groovy-all.src" value="" />
+    <property name="meta.inf.dir" value="src/META-INF" />
+    <property name="run.upgrademodulepath" value="" />
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle" />
+    <property name="compile.on.save" value="true" />
+    <property name="libs.testng.maven-pom" value="" />
+    <property name="org.openide.version" value="deprecated" />
+    <property name="default.javac.source" value="11" />
+    <property name="sun.desktop" value="windows" />
+    <property name="test.includes" value="orion/CBOrionTest.java" />
+    <property name="netbeans.dynamic.classpath" value="C:\Program Files\Netbeans\platform\core\asm-all-5.0.1.jar;C:\Program Files\Netbeans\platform\core\core-base.jar;C:\Program Files\Netbeans\platform\core\core.jar;C:\Program Files\Netbeans\platform\core\org-netbeans-libs-asm.jar;C:\Program Files\Netbeans\platform\core\org-openide-filesystems-compat8.jar;C:\Program Files\Netbeans\platform\core\org-openide-filesystems.jar;C:\Program Files\Netbeans\nb\core\org-netbeans-upgrader.jar;C:\Program Files\Netbeans\nb\core\locale\core_nb.jar" />
+    <property name="run.classpath" value="jblas-1.2.4.jar:C:\Program Files\Netbeans\platform\modules\ext\junit-4.12.jar:C:\Program Files\Netbeans\platform\modules\ext\hamcrest-core-1.3.jar:C:\Program Files\Weka-3-8\weka.jar:build/classes" />
+    <property name="libs.jaxb.src" value="" />
+    <property name="libs.eclipselinkmodelgen.classpath" value="C:\Program Files\Netbeans\java\modules\ext\eclipselink\org.eclipse.persistence.jpa.modelgen.processor-2.5.2.jar" />
+    <property name="javac.systemmodulepath.cmd.line.arg" value="" />
+    <property name="test.src.dir" value="test" />
+    <property name="sun.awt.enableExtraMouseButtons" value="true" />
+    <property name="org.openide.major.version" value="IDE/1" />
+    <property name="libs.spring-framework300.javadoc" value="" />
+    <property name="netbeans.buildnumber" value="incubator-netbeans-release-380-on-20181217" />
+    <property name="ap.proc.none.internal" value="" />
+    <property name="org.openide.specification.version" value="6.2" />
+    <property name="endorsed.classpath.cmd.line.arg" value="" />
+    <property name="libs.jpa20-persistence.maven-pom" value="" />
+    <property name="user.timezone" value="" />
+    <property name="jar.index" value="false" />
+    <property name="libs.jpa20-persistence.classpath" value="C:\Program Files\Netbeans\java\modules\ext\eclipselink\javax.persistence-2.1.0.jar" />
+    <property name="build.sysclasspath" value="ignore" />
+    <property name="java.vm.specification.version" value="11" />
+    <property name="libs.junit_5.classpath" value="C:\Program Files\Netbeans\platform\modules\ext\junit-jupiter-api-5.3.1.jar;C:\Program Files\Netbeans\platform\modules\ext\junit-jupiter-params-5.3.1.jar;C:\Program Files\Netbeans\platform\modules\ext\junit-jupiter-engine-5.3.1.jar" />
+    <property name="libs.eclipselinkmodelgen.javadoc" value="" />
+    <property name="os.name" value="Windows 10" />
+    <property name="libs.CopyLibs.maven-pom" value="" />
+    <property name="javadoc.noindex" value="false" />
+    <property name="javadoc.private" value="false" />
+    <property name="jdkBug6558476" value="false" />
+    <property name="http.nonProxyHosts" value="localhost|127.0.0.1|LAPTOP-FUGP67H3" />
+    <property name="javadoc.author" value="false" />
+    <property name="main.class" value="orion.NewClass" />
+    <property name="libs.JAXB-ENDORSED.maven-pom" value="" />
+    <property name="user.home" value="C:\Users\phung" />
+    <property name="source.encoding" value="UTF-8" />
+    <property name="libs.eclipselinkmodelgen.maven-pom" value="" />
+    <property name="jar.compress" value="false" />
+    <property name="have.sources" value="true" />
+    <property name="annotation.processing.processors.list" value="" />
+    <property name="javac.deprecation" value="false" />
+    <property name="jlink.launcher" value="false" />
+    <property name="manifest.custom.caller.allowable.codebase" value="" />
+    <property name="jnlp.mixed.code" value="default" />
+    <property name="java.awt.graphicsenv" value="sun.awt.Win32GraphicsEnvironment" />
+    <property name="build.generated.sources.dir" value="build/generated-sources" />
+    <property name="apple.awt.graphics.UseQuartz" value="true" />
+    <property name="plugin.manager.check.updates" value="false" />
+    <property name="run.jvmargs" value="" />
+    <property name="netbeans.autoupdate.language" value="en" />
+    <property name="build.compiler.emacs" value="true" />
+    <property name="libs.eclipselinkmodelgen.src" value="" />
+    <property name="build.classes.excludes" value="**/*.java,**/*.form" />
+    <property name="dist.jar" value="dist/orion.jar" />
+    <property name="ant.file" value="C:\Users\phung\Documents\Repositories\outlier detection\d.umn.edu\orion\build.xml" />
+    <property name="modules.supported.internal" value="true" />
+    <property name="path.separator" value=";" />
+    <property name="os.version" value="10.0" />
+    <property name="libs.JAXB-ENDORSED.classpath" value="C:\Program Files\Netbeans\ide\modules\ext\jaxb\api\jaxb-api.jar" />
+    <property name="netbeans.home" value="C:\Program Files\Netbeans\platform" />
+    <property name="ant.file.type.orion-impl" value="file" />
+    <property name="libs.CopyLibs.javadoc" value="" />
+    <property name="build.test.results.dir" value="build/test/results" />
+    <property name="debug-transport-by-os" value="dt_shmem" />
+    <property name="libs.jaxws21.javadoc" value="C:\Program Files\Netbeans\java\docs\jaxws-api-doc.zip" />
+    <property name="libs.spring-framework400.maven-pom" value="" />
+    <property name="ap.processors.internal" value="" />
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM" />
+    <property name="unnamed.module.internal" value="true" />
+    <property name="module.name" value="" />
+    <property name="libs.jaxws21.classpath" value="C:\Program Files\Netbeans\java\modules\ext\jaxws22\FastInfoset.jar;C:\Program Files\Netbeans\java\modules\ext\jaxws22\gmbal-api-only.jar;C:\Program Files\Netbeans\java\modules\ext\jaxws22\ha-api.jar;C:\Program Files\Netbeans\java\modules\ext\jaxws22\javax.mail_1.4.jar;C:\Program Files\Netbeans\java\modules\ext\jaxws22\jaxws-rt.jar;C:\Program Files\Netbeans\java\modules\ext\jaxws22\jaxws-tools.jar;C:\Program Files\Netbeans\java\modules\ext\jaxws22\management-api.jar;C:\Program Files\Netbeans\java\modules\ext\jaxws22\mimepull.jar;C:\Program Files\Netbeans\java\modules\ext\jaxws22\policy.jar;C:\Program Files\Netbeans\java\modules\ext\jaxws22\saaj-impl.jar;C:\Program Files\Netbeans\java\modules\ext\jaxws22\stax-ex.jar;C:\Program Files\Netbeans\java\modules\ext\jaxws22\stax2-api.jar;C:\Program Files\Netbeans\java\modules\ext\jaxws22\streambuffer.jar;C:\Program Files\Netbeans\java\modules\ext\jaxws22\woodstox-core-asl.jar;C:\Program Files\Netbeans\java\modules\ext\jaxws22\api\jaxws-api.jar;C:\Program Files\Netbeans\java\modules\ext\jaxws22\api\jsr181-api.jar;C:\Program Files\Netbeans\java\modules\ext\jaxws22\api\javax.annotation.jar;C:\Program Files\Netbeans\java\modules\ext\jaxws22\api\saaj-api.jar;C:\Program Files\Netbeans\ide\modules\ext\jaxb\activation.jar;C:\Program Files\Netbeans\ide\modules\ext\jaxb\api\jaxb-api.jar" />
+    <property name="os.arch" value="amd64" />
+    <property name="libs.hamcrest.javadoc" value="" />
+    <property name="build.generated.dir" value="build/generated" />
+    <property name="libs.spring-framework400.javadoc" value="" />
+    <property name="libs.javac-api.src" value="" />
+    <property name="libs.groovy-all.javadoc" value="" />
+    <property name="do.jar" value="true" />
+    <property name="java.vm.info" value="mixed mode" />
+    <property name="jnlp.descriptor" value="application" />
+    <property name="libs.jaxws21.maven-pom" value="" />
+    <property name="run.test.classpath" value="jblas-1.2.4.jar:C:\Program Files\Netbeans\platform\modules\ext\junit-4.12.jar:C:\Program Files\Netbeans\platform\modules\ext\hamcrest-core-1.3.jar:C:\Program Files\Weka-3-8\weka.jar:build/classes:build/test/classes" />
+    <property name="dist.jlink.output" value="dist/jlink/orion" />
+    <property name="java.class.version" value="55.0" />
+    <property name="javadoc.encoding.used" value="UTF-8" />
+    <property name="src.dir" value="src" />
+    <property name="org.netbeans.io.suspend" value="0" />
+    <property name="ant.project.default-target" value="default" />
+    <property name="debug.classpath" value="jblas-1.2.4.jar:C:\Program Files\Netbeans\platform\modules\ext\junit-4.12.jar:C:\Program Files\Netbeans\platform\modules\ext\hamcrest-core-1.3.jar:C:\Program Files\Weka-3-8\weka.jar:build/classes" />
+    <property name="awt.toolkit" value="sun.awt.windows.WToolkit" />
+    <property name="excludes" value="" />
+    <property name="ant.project.name" value="orion" />
+    <property name="dist.javadoc.dir" value="dist/javadoc" />
+    <property name="run.test.jvmargs" value="" />
+    <property name="sun.jnu.encoding" value="Cp1252" />
+    <property name="libs.junit_4.javadoc" value="C:\Program Files\Netbeans\platform\docs\junit-4.12-javadoc.jar" />
+    <property name="default.javac.target" value="11" />
+    <property name="javac.fork" value="true" />
+    <property name="jnlp.offline-allowed" value="false" />
+    <property name="sun.java2d.dpiaware" value="true" />
+    <property name="libs.eclipselink.classpath" value="C:\Program Files\Netbeans\java\modules\ext\eclipselink\org.eclipse.persistence.core-2.5.2.jar;C:\Program Files\Netbeans\java\modules\ext\eclipselink\org.eclipse.persistence.asm-2.5.2.jar;C:\Program Files\Netbeans\java\modules\ext\eclipselink\org.eclipse.persistence.antlr-2.5.2.jar;C:\Program Files\Netbeans\java\modules\ext\eclipselink\org.eclipse.persistence.jpa-2.5.2.jar;C:\Program Files\Netbeans\java\modules\ext\eclipselink\org.eclipse.persistence.jpa.jpql-2.5.2.jar;C:\Program Files\Netbeans\java\modules\ext\eclipselink\javax.persistence-2.1.0.jar" />
+    <property name="main.class.available" value="true" />
+    <property name="libs.javac-api.classpath" value="" />
+    <property name="jar.archive.disabled" value="false" />
+    <property name="netbeans.importclass" value="org.netbeans.upgrade.AutoUpgrade" />
+    <property name="libs.PostgreSQLDriver.maven-pom" value="" />
+    <property name="libs.absolutelayout.src" value="" />
+    <property name="netbeans.autoupdate.version" value="1.23" />
+    <property name="empty.dir" value="C:\Users\phung\Documents\Repositories\outlier detection\d.umn.edu\orion\build\empty" />
+    <property name="testng.mode" value="testng" />
+    <property name="annotation.processing.enabled.in.editor" value="false" />
+    <property name="netbeans.user" value="C:\Users\phung\AppData\Roaming\NetBeans\10.0" />
+    <property name="javac.includes.binary" value="C:\Users\phung\Documents\Repositories\outlier detection\d.umn.edu\orion\build\test\classes\orion\CBOrionTest.class" />
+    <property name="file.separator" value="\" />
+    <property name="java.vm.compressedOopsMode" value="Zero based" />
+    <property name="line.separator" value="&#xd;&#xa;" />
+    <property name="javadoc.additionalparam" value="" />
+    <property name="ant.file.type.orion" value="file" />
+    <property name="jnlp.signed" value="false" />
+    <property name="netbeans.productversion" value="Apache NetBeans IDE 10.0 (Build incubator-netbeans-release-380-on-20181217)" />
+    <property name="javac.debug" value="true" />
+    <property name="libs.testng.classpath" value="C:\Program Files\Netbeans\platform\modules\ext\testng-6.8.1-dist.jar" />
+    <property name="mkdist.disabled" value="false" />
+    <property name="user.name" value="phung" />
+    <property name="build.classes.dir" value="build/classes" />
+    <property name="javadoc.windowtitle" value="" />
+    <property name="nb.junit.single" value="false" />
+    <property name="nb.internal.action.name" value="run.single" />
+    <property name="libs.groovy-all.classpath" value="C:\Program Files\Netbeans\groovy\modules\ext\groovy.jar;C:\Program Files\Netbeans\groovy\modules\ext\groovy-ant.jar" />
+    <property name="libs.absolutelayout.javadoc" value="" />
+    <property name="libs.jaxws21.src" value="" />
+    <property name="module.build.classes.dir" value="build/classes" />
+    <property name="annotation.processing.processor.options" value="" />
+    <property name="libs.jaxb.maven-pom" value="" />
+    <property name="dist.dir" value="dist" />
+    <property name="jna.loaded" value="true" />
+    <property name="build.dir" value="build" />
+    <property name="netbeans.autoupdate.variant" value="" />
+    <property name="libs.junit_5.maven-pom" value="" />
+    <property name="libs.jpa20-persistence.javadoc" value="" />
+    <property name="javadoc.version" value="false" />
+    <property name="ant.junit.enabletestlistenerevents" value="true" />
+    <property name="libs.JWSAntTasks.src" value="" />
+    <property name="libs.CopyLibs.classpath" value="C:\Program Files\Netbeans\java\ant\extra\org-netbeans-modules-java-j2seproject-copylibstask.jar" />
+    <property name="ant.home" value="C:\Program Files\Netbeans\extide\ant" />
+    <property name="have.tests" value="true" />
+    <property name="debug.test.classpath" value="jblas-1.2.4.jar:C:\Program Files\Netbeans\platform\modules\ext\junit-4.12.jar:C:\Program Files\Netbeans\platform\modules\ext\hamcrest-core-1.3.jar:C:\Program Files\Weka-3-8\weka.jar:build/classes:build/test/classes" />
+    <property name="sun.os.patch.level" value="" />
+    <property name="javac.external.vm" value="true" />
+    <property name="testng.debug.mode" value="" />
+    <property name="jnlp.signing" value="" />
+    <property name="javac.target" value="11" />
+    <property name="ant.version" value="Apache Ant(TM) version 1.10.4 compiled on June 19 2018" />
+    <property name="libs.absolutelayout.maven-pom" value="" />
+    <property name="ant.file.orion-impl" value="C:\Users\phung\Documents\Repositories\outlier detection\d.umn.edu\orion\nbproject\build-impl.xml" />
+    <property name="javadoc.html5" value="false" />
+    <property name="javac.test.processorpath" value="jblas-1.2.4.jar:C:\Program Files\Netbeans\platform\modules\ext\junit-4.12.jar:C:\Program Files\Netbeans\platform\modules\ext\hamcrest-core-1.3.jar:C:\Program Files\Weka-3-8\weka.jar:build/classes" />
+    <property name="jdk.gtk.version" value="2.2" />
+    <property name="java.failonerror" value="true" />
+    <property name="netbeans.dirs" value="C:\Program Files\Netbeans\nb;C:\Program Files\Netbeans\ergonomics;C:\Program Files\Netbeans\ide;C:\Program Files\Netbeans\extide;C:\Program Files\Netbeans\java;C:\Program Files\Netbeans\apisupport;C:\Program Files\Netbeans\webcommon;C:\Program Files\Netbeans\websvccommon;C:\Program Files\Netbeans\enterprise;C:\Program Files\Netbeans\mobility;C:\Program Files\Netbeans\profiler;C:\Program Files\Netbeans\python;C:\Program Files\Netbeans\php;C:\Program Files\Netbeans\identity;C:\Program Files\Netbeans\harness;C:\Program Files\Netbeans\cnd;C:\Program Files\Netbeans\cndext;C:\Program Files\Netbeans\dlight;C:\Program Files\Netbeans\groovy;C:\Program Files\Netbeans\extra;C:\Program Files\Netbeans\javacard;C:\Program Files\Netbeans\javafx" />
+    <property name="javac.modulepath" value="" />
+    <property name="user.properties.file" value="C:\Users\phung\AppData\Roaming\NetBeans\10.0\build.properties" />
+    <property name="javac.includes" value="orion/CBOrionTest.java" />
+    <property name="libs.hamcrest.maven-pom" value="" />
+    <property name="netbeans.autoupdate.country" value="US" />
+    <property name="javac.processorpath" value="jblas-1.2.4.jar:C:\Program Files\Netbeans\platform\modules\ext\junit-4.12.jar:C:\Program Files\Netbeans\platform\modules\ext\hamcrest-core-1.3.jar:C:\Program Files\Weka-3-8\weka.jar" />
+    <property name="java.class.path" value="C:\Users\phung\Documents\Repositories\outlier detection\d.umn.edu\orion\jblas-1.2.4.jar;C:\Program Files\Netbeans\platform\modules\ext\junit-4.12.jar;C:\Program Files\Netbeans\platform\modules\ext\hamcrest-core-1.3.jar;C:\Program Files\Weka-3-8\weka.jar;C:\Users\phung\Documents\Repositories\outlier detection\d.umn.edu\orion\build\classes;C:\Users\phung\Documents\Repositories\outlier detection\d.umn.edu\orion\build\test\classes;C:\Program Files\Netbeans\extide\ant\lib\ant-launcher.jar;C:\Program Files\Netbeans\extide\ant\lib\ant.jar;C:\Program Files\Netbeans\extide\ant\lib\ant-junit.jar;C:\Program Files\Netbeans\extide\ant\lib\ant-junit4.jar" />
+    <property name="file.reference.weka.jar" value="C:\Program Files\Weka-3-8\weka.jar" />
+    <property name="libs.JWSAntTasks.maven-pom" value="" />
+    <property name="java.vm.vendor" value="Oracle Corporation" />
+    <property name="ap.supported.internal" value="true" />
+    <property name="user.variant" value="" />
+    <property name="netbeans.home+have.tests" value="true" />
+    <property name="run.modulepath" value="" />
+    <property name="javac.upgrademodulepath" value="" />
+    <property name="jnlp.codebase.type" value="no.codebase" />
+    <property name="test.binaryexcludes" value="" />
+    <property name="do.archive+manifest.available" value="true" />
+    <property name="javac.compilerargs" value="" />
+    <property name="file.reference.jblas-1.2.4.jar" value="jblas-1.2.4.jar" />
+    <property name="apple.laf.useScreenMenuBar" value="true" />
+    <property name="user.country" value="US" />
+    <property name="sun.java.launcher" value="SUN_STANDARD" />
+    <property name="libs.jpa20-persistence.src" value="" />
+    <property name="endorsed.classpath" value="" />
+    <property name="javac.test.sourcepath" value="C:\Users\phung\Documents\Repositories\outlier detection\d.umn.edu\orion\build\empty" />
+    <property name="sun.cpu.endian" value="little" />
+    <property name="libs.junit_4.src" value="C:\Program Files\Netbeans\platform\docs\junit-4.12-sources.jar" />
+    <property name="user.language" value="en" />
+    <property name="copylibs.rebase" value="true" />
+    <property name="includes" value="**" />
+    <property name="javadoc.nonavbar" value="false" />
+    <property name="ant.java.version" value="11" />
+    <property name="libs.junit_4.classpath" value="C:\Program Files\Netbeans\platform\modules\ext\junit-4.12.jar" />
+    <property name="libs.hamcrest.classpath" value="C:\Program Files\Netbeans\platform\modules\ext\hamcrest-core-1.3.jar" />
+    <property name="jlink.launcher.name" value="orion" />
+    <property name="javadoc.splitindex" value="true" />
+    <property name="libs.JWSAntTasks.classpath" value="C:\Program Files\Netbeans\java\ant\extra\org-netbeans-modules-javawebstart-anttasks.jar" />
+    <property name="test.binarytestincludes" value="" />
+    <property name="junit.available" value="true" />
+    <property name="sun.awt.keepWorkingSetOnMinimize" value="true" />
+    <property name="manifest.custom.application.library.allowable.codebase" value="" />
+    <property name="libs.junit_4.maven-pom" value="" />
+    <property name="javac.processormodulepath" value="" />
+    <property name="runtime.encoding" value="UTF-8" />
+    <property name="javadoc.encoding" value="UTF-8" />
+    <property name="javac.classpath" value="jblas-1.2.4.jar:C:\Program Files\Netbeans\platform\modules\ext\junit-4.12.jar:C:\Program Files\Netbeans\platform\modules\ext\hamcrest-core-1.3.jar:C:\Program Files\Weka-3-8\weka.jar" />
+    <property name="dist.jlink.dir" value="dist/jlink" />
+    <property name="netbeans.hash.code" value="unique=06c00c8bd-49c9-4d60-add8-7057d7e1e32e_4b3b8ab5-9496-4b08-8ef7-bda25724020b" />
+    <property name="nb.junit.batch" value="true" />
+    <property name="jlink.strip" value="false" />
+    <property name="build.test.classes.dir" value="build/test/classes" />
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment" />
+    <property name="manifest.available" value="true" />
+    <property name="libs.jaxb.javadoc" value="C:\Program Files\Netbeans\ide\docs\jaxb-api-2.2.5-javadoc.jar" />
+    <property name="libs.spring-framework300.maven-pom" value="" />
+    <property name="ant.project.invoked-targets" value="test-single" />
+    <property name="run.jvmargs.ide" value="" />
+    <property name="ap.cmd.line.internal" value="" />
+    <property name="libs.PostgreSQLDriver.src" value="" />
+    <property name="ant.core.lib" value="C:\Program Files\Netbeans\extide\ant\lib\ant.jar" />
+    <property name="java.vendor.url.bug" value="http://bugreport.java.com/bugreport/" />
+    <property name="annotation.processing.source.output" value="build/generated-sources/ap-source-output" />
+    <property name="javac.profile.cmd.line.arg" value="" />
+    <property name="user.dir" value="C:\Users\phung\Documents\Repositories\outlier detection\d.umn.edu\orion" />
+    <property name="platform.java" value="C:\Program Files\Java\jdk-11.0.1/bin/java" />
+    <property name="application.args" value="" />
+    <property name="application.title" value="orion" />
+    <property name="do.archive+main.class.available" value="true" />
+    <property name="javac.test.modulepath" value="" />
+    <property name="org.xml.sax.driver" value="com.sun.org.apache.xerces.internal.jaxp.SAXParserImpl$JAXPSAXParser" />
+    <property name="libs.PostgreSQLDriver.javadoc" value="" />
+    <property name="libs.eclipselink.src" value="" />
+    <property name="manifest.custom.codebase" value="" />
+    <property name="java.vm.version" value="11.0.1+13-LTS" />
+    <property name="test.class" value="orion.CBOrionTest" />
+    <property name="sun.awt.datatransfer.timeout" value="1000" />
+    <property name="junit.forkmode" value="perTest" />
+    <property name="annotation.processing.run.all.processors" value="true" />
+  </properties>
+  <testcase classname="orion.CBOrionTest" name="testDetectOutlier" time="54.869" />
+  <system-out><![CDATA[detectOutlier
+0.3627304060684084
+0.47218080410858754
+0.10733171768034416
+0.39759012481064854
+0.28401880863463513
+0.28401880863463497
+0.3611778109835704
+0.43008110182527587
+0.5875307105919901
+0.12149328757078999
+0.43309582091155835
+0.06843039894546982
+0.5862973654333904
+0.15772158654173257
+0.19153052400316933
+0.18193067335333313
+0.29384638268734004
+0.38240212912469285
+0.08116147997851013
+0.2437125917507082
+0.15120626273252039
+0.2613706150159783
+0.19332294237083703
+0.22692050053190388
+0.06993768523205281
+0.2147677065895096
+0.26137061501597825
+0.15885307138135027
+0.24371259175070814
+0.18646011708087878
+0.2732430915261997
+0.29084682031122155
+0.526480498902475
+0.24371259175070803
+0.4283728595267198
+0.23178073909020314
+0.19202587263370932
+0.21476770658950964
+0.13202600091798214
+0.47923840074740703
+0.07812278993607971
+0.4230537795401305
+0.6262834632507067
+0.5529522059504866
+0.6473671403411718
+0.3322692681395193
+0.20229815598750994
+0.2669762813754695
+0.2993256276303577
+0.434292361096546
+0.10335851610608152
+0.2669762813754695
+0.8792435611991574
+0.1399510481072549
+0.3215230774818291
+0.28333691529983507
+0.20425874726246288
+0.19106782310972142
+0.13939520442632636
+0.2669762813754695
+0.43429236109654606
+0.26697628137546947
+0.11620817606905974
+0.6332485860064139
+0.4389585881980031
+0.23526844982821285
+0.46926337394829254
+0.43429236109654595
+0.20240083094972364
+0.29808022090813135
+0.22480728335428857
+0.5767359199784814
+0.5809934129440418
+0.3972769050942582
+0.283534842949275
+0.3997848408843766
+0.548476651992427
+0.5048964031786007
+0.37802442042431816
+0.548476651992427
+0.3337371129669776
+0.2646880320041793
+0.47645688225120014
+0.6488549389290789
+0.22211398820532505
+0.08132765220873697
+0.22211398820532513
+0.2968059376391343
+0.17348635735829768
+0.8237337524428777
+0.6554125483857753
+0.02301027002979372
+0.5216948673749265
+0.6554125483857753
+0.7811779299208841
+0.6846217842091045
+0.8445769023055185
+0.3705201964439218
+0.9913557649108283
+0.9419968479801659
+0.8930653990314475
+0.689245633423703
+1.0994344424687548
+0.707177324621749
+0.4347292039027975
+0.5348716450009949
+0.7288163161506347
+0.4973416706744879
+0.16127828286342347
+0.686131373468127
+0.6809668902889575
+0.6809668902889575
+0.31723572728217064
+0.3740083434425096
+0.5728459880555791
+0.6381880698218152
+0.31200037718756807
+0.7678649228579573
+0.7031637682304409
+0.3597908319940319
+0.5958821565360878
+0.7678649228579574
+0.5897304994092398
+0.7416904226782248
+0.3740083434425096
+0.12958609282944017
+0.4798364629054434
+0.2977106633273421
+0.819742172243598
+0.520577436381954
+0.9795505782592865
+0.4798364629054434
+0.7416904226782248
+0.8990540149947381
+0.9005972362783716
+0.9005972362783716
+0.8592455377351534
+0.7416904226782247
+0.819742172243598
+0.8925529309473006
+0.7031637682304411
+0.48428821554456647
+0.13395529631345032
+0.7496955017838896
+0.519677874240238
+0.8592455377351534
+0.5897304994092397
+0.8990540149947381
+0.6649858765434367
+0.9065187077202839
+0.5897304994092398
+0.859430149023952
+0.11882649118022764
+0.8197421722435976
+0.9261901883172177
+0.8692568158344772
+0.934577246127735
+0.6656110684077551
+0.7812874920604757
+0.48000521261531076
+1.0249996326944837
+0.889898926403149
+0.9035712429725333
+0.2651706184713363
+1.2608142773155027
+0.528905848560119
+0.9909937311201764
+0.36800756673819374
+1.7417520936722253
+0.6754166614918485
+0.8253393856730311
+0.9020989772336819
+0.5308741259320687
+0.6839594984583883
+0.4956821256435187
+1.1790879636845912
+0.5392621771780505
+1.6276958759550124
+1.1305978291722176
+1.1229690562008068
+1.3976076995484479
+1.0782013744311625
+1.3528109676717415
+0.04307567281666218
+1.6452457054428808
+0.8163862600695786
+1.274126480617019
+0.8923271051050556
+1.0177628966685444
+0.6101058199086775
+0.7037200489644682
+0.6975632913562816
+0.6975632913562816
+0.5279177077748277
+0.7376323097206697
+1.7731457099062005
+0.5384035423836296
+1.1041530561577109
+0.5062630543750851
+1.386804127677
+0.6367153456739508
+0.053512155735413736
+0.636715345673951
+0.4239231071828961
+0.8847255246501653
+0.5184829941005451
+0.6264437390595384
+0.5990667537313108
+0.5033436311504874
+0.8847255246501649
+0.7718064982824735
+0.7037200489644682
+0.6351881351668774
+0.8758251648418356
+0.6367153456739509
+2.255924892969239
+0.15275293440504636
+0.875825164841835
+0.636715345673951
+1.017580199648624
+0.8062348213649274
+1.274126480617019
+0.5602333841012374
+1.812621559494887
+0.820743101494731
+0.7718064982824735
+0.41463797039418665
+1.319321806060551
+0.7322527313728909
+0.563304920275729
+0.603641557265302
+0.47445925213285156
+0.6326905676401658
+0.635188135166877
+1.2147821069405393
+0.9836313711851067
+0.8208906461220834
+0.5534575327433968
+0.9404743042496344
+0.6659175340018815
+0.7122424211253524
+0.9003136062254102
+0.9708157207487941
+0.1781865604160639
+1.1454444293076451
+1.8910296440634393
+1.1110539000094153
+1.7109831929004817
+0.9734233603043387
+0.5626788351950693
+1.0124889477998793
+0.9370066381905328
+1.4401924557791679
+1.0468446044237047
+1.488331246497371
+0.6085953710407173
+0.7821395893554094
+0.8219266983887376
+1.55946233227766
+0.7863818996745995
+1.4862292625069886
+0.6435357945540386
+1.6002318889238716
+0.7502284019437042
+0.9370066381905329
+1.3186741133487312
+1.1148337402028963
+0.9337078214103111
+0.20799624065543404
+1.2644757417960362
+0.7466525629990859
+0.9370066381905329
+0.975495114387133
+1.3492356790328006
+1.306741157684244
+0.8983688975086376
+2.856653198303786
+1.142269146425854
+1.13910623499954
+1.5214113422726057
+0.6726238881282047
+0.8983688975086377
+2.056932371013107
+1.306741157684244
+0.9352702902184022
+1.2077908264989798
+1.0159983597774163
+0.975495114387133
+0.45563399512179725
+2.056932371013107
+1.507243665671363
+0.5872889402006164
+0.28009580776122406
+1.13910623499954
+1.8754759801415528
+0.8594859432393863
+1.2138506695006444
+3.085516933093167
+1.0385821339673134
+1.1255334948010016
+1.650200242057517
+0.34331642191142536
+1.633267215941728
+1.44486528650114
+2.7432475665547336
+2.177801942974398
+1.0128691484569665
+1.1398710386268853
+2.065713997484086
+3.813192163983759
+1.4756721338415935
+1.4756721338415935
+1.7934412949833425
+2.0113520642680056
+0.17334074279279446
+1.625950105371743
+0.9166699275213339
+1.7319792078005336
+1.5733601513376958
+2.2764751234781255
+0.5036885193913284
+1.5157236856872898
+1.834901821131805
+2.056459505887108
+2.1114195752854545
+0.5624230768662288
+1.9589967435488946
+2.3448244253401502
+0.9166699275213344
+0.5081456562131703
+1.051666255766933
+0.6775303948635445
+1.5141238412264793
+0.8879977795780877
+1.6902951354446027
+1.1164520468540626
+1.1495236268945543
+1.1941636394550554
+2.179141492180262
+1.529019441488771
+1.239083566928605
+1.1787361303223065
+0.9830306787607699
+1.019181473025417
+1.2577487970919479
+1.7483066114059806
+0.9756526846760125
+0.9093502534479442
+1.3463209258078355
+0.9915409136522246
+0.9532835791876245
+1.1286073247356283
+1.1077743548003296
+0.8718529318178785
+0.8634771490338107
+1.0687923443234675
+1.4683809892409703
+0.7659574010345863
+1.1981329161091028
+1.146986376914001
+1.023372090513792
+0.9152804875853684
+0.9199985807435702
+0.7146357399044908
+0.9380083771492068
+0.8107335933385411
+1.3776560386619245
+0.7520990776025271
+0.5317971099769616
+0.9569201161385859
+1.9287654582427658
+0.7017193995921015
+1.128607324735628
+1.1571723473114213
+0.9957925025090606
+0.14751834172385064
+1.0314742237825263
+0.6213549466753022
+2.3310591984276128
+0.9957925025090606
+1.0759778235563613
+0.9166699275213344
+1.9456614945541029
+1.6337817330258468
+1.2643392923236583
+1.1069380213098179
+1.3883327085677373
+1.3338235686538984
+0.5394489505280105
+1.8540527082342766
+0.7659574010345864
+1.4185023538098709
+0.3603741149128984
+0.6570279176211817
+1.1981329161091034
+1.2084807152975883
+1.3383887571523971
+1.3338235686538984
+1.1449978010711404
+0.9609772946255029
+0.8246881817371338
+1.3816097051093554
+1.0692240107614892
+1.118145391723101
+1.2094430496546982
+1.1849553249013964
+0.8817910354566704
+1.8392493805393864
+1.4175609972513987
+1.0617052918020247
+0.996795509030077
+1.478251376136458
+1.5506053275002694
+0.994563347943142
+1.7412407259250597
+1.5808897756883142
+2.044527164453658
+1.9472050075905143
+1.9901414099652317
+1.658947854952334
+0.7370797115084226
+2.0284749399531843
+1.2792998537092533
+0.7713257177478832
+2.147052481612191
+0.5726202609371198
+1.0629334131658952
+0.6621731595109175
+1.679566735652617
+0.8311351161918128
+1.738786037227177
+0.7741734869207534
+0.6683743542573233
+0.7742358634762636
+1.572328733928045
+0.27977060880794014
+1.2952490578789784
+1.4286937960788442
+1.383069999130819
+1.5604478659559635
+1.2078089464513029
+1.2475480024771743
+1.3771717687620477
+1.2574416116687477
+3.683412977042729
+5.2584349690796754
+1.743194449372654
+1.6816409569142257
+1.049070891944882
+3.716451156484673
+1.144972035786559
+1.3672452735578446
+2.400529789422305
+1.214618697785177
+1.5536423783000863
+1.2186178658190616
+1.46360327136276
+1.1883342409610869
+1.1760857120339105
+0.3258584672708633
+1.2287885786538497
+1.4223121299472097
+1.4761766243761627
+1.8104073219609653
+0.9751317648155752
+1.8284596156924373
+1.295829477555446
+1.0526892232409812
+1.1033188306520165
+1.0236033151780908
+1.6894125117222927
+0.8959490723868113
+0.8199380252356012
+0.32680380379735935
+2.4603786794994793
+2.687420977441379
+0.3279401639911377
+2.016616532608994
+1.1351563663376285
+2.929654123299672
+1.6278863210530645
+1.375665492736443
+0.8572384220394114
+2.2573097913903473
+0.8165380029946583
+1.148978942555925
+1.8755850183392038
+0.29764584943852107
+0.9130998770307636
+1.1534462661257152
+1.7193786989276938
+1.2332888982084456
+1.3043020163593275
+1.4378848077667632
+0.7442949680646065
+1.2199653512274078
+1.4608691392558453
+1.119591891548988
+0.8812176373229065
+1.70118019251231
+2.41969794933886
+2.900333813538643
+0.840323824249256
+1.8327913841189654
+1.9308600033852705
+1.5228554132338197
+2.328549226207336
+1.2175476533830438
+2.91078666992799
+2.0242697505350296
+2.6754599118079314
+0.9851648801883298
+2.6394520024958044
+2.2716826732302904
+1.3058220710431947
+3.34786982119181
+1.5223459259988894
+1.0435418151034184
+0.6900773361449019
+1.559376049252875
+0.4102663516970812
+1.0818342778342624
+1.554436701863872
+1.1686323154911442
+0.6534422581661755
+2.414373826858595
+1.5476233352958693
+2.0944974769694076
+2.8343049519220798
+1.5874033948777906
+1.167288448972767
+1.1329773389660658
+1.5132491817259608
+3.1975299306646807
+3.2146538750046916
+0.9064648957102669
+1.791937048958162
+1.5588350573676644
+1.557975965478231
+3.0751188072822138
+0.3068066513696022
+1.3874964054688688
+0.9988840486873811
+0.8812348676558696
+1.6037708732421632
+2.3292328634443034
+1.3436912293036158
+2.1857162799208227
+4.553254999614008
+2.77047520610781
+1.8263491316301026
+1.470313818555876
+2.0226524727681854
+1.339930685767002
+2.059768203908514
+0.8024422578187242
+1.3047812892593766
+0.7315221991321661
+1.5155185929897796
+1.3763486453475926
+1.5429677984211272
+1.4440071178748368
+1.4059986202340966
+1.587590063150926
+0.86435508174224
+1.6621862766201931
+1.7218760265948394
+1.2297083493370227
+1.0562000675299439
+1.0604974824864257
+1.4029240765945068
+0.8050078693506156
+0.8050687282394859
+1.800085603166054
+1.6299950658182947
+0.9000915805794979
+1.5540778728211981
+1.7223785799775027
+0.9399408797110135
+1.852275865085883
+1.3378495066777514
+0.8427731404992137
+1.4130916796998074
+1.004814893383741
+1.8318851262544684
+0.2572745243570663
+2.0148299689751727
+3.2675297215994275
+3.4897849467009747
+2.710001485739223
+1.6232920964117044
+1.4575418839314405
+2.314293761497953
+2.367782141589591
+1.0220039133111316
+2.527511606035226
+1.8594093067321094
+1.8012467829153498
+1.3790590933100078
+1.8546366664515896
+2.7774413787448253
+2.596737804941241
+1.8509052342816215
+2.439865222667661
+0.9241726608563439
+0.7191967743970116
+3.026251715070921
+2.6834820383520803
+2.855589076857141
+2.5476719661575102
+2.4904716481355185
+1.1387847407050158
+3.5339724762813827
+2.5267171170714784
+1.0267746598636223
+1.6219644540110256
+0.5817972503439837
+3.5651155431129022
+0.3594219762463413
+2.2661055871636546
+2.8722067349872273
+2.099557406290269
+2.5088534200027177
+0.6236670487051709
+1.0687540570843768
+1.1840074927158317
+1.7885837093418728
+0.3710683622348767
+1.0105812905110685
+1.3537106766683944
+1.268712956845674
+0.28076145177817685
+1.6419987692696794
+1.7697127913603055
+3.1406825508353515
+1.1078233602162848
+1.7797757081121806
+0.9856899475647259
+2.630478057323783
+1.3607023381463006
+3.192206723112197
+1.048709777101813
+2.0835699639902563
+1.8659119625355736
+2.3713379553786145
+2.311857679103496
+0.809573595366941
+1.2063683297605068
+1.8776499148681942
+1.0006650948015048
+1.1992756925759531
+1.2084175008060813
+1.4386493985330364
+1.5434360191078267
+1.5496282975720546
+1.5942326767738642
+0.3957448297222533
+2.2357942063078617
+0.7844214747838927
+0.4467914936632295
+0.917666798286998
+0.7265153259274
+0.9806511849295632
+1.2600203226461482
+1.258030941749086
+2.004521887807426
+1.3017314726913454
+1.2983085876835707
+1.3012432758515964
+1.8518616009424251
+0.9266875986470999
+1.2963242738669187
+4.088234725600077
+1.6460863298613218
+1.2820109545465344
+0.5209704836261827
+4.599512820212575
+0.755975770622217
+1.0547366096750697
+2.472962347862702
+0.9452199404218341
+0.9104581260348092
+3.0044877311110385
+0.8316198671038103
+1.0212463524268225
+2.017186900524029
+0.761327860384233
+1.3911849171623487
+2.100513193127839
+1.219862954009331
+0.9880155971663854
+1.4212731594719252
+1.2206857761670038
+1.7898951771616758
+1.6994666193922718
+2.071254937654961
+1.0012905206810563
+1.100967174085507
+1.481777910339777
+1.306591063844635
+1.6526072113617365
+2.384851891482966
+1.256716665609062
+0.8749009496636728
+1.4661335572612808
+1.1848366001104793
+1.7870332135592009
+0.9926866877598176
+1.5317247359669564
+1.3474216813897597
+1.1371917906485485
+0.18404073735714063
+2.8069786326368322
+1.2280616864045013
+0.9748971697944571
+0.43992454993997365
+1.8060387661488642
+1.3944437261363252
+1.347898830043205
+1.5154754145549902
+0.4705749200997372
+1.571691189539756
+2.09249113189278
+1.0102453335921227
+1.5094673389119633
+1.368408878769811
+2.0598644225470597
+1.5530938272594643
+1.038322120220936
+0.6238693120552076
+0.3983716632340246
+3.0853436907489966
+1.947729276473939
+0.5761100495768773
+0.7641830028370775
+1.3562441030101189
+1.8861660648996743
+1.9051593136457752
+1.1583351573471359
+1.8692071875901792
+1.5855315563769055
+2.6716972570588204
+3.275979304817703
+1.1632190766782817
+2.072843062495587
+0.969045041218672
+1.8283926805136872
+2.0634222115542196
+1.6811312351156267
+1.4677864605522566
+1.79250196718136
+2.8492076833679705
+1.8510033267006387
+1.4513770556141674
+1.6134943922806555
+1.4695213781086118
+0.5621768061351863
+1.966453732438314
+0.24939905783388128
+0.4788107797506704
+1.172862170979497
+3.46175254575986
+1.4537900725149469
+3.292441723126062
+3.589143231827856
+1.5410867860794315
+1.5089087551099858
+1.545367289191669
+1.045923138975632
+4.121293031409605
+1.3231328992684137
+1.1435591862307635
+1.5466292980099647
+0.7389967905653297
+1.5707496893799486
+1.3224687624033953
+1.3413856713857077
+0.7052249812832522
+0.9173784276758561
+0.9288875888863332
+0.3833979626476944
+2.1783665163751507
+0.43705103593108663
+2.9746142347246307
+1.7521324345576352
+1.4101735325242506
+1.0111172661961076
+0.7328598766198074
+0.88676755691815
+1.7510748353600487
+1.5065563418876324
+1.9067975334368552
+1.8151893774026486
+1.3233122667255666
+1.2083469459227065
+1.678872015747004
+1.2489721707527726
+2.215729846338777
+1.2132297452643308
+1.8481059035436933
+2.4343341218447496
+1.4396464413178653
+0.9249516575224166
+1.6349551142965233
+1.043441105100524
+1.8987743365885956
+1.4009224778051175
+1.3558571634912089
+1.2166644998474445
+1.238793080078277
+0.5455777604952303
+1.6088744426331325
+1.439893638299765
+1.401023574579882
+1.4793236277994557
+1.5646293953209085
+1.3967765020545924
+1.313454572506353
+1.610298490018457
+2.144816001753886
+2.8850478302577973
+0.925939047395387
+0.9667203935848082
+2.126137797891947
+0.7976421242080208
+0.9263306734672446
+0.4881461352151013
+1.197010304677859
+1.1115902846849743
+1.425227010177456
+1.1480642152579845
+2.0267921802054034
+2.179842989145374
+1.0423084203214925
+2.591697597485416
+0.9724757260151917
+1.0821615089492194
+0.3840508915556176
+1.2552819910772737
+0.4095683349545382
+1.932523888591905
+1.2449681014442495
+4.154343753392209
+1.0080643944007974
+1.2032927568901848
+0.998939494256372
+0.197026415504336
+0.8842041201181068
+3.450079435625297
+4.655848268316341
+1.3681431619979352
+1.5449339516299903
+1.1609866365723533
+1.4438084621758556
+1.1514209945150629
+0.6356831176358689
+0.6818604984792326
+0.9467229986125218
+1.1037223258395223
+1.3458601895136548
+1.7273488117796851
+1.855793528575798
+1.6787292592926741
+2.248939301662546
+2.0527492190728873
+0.9718389970924959
+0.7087130791484464
+2.0179486713295445
+1.7713187045824563
+0.2291013829676427
+0.5269486590408613
+1.925317153621953
+1.2764533024578106
+2.0366504163685044
+1.3727215290334618
+1.6215062842523633
+0.7511767079232983
+1.5014838572100575
+0.4390888281707179
+3.8799073523688614
+2.670251388754711
+0.48166445665646845
+1.238622049263243
+1.3145293479323903
+1.1144657690523294
+0.2484455365679258
+0.5782575206349282
+1.3490440054716952
+1.037984397821839
+0.021157174111237003
+1.075780021081875
+0.49396230482730025
+1.450593671088415
+1.64364609658763
+1.2601041834500033
+1.1553167646376439
+1.241011548151244
+1.269502521508866
+1.0389038358392824
+0.8152711991850198
+0.009019926160863157
+0.006007298074162055
+0.005498113823254578
+0.0042072758775669634
+0.003274650235642974
+0.0027197264064257013
+0.003383708247367324
+0.0024554543287483143
+0.0021476248363879766
+0.0020558503112547625
+0.0020138939294983994
+0.004191477366029432
+0.0018941872722518305
+0.0018113374764875607
+0.0023465593173434872
+0.001679122844894239
+0.002225574436626151
+0.0016121202764832947
+0.0015493661411305592
+0.001458352685118346
+0.0016441396277394142
+0.0016187136236282154
+0.0016180086416257248
+0.002183735275568893
+0.0019994358705990116
+0.00227278163271074
+0.0017894014238870447
+0.004005077478807116
+0.0039360424542276805
+0.0016446130370270258
+0.00370786197816705
+0.0017616181710949166
+0.0017543194395920581
+0.0017060493537992747
+0.003262401808922258
+0.0017089151941418938
+0.003207552012235688
+0.001960632737169671
+0.0013597409600435092
+0.0021630133043983907
+0.0021837586818127383
+0.0013847918277268669
+0.0013782149520224372
+0.003944940570337154
+0.0013550119360893368
+0.0030642732658820782
+0.0012547256304018916
+0.0029346358997401362
+0.0013069091111914573
+0.00130236692920949
+0.0012735771994930442
+0.0036019931779167603
+0.0034856510765362866
+0.0015296545976474533
+0.0034828245578334945
+0.004034220743982723
+0.003053655516488807
+0.005535234525176805
+0.0011336452585454207
+0.001104732569719569
+0.0011047446212688102
+0.001304652042299159
+0.0025818416580192273
+0.005874404375601747
+0.002549754828766464
+0.0011768589436678607
+0.0010883258507116394
+0.0010874392572166347
+0.0010854350179787954
+0.0024765406298555325
+0.002609063130813818
+9.979934775008676E-4
+0.002278141476780291
+9.885853541744803E-4
+0.001978406602661649
+0.0011667398594662301
+0.0019277134511954928
+0.0010043408365375567
+0.0011568681418793847
+0.0012206371821105802
+0.003282040006828411
+0.003000982311125904
+9.839958570600068E-4
+0.0011254608611163679
+0.003920270634661391
+0.0010395258958057051
+0.0014131180477535892
+0.001316883971365521
+0.001290389654222028
+9.475486104807563E-4
+0.0014558927981099914
+9.456128102526351E-4
+0.0010194102174087172
+0.003138473425446884
+0.0010019711022360507
+0.0013469684679238052
+0.0025866053792208605
+0.0030606819081659123
+9.149313208980665E-4
+0.0061294939626398235
+0.0013073194797574973
+0.0016138883150156838
+0.0012704241728401233
+0.0046819036312959255
+0.002714786338901705
+0.002249808070683148
+0.00575055762763218
+0.006019199344667993
+0.005608505198070241
+0.005540457249420879
+0.008845780209682606
+0.001019719287943192
+0.0037929814494732936
+0.00526802598936717
+0.008528079545601648
+0.002259665959628607
+0.008358434706049519
+0.00991802884707854
+0.007684835015037158
+0.006058118512217352
+0.008479660426434535
+0.009681379241002546
+0.006652591747958129
+0.006290354474934031
+0.012013546917653398
+0.0057576181599569756
+0.013125126112253737
+0.002468476270591671
+0.012932629924334147
+0.007655513427393423
+0.0023436733525849986
+0.007777837309507736
+0.004264936378888539
+0.008575636062785568
+0.004334573392051204
+0.007567522913655743
+0.011018791324979937
+0.012155177183583976
+0.0032333000918931282
+0.01445086038745577
+0.01340342730604734
+0.011871451661388567
+0.0022367894302724877
+0.016727293390260266
+0.010515062746719758
+0.01045666249026145
+0.002188143782647024
+0.0021771246886674376
+0.009564952906972572
+0.0142506371605797
+0.01963953939690608
+0.009044729637161283
+0.014749722161625886
+0.006904690202402716
+0.006872873238364907
+0.007880631249371934
+0.014480024778774993
+0.011026450184508698
+0.009889551400721749
+0.008784086667875373
+0.008745363064241311
+0.020007374039817602
+0.02112593682398744
+0.01748712508539057
+0.006354455789774735
+0.013375006898110912
+0.009573133523995227
+0.00419580380279061
+0.004480089422733674
+0.00823855828480229
+0.002801290179607895
+0.008178543353038654
+0.01177518282888807
+0.013212266842231262
+0.004385236239860969
+0.014022276000651762
+0.009014164010369082
+0.0034890134194952203
+0.010945465894171365
+0.010909876105174616
+0.005174771900235551
+0.012875689735839843
+0.010809451992736818
+0.009036087903996744
+0.001848893306610337
+0.011706520813423549
+0.022287861021427352
+0.0033840402236657284
+0.010620229451831267
+0.012678979881376352
+0.01390034750179184
+0.011790055508890486
+0.011757602092914798
+0.004243179020043873
+0.022338964273966838
+0.010675591695658232
+0.004211306350300145
+0.011610099058607505
+0.011716564040246723
+0.012550531862205734
+0.010669164410714325
+0.012638746670433257
+0.011607122758383175
+0.004141679573923455
+0.017728409747386487
+0.021152696853012146
+0.023907711010070953
+0.004107001787073914
+0.01601708690190742
+0.004921443245328255
+0.010323088000609906
+0.009359888215731539
+0.014187304343481496
+0.011215435457085171
+0.012160968288878755
+0.01213617505712334
+0.012112653759237785
+0.0048455204531652595
+0.006541049322710936
+0.006530150745981314
+0.008292936917320703
+0.005649739277958522
+0.013934956040575812
+0.00438182241437679
+0.015493447136925123
+0.00555378327870496
+0.004814875037974481
+0.013392965222966326
+0.007809080962467036
+0.004084034839456777
+0.008571561553317791
+0.013495947271152815
+0.009341535391597171
+0.009328916749701833
+0.0077430865183394
+0.010106657965805272
+0.007721772712303016
+0.010079137889066135
+0.012529408548433551
+0.0125139926851015
+0.00547637846953243
+0.013514558562773359
+0.005428976731879982
+0.015849956402416824
+0.014955751496504646
+0.005411946050913091
+0.015801921870372194
+0.01840243515547181
+0.00838846979525555
+0.00398684136687195
+0.006111228428968942
+0.014871843400584983
+0.006837378867214252
+0.006093139065905168
+0.00757569712306986
+0.014373750143212065
+0.013961529521441486
+0.006072963228085519
+0.0068026006632380745
+0.013927824763148794
+0.00907776184159275
+0.009846856527874249
+0.008291881097550368
+0.01306527897931276
+0.010621785778865937
+0.011414274303124139
+0.0022335326740511603
+0.0189691805917366
+0.00362943367365717
+0.018948035273081875
+0.02070019217064175
+0.01719551527508942
+0.006739747927220551
+0.008998501969482242
+0.011353540553103655
+0.006731125493182973
+0.015842396091580266
+0.0074650741151577596
+0.011332626732144786
+0.011327159451112451
+0.008969119681521573
+0.009739640034320077
+0.004578707656865743
+0.017106814290244653
+0.014569228659022418
+0.008191015635704969
+0.01865927527451437
+0.017085642052880934
+0.008183997522853825
+0.008942337632445365
+0.009181912279873599
+0.017529241995267487
+0.014539677780567072
+0.011270173494229872
+0.017522791529829246
+0.0045657199504273785
+0.004565867401006864
+0.008176139262565175
+0.00669157703417972
+0.008175744394271494
+0.012690034222889056
+0.004566125252945647
+0.01083009152970321
+0.010772828532242512
+0.007429072003643799
+0.014084504299531063
+8.654381413008566E-4
+0.008181386573656028
+0.015384100797446402
+0.008404892850568271
+0.008186384791266144
+0.006881805277307991
+0.008953932140633912
+0.003327501417746091
+0.009733374881426084
+0.0056795158893505285
+0.00896724618021729
+0.010529656258784907
+0.008028684840494434
+0.012136774715466802
+0.005662846154105211
+0.016300226883352836
+0.012151069509080148
+0.01716760597354815
+0.009684227346032375
+0.0052969645304599315
+0.010855481511716673
+0.001418731726499278
+0.008035798928239543
+0.004609070308185837
+0.003929289087584556
+0.006764048302411188
+0.011139810426963178
+0.016411522338537488
+0.008471380671889036
+0.010632714297253007
+0.002015954430216675
+0.010648136226331121
+0.006062699242959875
+0.004874195870023087
+0.008319882941461684
+0.010681946667257015
+0.014672050635202542
+0.0120832081061878
+0.014699280001469429
+4.040316200635925E-4
+0.007975674220202655
+0.010434786759270401
+0.01226347595459667
+0.017804353550388917
+0.013280083124926316
+0.02174497902524907
+0.004285271119219828
+0.01320226723581779
+0.009775649870185888
+0.01698793825169601
+0.013109691862911515
+0.013012287859266138
+0.015506439300763562
+0.01894653893608544
+0.01752807127884622
+0.013450543211653022
+0.014860490765382687
+0.00887412845786921
+0.005878798926120666
+0.017208588878075085
+0.015845913703514486
+0.0167807993227996
+0.013210199087527576
+0.0049999910940177125
+0.014539649979620354
+0.011521327625749757
+0.012411448702689835
+0.018374180860692948
+0.013469702008655377
+0.00821221758124906
+0.017959541938557037
+0.01564376642998904
+0.019152410961947426
+0.019000973898361025
+0.005093722318225868
+0.023594601729867822
+0.0058894715446354004
+0.010026321610875567
+0.00780609241535099
+0.013188985696959749
+0.014020543438082199
+0.01664367096820074
+0.019334107841749163
+0.010270992202353111
+0.0016008885278888498
+0.015631739896810288
+0.02004996693044935
+0.01909572554739373
+0.014799618550529582
+0.018183759994811515
+0.016004408950017406
+0.010456121634303579
+0.011385422516344662
+0.016370479116978302
+0.001658364398150894
+0.010428225184315937
+0.015080892434259315
+0.015121224993008909
+0.012333993201115969
+0.006844677246510321
+0.02247745133927455
+0.01771400064531459
+0.009836643300003002
+0.016339762624777054
+0.017376886431356153
+0.01763829034712361
+0.015498037002788028
+0.010772928292605503
+0.008316733640126122
+0.010838060296570622
+0.007259418097545767
+0.01672794150878888
+0.007305450079442389
+0.012882840279577009
+0.009524054115169924
+0.01698679030082944
+0.02506179581758915
+0.024761992897518917
+0.015877259638992062
+0.011513891344589135
+0.006694877265826156
+0.018857984415343917
+0.01970831204455904
+0.005967148810952782
+4.864247238236692E-4
+0.01777524373381296
+0.01648245575741127
+0.007917452732248769
+0.013760724296366635
+0.0034214672286680325
+0.002628412100741681
+0.013930257447856718
+0.005617669410858003
+0.007153333521648026
+0.01873410981001774
+0.018816265110366694
+0.021197022687476995
+0.016737546396586617
+0.021844999823750762
+0.018032082779282785
+0.016874995530760852
+0.0028071499695585334
+0.015445882298831832
+0.00591272286537795
+0.0184976794800648
+0.018598978316436157
+0.004688750800298049
+0.008702593290032194
+0.018907228168033797
+0.014317125285561097
+0.01439453281842175
+0.027099688675112248
+0.02057209570838045
+0.019467604141418196
+0.01128698778133412
+0.006983259124110749
+0.021111161992397015
+0.018729239422023897
+0.010444109900254744
+0.011190769161534143
+0.0013685507472758888
+0.007275795676332291
+0.008982756717012588
+0.02217091621637378
+0.022341305852799365
+0.023861097139626735
+0.020746106510331846
+0.020341121479122246
+0.024684670199448
+0.01076291711216794
+0.007881499522191535
+0.003957209258418673
+0.013755950855643953
+0.006897168144474618
+0.020185971457725247
+0.022695679940476342
+0.009598037976958131
+0.014426725986705887
+0.004842362789356712
+0.026867922277809382
+0.025190993066596504
+0.007294423251738012
+0.02744080836755069
+0.02475244789276728
+0.026688891619559025
+0.011641510331385142
+0.005178407029069067
+0.018352144838743135
+0.030278357633132448
+0.0340191075782635
+0.011558589687865543
+0.01595270859844388
+0.029934480846601025
+0.025406719253720886
+0.012712901314905121
+0.02892582744518597
+0.02917278232820629
+0.011928606492136073
+0.027419193045476385
+0.02028500776841728
+0.026268639327510876
+0.016837743962752626
+0.030374853657286004
+0.0334970067449185
+0.03811966948775477
+0.015961967098009632
+0.025156510654056555
+0.002078708436065827
+0.02912797378528566
+0.0020646149548451936
+0.03151972398365011
+0.014616072539192188
+0.021661087414023335
+0.021906905081341174
+0.02965460145511659
+0.03397606484858012
+0.013770433377335418
+0.003982034981583763
+0.029253706944167537
+0.08431623113506097
+0.026302242432123542
+0.04422083378801803
+0.023689633749341216
+0.03444193147182355
+0.0470494647758016
+0.026734556230758644
+0.03250268707000059
+0.012873374918150849
+0.049756872308399175
+0.026558865584476163
+0.04381868640746647
+0.010340681684732936
+0.021704739626173215
+0.010595040406385871
+0.01582126968541898
+0.03195311026539112
+0.04300544161328784
+0.027308274335574347
+0.02543475323669624
+0.032080332176626404
+0.02154518917941563
+0.03492327850191602
+0.01085279000086006
+0.05507139843166878
+0.011965835346789718
+0.020582017130298415
+0.025135954348169925
+0.019907999020854283
+0.039793180122919956
+0.04937100507862538
+0.05582550253708711
+0.04289435649222558
+0.03235446647224182
+0.040934862626678885
+0.03665480815473583
+0.025415390523414887
+0.03758916442465497
+0.026768621177775457
+0.0319154251741882
+0.057194327417295736
+0.054604277056530245
+0.03574744857890268
+0.05027382913892234
+0.047590799360421536
+0.02648105522479585
+0.008656540799122802
+0.0018291240191484343
+0.03688929976253555
+0.029086069634066014
+0.07953432678242615
+0.02938304270919253
+0.002015230601981395
+0.007542220939982157
+0.028844046175441163
+0.036576630496540426
+0.021999991373096356
+0.10857770272577708
+0.08406581638593687
+0.01280877011070074
+0.04102774950204758
+0.0025840317039695854
+0.023681790051954924
+0.029079404653930028
+0.0028245508294622262
+0.01411483034193237
+0.19585541803054976
+0.12093523189769666
+0.14293254626380628
+0.3199366142181171
+0.20764030963715058
+0.050786572932690885
+0.36434971290229096
+0.3095293346114599
+1.719818989438523
+1.711092333587761
+1.6862005573998025
+1.8662920923337933
+1.6152356484731705
+1.3903159785524937
+2.2534829079341625
+0.6617062598768735
+1.6067823477225927
+1.496479766151354
+1.357968052227597
+0.8847196950216547
+0.9996804725759342
+1.5595938265764533
+0.4343170144169322
+1.4959580332292455
+0.6491231252260214
+1.6650634236373747
+2.289956886973279
+1.9707132387195772
+0.9695509587238964
+0.9159822693983452
+3.2278608051345263
+2.606938263415386
+1.6567344793203946
+0.2619042300591532
+1.2994004006867574
+1.7124286463668412
+0.9127647345007588
+0.825761402489191
+2.8460539928571658
+0.4541127160243831
+2.391377216716538
+2.8352651839743808
+0.607980188295094
+2.408211597975489
+2.2480066769364044
+2.058649258977012
+0.9234519910951363
+1.9544611680019852
+0.8036870324701442
+1.9321853889810285
+0.7382049008336722
+2.414336404285804
+1.2012839319473814
+3.1610666471962063
+2.091523725699928
+1.8692511037152826
+1.5218477266674546
+0.8097850843149975
+0.5274243504895268
+3.2197530772756706
+3.0626653097843124
+0.9235443886463897
+1.1514983722572416
+2.405609464098751
+1.5884184925734866
+2.386375737386419
+0.7253611580987062
+1.5056932499889093
+2.830877360525673
+2.3142601933453624
+2.8062828546148135
+1.2998858269474998
+0.9125702780317669
+1.1355889717353966
+1.3882359383111276
+0.764392552404017
+1.472443322651007
+1.3326079133156679
+1.4273062431627643
+0.302422461039065
+1.6759698570827588
+1.7171070901791847
+1.0476348455996258
+1.4859531277588836
+1.3675415858721331
+0.45605485881227786
+1.2979177955217192
+1.087060150033155
+1.3042406384172454
+1.2368125428810315
+1.5138573482036768
+0.950602988380022
+0.8332212444695728
+0.3281005476475496
+1.1291752173324285
+0.48179275428661655
+0.9537320225310296
+1.3316151788985646
+1.146636791206352
+0.7651494650101521
+0.39509097347559746
+0.8960581469757896
+1.2062921318989643
+0.9315529455994593
+2.473063982526962
+1.154207552324989
+0.7166835557624763
+0.33964824306172636
+1.310320141035387
+0.6966876546943935
+0.7597753782975919
+1.1144795265814977
+1.0706571144470438
+1.519241440241173
+2.6003044479581296
+1.63654605803769
+1.0948701770563
+0.7318510392463946
+1.252634902621841
+0.6493181793917422
+0.8535000946594465
+1.9567260686738257
+1.7437371702263005
+0.9734253548650005
+1.3726172752449253
+0.9052371307467104
+1.370326949802479
+1.2869096834941407
+1.0529115209680746
+0.7048193201325494
+0.9476479606533017
+0.9108783335423722
+2.2136810590789175
+1.0879502095034805
+1.0893260459320653
+1.9714622092549459
+1.7720599433967816
+1.15913542703024
+1.049941044817976
+2.353555610589414
+1.4197993141245695
+1.0120039063284256
+0.9045985867816234
+1.651852143268309
+0.2597795101563362
+1.0050481261119422
+0.2674929764087192
+1.111529455263557
+1.8616144002418267
+0.5619733904260017
+1.035822695997415
+1.1066271439159654
+1.654154015743085
+0.823715519150062
+0.9978160950985228
+3.55407266546964
+1.854609047909786
+0.4945181393730967
+1.3539665428444343
+0.994804543969672
+0.5878673607541154
+2.3238707113757444
+1.2465272176598927
+1.5630789644827248
+0.9585832933952229
+2.201327107657226
+1.1778397383415666
+0.590103090393832
+1.0295856642618093
+1.5028562512513943
+0.946572912270839
+0.3715702307667096
+1.0530680466133455
+1.7369366730301048
+1.1618587402940521
+1.239903457224441
+1.0269100021879813
+0.8411366278795481
+1.0627987292585404
+1.8565723407607284
+0.8864274688048132
+0.34006519521081513
+2.5557325613052155
+1.358056900196441
+0.6978027878844986
+1.0883338629815908
+1.2772843405154932
+1.1307007164850753
+1.092957493157292
+1.354705381499728
+0.8815448789477678
+2.6425631211821767
+1.2690144435854454
+2.315999670246298
+0.6032159164446017
+1.770313376424719
+0.2329012464830338
+0.8719695505689316
+0.5973223750856747
+0.4372747328322124
+1.3313392059997278
+0.8985976014716961
+0.5955140360015122
+2.1785758743176626
+2.1131655021374254
+1.0059385684421485
+0.561281129959553
+3.3114743600400547
+1.4386274742883778
+1.389980577924505
+0.7259774934062284
+0.5100340303809151
+1.0222017187678343
+1.0707334194842073
+0.7360289062197047
+1.4397225629065609
+0.7239571182506728
+0.9975082552073364
+0.732847458674025
+1.0741805917449554
+1.5060173119075975
+1.2419460930547954
+1.0196126449587883
+1.2848324581643051
+1.2837206647750445
+2.0487119747044678
+1.159629557062503
+1.3099102541643095
+1.0441182689366455
+1.6226520994611828
+2.2398602185419443
+1.7865100255286832
+1.6639262768733611
+1.8926041866323056
+0.8291530358113487
+0.21356948395428965
+1.344056202731496
+1.099101102720834
+1.7669436400301328
+1.6923147453954934
+1.744446996716337
+1.744688760531808
+0.6877903043494616
+2.0105539218374484
+2.100185318015059
+0.9428810928574217
+1.0955140246541173
+2.279342597041851
+0.9640705397487107
+1.175009455749518
+1.1517994019638658
+0.5731519192244662
+0.7874270607358895
+1.3382680839502221
+0.7623859853091096
+2.3840993023226416
+1.8876076647333102
+1.460578351047441
+0.7883650430860858
+1.5814210483357594
+2.0936843624953485
+1.0353016672839184
+1.5329409662217592
+1.6470562777776836
+1.0463578296403524
+0.9613310436432372
+1.5888625342669023
+1.3428855323601678
+1.1535534444539906
+1.0693126281770973
+0.8625672725643874
+3.2752965813238237
+1.3674044993041365
+1.3674330388148879
+1.3651194386670944
+1.5185363541110597
+0.40148191844971337
+1.757720729967405
+0.8135287846591414
+0.8810332353956497
+1.180867924577556
+1.7913720491379768
+1.2057777562799046
+1.4738094993107098
+0.447880037655446
+1.041846425168591
+0.9296368238436095
+0.8495115114712982
+0.7838407165086555
+1.3827530557287375
+0.714209057576058
+0.020438807598091985
+0.5560289009959508
+0.9276306789670776
+1.1609249192011593
+1.390252494913793
+1.7074289503106344
+1.4982897615091022
+1.3029332681555834
+0.5379902909027594
+1.2008342013149245
+0.8561578447921294
+1.0130140945970414
+1.2746595947480832
+1.123282515685419
+1.2019834845773139
+1.4121687085031034
+1.8000093932729648
+0.739563131551489
+1.4764257081355812
+1.2883832644562088
+0.9246433964836479
+1.6744431982096517
+0.4856945355413297
+1.6733451421341823
+0.8828152122079181
+1.1618187552198271
+0.7568556388027753
+1.3746194365529247
+2.0554001954872256
+1.431094737637683
+1.2258436556642014
+0.8562482422790387
+0.7743892189667425
+1.0090332675546796
+1.276220831789169
+1.4193285692996995
+1.3788464777579685
+0.9723331900034657
+1.8744431099290468
+0.1955541336802777
+0.9371184328271986
+5.6705549870318706
+5.362275423576444
+1.9867361022823096
+1.1501144227142404
+1.5710465362290256
+1.225326681235123
+1.8592072229942513
+1.519616408997976
+2.158149307991112
+1.603400231726371
+1.0450073902838064
+1.6488064266760607
+1.4371083711539945
+1.3032258731619057
+1.162626787738607
+0.8711947198078109
+0.9905945367346082
+0.9380776326098473
+0.4403300746015755
+1.3047389042559911
+0.7330134436308313
+1.8434369019186225
+0.7321221416599198
+1.5643017753788815
+1.190049329813944
+1.1578475350283421
+1.3404429111570966
+1.155565132317901
+1.2700980422235595
+1.189522207383591
+0.7961988242893283
+1.361131901305456
+1.2438264886153123
+0.9368609078269783
+1.5319244592633392
+0.3919761265363852
+1.046186082594727
+1.935165066483761
+1.4921262031227625
+1.327997894653415
+1.280063524223625
+1.3968363321571844
+1.4341629459289507
+0.2421962466259234
+1.412780233130839
+1.0076890447866171
+1.828075642350506
+1.7124092578188368
+1.7838175448856017
+1.3861255855692791
+0.7775418504009629
+1.0772347310634978
+2.4628388269639196
+0.7067258734743854
+1.0737978309894733
+0.775840026986935
+1.2081503709534527
+1.704605832750872
+0.7172684119753832
+1.6161967444945775
+1.0202108918891746
+1.1379311322543324
+2.052622840270156
+1.1029012966356861
+2.4056056381872657
+1.694743867308832
+1.3792677524514427
+0.7648415430842509
+1.0074907854558492
+0.35788592434519884
+0.8022179498853389
+1.6845151180537192
+1.1908833744752076
+1.4529446961132435
+1.2281975412526775
+0.9614738621893586
+0.6421228924741219
+0.9973126399721758
+1.1004170871459233
+2.528292903730608
+2.211058657719907
+2.7767912353592794
+2.0437188724410627
+1.2820367349797714
+1.95213006379382
+0.38478360190769645
+1.7010590253988915
+1.592999170099732
+1.617406908441242
+3.285905167517974
+1.1253810473168655
+1.4069734250013424
+1.3511385535831812
+2.3015187010574896
+1.7850677590995243
+0.8706960414755051
+2.0867601423195405
+1.2208310989096804
+0.9743890655220151
+1.051629746293191
+2.7110562863279197
+1.8306621142122446
+0.6611537456080703
+1.3849931269369857
+1.6556881144769096
+1.9493662354741388
+2.231175260044172
+1.059242492623154
+1.8206673055179188
+1.4283433441888647
+1.0067967780964138
+1.183097632114179
+1.0250574149198797
+0.6848713935832846
+1.3423513887147585
+1.009240621925339
+1.1817973144647254
+1.7001689412920677
+0.834292690309213
+1.0357095537344307
+0.9327590223968936
+1.3785463933707602
+0.6821089041085707
+1.5663887578220654
+1.4131590114509418
+1.2513950371725713
+2.6771157063463864
+1.5279210883850525
+0.6671919472722576
+1.928722122764762
+1.0124570587938235
+1.6080524701678407
+1.2951495747295563
+2.7161813627481073
+0.474717526123304
+1.6665868897567635
+0.8906869024404175
+1.243746573085841
+1.2831777716669523
+1.4099417652577337
+1.797023132112672
+1.4064057795487448
+0.7885845076390171
+1.6636545713902449
+1.8301704800768162
+1.4883820261290561
+2.0233690622433946
+1.375890396028975
+1.3770371725142108
+1.1189916530826745
+1.3777348531159925
+1.545802023043932
+1.2079500250904467
+1.8066228306330507
+0.7892731730045548
+1.2049522203633598
+0.7209656197767255
+1.316215945974181
+2.1121506165268515
+0.9363195186673797
+1.3136788521021043
+1.285422312239279
+0.9125976208793294
+1.6614485547788258
+3.66642110984789
+1.348697303155491
+1.501018790610546
+0.5315873932276876
+3.0851855550230782
+1.1182898197499815
+0.867303612001298
+2.0309834420848616
+1.9666693193541966
+1.3055653931596838
+2.1763046504034804
+0.9913123425877678
+2.8597353138080037
+Avg time 0.0
+]]></system-out>
+  <system-err><![CDATA[-- org.jblas INFO Starting temp DLL cleanup task.
+-- org.jblas INFO Deleted 4 unused temp DLL libraries from C:\Users\phung\AppData\Local\Temp
+]]></system-err>
+</testsuite>

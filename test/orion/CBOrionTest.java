@@ -8,7 +8,7 @@ package orion;
 import dataStructures.DataPoint;
 import dataStructures.Stream;
 import fileIO.FileReader;
-import math.Statistics;
+import java.util.LinkedList;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -42,39 +42,33 @@ public class CBOrionTest {
 
     /**
      * Test of detectOutlier method, of class CBOrion.
+     * @throws java.lang.InterruptedException
      */
     @Test
-    public void testDetectOutlier() {
+    public void testDetectOutlier() throws InterruptedException, Exception {
         System.out.println("detectOutlier");
-        int[] w_size = new int[]{200};
+        int[] w_size = new int[]{500}; // window size
+        int[] s_size = new int[]{250}; // slide size
 
-        for (int size : w_size) {
-            String filePath = System.getProperty("user.dir") + "/datasets/random.csv";
-            char separator = ',';
-            boolean hasHeader = false;
-            double[][] incomingData = FileReader.readCSV(filePath, separator, hasHeader);
+        for (int windowSize : w_size) {
+            for (int slideSize : s_size) {
+                String filePath = System.getProperty("user.dir") + "/datasets/tao.csv";
+                char separator = ',';
+                boolean hasHeader = false;
+                double[][] incomingData = FileReader.readCSV(filePath, separator, hasHeader);
 
-            // Data stream
-            Stream stream = new Stream(false); // Create a count-based timestamp stream
-            stream.writeToStream(incomingData);
-            int count = 0;
-            double meanExecutionTime = 0;
+                // Data stream
+                Stream stream = new Stream(false); // Create a count-based timestamp stream
+                stream.writeToStream(incomingData);
+                int count = 0;
+                double meanExecutionTime = 0;
 
-            CBOrion instance = new CBOrion(size, 100, 20, 50);
-            while (!stream.isEmpty()) {
-                long startTime = System.nanoTime();
-                DataPoint dt = stream.readFromStream();
-                boolean result = instance.detectOutlier(++count, dt);
-                long endTime = System.nanoTime();
-
-                // Update the mean execution time
-                double executionTime = (endTime - startTime) / 1000000;
-                meanExecutionTime = Statistics.computeMeanOnline(count - 1, meanExecutionTime, executionTime);
-
-                // Output mean execution time
-                System.out.println("Mean execution time: " + meanExecutionTime + " ms");
+                CBOrion instance = new CBOrion(windowSize, slideSize, 0.2, 50);
+                while (!stream.isEmpty()) {
+                    LinkedList<DataPoint> window = stream.readFromStream(windowSize);
+                    LinkedList<Boolean> result = instance.detectOutliers(window);
+                }
             }
-            System.out.println("Avg time " + Stats.avgEfficientESD);
         }
     }
 }

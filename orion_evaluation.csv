@@ -1,0 +1,17 @@
+slide_size,Operation,execution_time
+200,Evolutionary Computation,24.58294813
+400,Evolutionary Computation,93.066382
+600,Evolutionary Computation,199.517863
+800,Evolutionary Computation,345.824039
+200,Estimate Stream Density,4.579809092
+400,Estimate Stream Density,17.5506128
+600,Estimate Stream Density,37.4758648
+800,Estimate Stream Density,58.8971344
+200,Compute K-Integral,0.027867878
+400,Compute K-Integral,0.065748154
+600,Compute K-Integral,0.102402201
+800,Compute K-Integral,0.121833417
+200,Co-Clustering,303.64586
+400,Co-Clustering,338.06865
+600,Co-Clustering,365.9493
+800,Co-Clustering,400.3696

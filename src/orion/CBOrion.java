@@ -5,17 +5,25 @@
  */
 package orion;
 
+import outlierMetrics.StreamDensity;
+import clusteringEngine.CoClusterer;
 import dataStructures.DataPoint;
 import dataStructures.Dimension;
 import dataStructures.Slide;
+import evolutionaryEngine.EvolutionaryEngine;
+import java.io.PrintWriter;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
-import math.Statistics;
+import utils.Statistics;
 import org.jblas.DoubleMatrix;
 import org.jblas.Eigen;
+import outlierMetrics.KIntegral;
+import utils.Projector;
 
 /**
  * Class definition and implementation of the Orion algorithm using a
@@ -26,12 +34,18 @@ import org.jblas.Eigen;
 public class CBOrion {
 
     // Class attributes used for setting up the Orion algorithm
-    private int initializationThreshold = 0;
-    private int k = 0; // Number of neighbors k
+    private double k = 0; // Percentage of neighbor k
     private double r = 0.0; // User-defined distance r
+    private int W = 0; // Capacity of the window
+    private int S = 0; // Capacity of the slide
 
-    // Stream density estimator
-    private StreamDensity SDEstimator = null;
+    private int initializationThreshold = 0;
+    private boolean isInitialized = false;
+
+    // Stream density estimator and k-integral estimator computing
+    // outlier metrics
+    private StreamDensity sdEstimator = null;
+    private KIntegral kIntegeral = null;
 
     // Statistical variables for helping choosing set of p-dimensions
     private DoubleMatrix currentMean = null;
@@ -39,15 +53,16 @@ public class CBOrion {
     private double meanAbsoluteNormalizedDeviation = 0.0;
 
     // Partitions of p-dimension used by genetic algorithm and outlier detection
-    private List<Dimension> A_out = new LinkedList();
-    private List<Dimension> A_in = new LinkedList();
+    private Dimension[] A_out = null;
+    private Dimension[] A_in = null;
 
-    private EvolutionaryComputation ea = null;
+    private EvolutionaryEngine evolutionEngine = null;
 
     // The slide containing all active data points, every data points not
     // in this slide are considered expired & shall not be used to determine
     // outlierness of an incoming data point
     private Slide<DataPoint> slide = null;
+    private LinkedList<DataPoint> window = null;
 
     private CBOrion() {
 
@@ -55,27 +70,41 @@ public class CBOrion {
 
     /**
      * Parameterized constructor for constructing the count-based orion
-     * algorithm. The constructor takes in a slide size, the number of neighbors
+     * algorithm.The constructor takes in a slide size, the number of neighbors
      * k, user-defined distance r to detect outlier, and initialization
      * threshold h for the initialization stage. The threshold indicates the
      * first h data points that will be used for the initialization stage. These
      * first h points will not be detected as outliers. Any incoming data points
      * (h+1), (h+2), ... will be computed to reveal if they are outliers or not.
      *
+     * @param W window size.
      * @param S slide size.
-     * @param h the initialization threshold used for the first stage of the
-     * algorithm. The h coefficient must be smaller than the S coefficient
      * @param k minimum amount of neighbors for a data point to not be an
      * outlier.
      * @param r radius distance r of a data point. If data point has fewer than
      * k neighbors within the distance r, it is potentially an outlier.
      *
      */
-    public CBOrion(int S, int h, int k, double r) {
+    public CBOrion(int W, int S, double k, double r) {
+
+        // Slide size cannot be greater than the window size
+        if (S > W) {
+            throw new IllegalArgumentException("Slide size must not be greater than the window size.");
+        }
+
+        // K value must be in range (0,1)
+        if ((k <= 0) || (k > 1)) {
+            throw new IllegalArgumentException("k value must be in range (0, 1]");
+        }
 
         // Assign all variables
-        this.slide = new Slide(S); // Data slide of size S
-        this.initializationThreshold = h; // Initialization threshold for first stage of algorithm
+        this.S = S; // Capacity of the slide
+        this.W = W; // Capacity of the window
+
+        this.slide = new Slide(this.S); // Data slide of size S
+        this.window = new LinkedList<>(); // Window containing the incoming data points
+        this.initializationThreshold = S; // Initialization threshold for first stage of algorithm
+
         this.k = k; // K-neighbor of a data point
         this.r = r; // Maximum distance r of a data point
     }
@@ -84,18 +113,28 @@ public class CBOrion {
      *
      * @param dt
      */
-    private void initialize(int dimension) {
-        // Initialize the mean, covariance matrix, and the stream density estimator
+    private void initialize(List<DataPoint> samples) {
+
+        // Dimension of the data point
+        int dimension = samples.get(0).getValues().data.length;
+
+        // Initialize the mean, covariance matrix
         List<DoubleMatrix> allPoints = new LinkedList();
-        this.slide.forEach((p) -> {
+        samples.forEach((p) -> {
             allPoints.add(p.getValues());
         });
         this.currentMean = Statistics.computeVectorMean(allPoints);
         this.currentCovariance = Statistics.computeCovarianceMatrix(allPoints);
-        SDEstimator = new StreamDensity(dimension, this.r);
+
+        // Initialize the stream density estimator
+        this.sdEstimator = new StreamDensity("sigmoid", dimension, this.r, this.slide);
+
+        // Initialize the k-integral estimator
+        this.kIntegeral = new KIntegral(this.slide);
 
         // Learn the forgetting factor λ once Orion has received enough data points
-        SDEstimator.updateForgettingFactor(slide);
+        // THIS NEEDS TO BE CHECKED
+        this.sdEstimator.updateForgettingFactor(samples);
 
         // Compute the initial set of p-dimensions (population set)
         // The set of candidate p-dimenion has size of at least 10
@@ -103,62 +142,123 @@ public class CBOrion {
         DoubleMatrix eigen = Eigen.eigenvectors(this.currentCovariance)[0].getReal();
         for (int i = 0; i < eigen.getRows(); ++i) {
             DoubleMatrix p = eigen.getRow(i).transpose();
-            List<Double> projected = slide.parallelStream().map(k -> SDEstimator.projectOnDimension(k, p)).collect(Collectors.toList());
-            Dimension candidate = new Dimension(p, Statistics.computeMean(projected), Statistics.computeVariance(projected));
-            dimensions.add(candidate);
-        }
-        for (int i = 0; i < 10 - eigen.getRows(); ++i) {
-            DoubleMatrix p = DoubleMatrix.rand(dimension);
-            List<Double> projected = slide.parallelStream().map(k -> SDEstimator.projectOnDimension(k, p)).collect(Collectors.toList());
+            List<Double> projected = samples.parallelStream().map(k -> Projector.projectOnDimension(k, p)).collect(Collectors.toList());
             Dimension candidate = new Dimension(p, Statistics.computeMean(projected), Statistics.computeVariance(projected));
             dimensions.add(candidate);
         }
 
         // Randomly partition the set of dimensions into 2 subset A_in and A_out
+        // Create 2 linked list that holds each half of the dimensions lists
+        LinkedList<Dimension> A_inList = new LinkedList<>();
+        LinkedList<Dimension> A_outList = new LinkedList<>();
         Collections.shuffle(dimensions);
         int cutoff = (dimensions.size() / 2);
         for (Iterator<Dimension> iter = dimensions.iterator(); iter.hasNext();) {
             if (cutoff > 0) {
-                A_in.add(iter.next());
+                A_inList.add(iter.next());
             } else {
-                A_out.add(iter.next());
+                A_outList.add(iter.next());
             }
             --cutoff;
         }
 
+        // Convert the linked list of dimensions into an array of dimensions
+        A_in = new Dimension[A_inList.size()];
+        A_in = A_inList.toArray(A_in);
+        A_out = new Dimension[A_outList.size()];
+        A_out = A_outList.toArray(A_in);
+
         // Initialize the evolutionary computation module
-        ea = new EvolutionaryComputation(SDEstimator);
+        this.evolutionEngine = new EvolutionaryEngine(sdEstimator, this.slide);
     }
 
-    /**
-     * 
-     * @param dt
-     * @return 
-     */
-    public boolean detectOutlier(int count, DataPoint dt) {
+    public LinkedList<Boolean> detectOutliers(LinkedList<DataPoint> batch) throws Exception {
 
-        // Add incoming data point to the slide
-        DataPoint oldestPoint = this.slide.peekFirst(); // The data point that will be removed if the slide is full
-        this.slide.add(dt);
+        // Reference to the current window
+        this.window = batch;
 
-        /**
-         * INITIALIZATION STAGE
-         */
+        // INITIALIZATION STAGE
         // For the first few rounds unti the threshold reaches 0, all the incoming
         // data points will be detected as non-outlier. While the threshold hasn't
         // reached 0, these incoming data points will be used for the initialization
         // stage. Once the threshold has reached 0, the second stage of the algorithm
         // will be executed, all data points come in after that will be checked to
         // reveal their outlierness.
-        if (initializationThreshold > 1) {
-            // Decrease the threshold, once it reaches 0, start the initialization stage
-            --initializationThreshold;
-            return false;
-        } else if (initializationThreshold == 1) {
-            this.initialize(this.slide.element().getValues().data.length); // Start the initialization stage
-            initializationThreshold = 0; // Finish the initialization stage
-            return false;
+        if (!isInitialized) {
+            this.initialize(this.window.subList(0, Math.min(this.initializationThreshold, this.window.size())));
+            isInitialized = true; // Finish the initialization stage
         }
+
+        // Compute stream density of all data points in the incoming window
+        double[] allDensities = new double[this.window.size()];
+        double[] allKIntegrals = new double[this.window.size()];
+        {
+            int i = 0;
+            for (Iterator<DataPoint> iter = this.window.iterator(); iter.hasNext(); ++i) {
+                double[] metrics = computeOutlierMetrics(iter.next());
+                allDensities[i] = metrics[0];
+                allKIntegrals[i] = metrics[1];
+                //System.out.println("Density: " + allDensities[i] + "    k-integral: " + allKIntegrals[i]);
+            }
+        }
+
+        // Perform clustering the data points based on stream density
+        CoClusterer clusterer = new CoClusterer();
+        double[][] result = clusterer.clusterDensity(allDensities);
+        double[] sdClusterMean = result[0];
+        double[] sdClusterAssignments = result[1];
+
+        // Find the cluster contains data points with low density
+        int sdIdx = 0;
+        double smallestMean = sdClusterMean[0];
+        for (int i = 0; i < sdClusterMean.length; ++i) {
+            smallestMean = Math.min(smallestMean, sdClusterMean[i]);
+            if (sdClusterMean[i] == smallestMean) {
+                sdIdx = i;
+            }
+        }
+
+        // Perform clustering the data points based on k-integral
+        result = clusterer.clusterKIntegral(allKIntegrals);
+        double[] kIntegralClusterMean = result[0];
+        double[] kIntegralClusterAssignments = result[1];
+
+        // Find the cluster contains data points with low density
+        int kIdx = 0;
+        double largestMean = kIntegralClusterMean[0];
+        for (int i = 0; i < kIntegralClusterMean.length; ++i) {
+            largestMean = Math.max(largestMean, kIntegralClusterMean[i]);
+            if (kIntegralClusterMean[i] == largestMean) {
+                kIdx = i;
+            }
+        }
+        
+        try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("output1.csv", true)))) {
+            for (int i = 0; i < sdClusterAssignments.length; ++i) {
+                if (((int) kIntegralClusterAssignments[i] == kIdx) && ((int) sdClusterAssignments[i] == sdIdx)) {
+                    out.print("outlier\n");
+                } else {
+                    out.print("non-outlier\n");
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        // Read the data points in the window sequentially
+        return null;
+    }
+
+    /**
+     *
+     * @param dt
+     * @return
+     */
+    public double[] computeOutlierMetrics(DataPoint dt) {
+
+        // Add incoming data point to the slide
+        DataPoint oldestPoint = this.slide.peekFirst(); // The data point that will be removed if the slide is full
+        this.slide.add(dt);
 
         /**
          * INCREMENTAL STAGE
@@ -177,27 +277,26 @@ public class CBOrion {
                     oldestPoint.getValues(),
                     currentMean,
                     currentCovariance);
-            double meanAD = this.meanAbsoluteNormalizedDeviation;
-            this.meanAbsoluteNormalizedDeviation = Statistics.revertMean(oldestAD, meanAD, slide.size());
+            this.meanAbsoluteNormalizedDeviation = Statistics.revertMean(oldestAD, this.meanAbsoluteNormalizedDeviation, slide.size());
 
             // New mean after the oldest point removed from the slide
             this.currentMean = Statistics.revertVectorMean(oldestPoint.getValues(), currentMean, slide.size());
 
-            // Revert the covariance matrix to not include the oldest point
+            // Revert the covariance matrix to exclude the oldest point
             this.currentCovariance = Statistics.revertCovarianceMatrix(oldestPoint.getValues(), currentCovariance, currentMean, slide.size());
 
             // Revert the mean and variance of the projected dimensions and then update the variance and mean
             // when new data point comes in
-            for (Iterator<Dimension> iter = A_in.iterator(); iter.hasNext();) {
-                Dimension p = iter.next();
+            for (int i = 0; i < A_in.length; ++i) {
+                Dimension p = A_in[i];
 
                 // Revert
                 p.setMean(Statistics.revertMean(
-                        SDEstimator.projectOnDimension(oldestPoint, p.getValues()),
+                        Projector.projectOnDimension(oldestPoint, p.getValues()),
                         p.getMean(),
                         slide.size()));
                 p.setVariance(
-                        Statistics.revertVariance(SDEstimator.projectOnDimension(oldestPoint, p.getValues()),
+                        Statistics.revertVariance(Projector.projectOnDimension(oldestPoint, p.getValues()),
                                 p.getVariance(),
                                 slide.size(),
                                 p.getMean()));
@@ -207,24 +306,24 @@ public class CBOrion {
                         slide.size() - 1,
                         p.getMean(),
                         p.getVariance(),
-                        SDEstimator.projectOnDimension(dt, p.getValues())));
+                        Projector.projectOnDimension(dt, p.getValues())));
                 p.setMean(Statistics.computeMeanOnline(
                         slide.size() - 1,
                         p.getMean(),
-                        SDEstimator.projectOnDimension(dt, p.getValues())));
+                        Projector.projectOnDimension(dt, p.getValues())));
 
             }
 
-            for (Iterator<Dimension> iter = A_out.iterator(); iter.hasNext();) {
-                Dimension p = iter.next();
+            for (int i = 0; i < A_out.length; ++i) {
+                Dimension p = A_out[i];
 
                 // Revert
                 p.setMean(Statistics.revertMean(
-                        SDEstimator.projectOnDimension(oldestPoint, p.getValues()),
+                        Projector.projectOnDimension(oldestPoint, p.getValues()),
                         p.getMean(),
                         slide.size()));
                 p.setVariance(Statistics.revertVariance(
-                        SDEstimator.projectOnDimension(oldestPoint, p.getValues()),
+                        Projector.projectOnDimension(oldestPoint, p.getValues()),
                         p.getVariance(),
                         slide.size(),
                         p.getMean()));
@@ -234,11 +333,11 @@ public class CBOrion {
                         slide.size() - 1,
                         p.getMean(),
                         p.getVariance(),
-                        SDEstimator.projectOnDimension(dt, p.getValues())));
+                        Projector.projectOnDimension(dt, p.getValues())));
                 p.setMean(Statistics.computeMeanOnline(
                         slide.size() - 1,
                         p.getMean(),
-                        SDEstimator.projectOnDimension(dt, p.getValues())));
+                        Projector.projectOnDimension(dt, p.getValues())));
             }
         }
 
@@ -263,24 +362,16 @@ public class CBOrion {
                 this.currentCovariance);
 
         // Learn parameters for Data Density Function
-        SDEstimator.updateDDFparameters(dt, currentMean, currentCovariance);
+        sdEstimator.updateDDFparameters(dt, currentMean, currentCovariance);
 
         // Select the best partition that can reveal the p-dimension for data point dt
         // Perform evolutionary computation to find the p-dimension for the given data point dt
         Dimension pDimension = null;
-        double pDimensionDensity = 0.0;
         if (absoluteNormalizedDeviation > this.meanAbsoluteNormalizedDeviation) {
-            Object[] evolved = ea.evolve(A_out, dt, slide, 5);
-            pDimension = (Dimension) evolved[0];
-            pDimensionDensity = (double) evolved[1];
-            A_out = (LinkedList) evolved[2];
+            pDimension = evolutionEngine.evolve(A_out, dt, 5);
         } else {
-            Object[] evolved = ea.evolve(A_in, dt, slide, 5);
-            pDimension = (Dimension) evolved[0];
-            pDimensionDensity = (double) evolved[1];
-            A_in = (LinkedList) evolved[2];
+            pDimension = evolutionEngine.evolve(A_in, dt, 5);
         }
-//        System.out.println(" Stream density @ [" + count + "] " + pDimensionDensity);
 
         // Update the mean absolute normalized deviation after evolutionary step 
         // to find a candidate p-dimension for the incoming data point and the stream 
@@ -290,7 +381,11 @@ public class CBOrion {
                 this.meanAbsoluteNormalizedDeviation,
                 absoluteNormalizedDeviation);
 
-        return false;
+        // Compute the stream density and k-integral of data point dt
+        double streamDensity = sdEstimator.estimateStreamDensity(dt, Math.sqrt(pDimension.getVariance()), pDimension.getValues());
+        double kIntegral = kIntegeral.computeKIntegral(dt, pDimension, this.k);
+
+        return new double[]{streamDensity, kIntegral};
     }
 
 }
