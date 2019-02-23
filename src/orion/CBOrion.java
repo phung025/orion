@@ -172,7 +172,7 @@ public class CBOrion {
         this.evolutionEngine = new EvolutionaryEngine(sdEstimator, this.slide);
     }
 
-    public LinkedList<Boolean> detectOutliers(LinkedList<DataPoint> batch) throws Exception {
+    public boolean[] detectOutliers(LinkedList<DataPoint> batch) throws Exception {
 
         // Reference to the current window
         this.window = batch;
@@ -204,9 +204,14 @@ public class CBOrion {
 
         // Perform clustering the data points based on stream density
         CoClusterer clusterer = new CoClusterer();
-        double[][] result = clusterer.clusterDensity(allDensities);
-        double[] sdClusterMean = result[0];
-        double[] sdClusterAssignments = result[1];
+        double[][] sdCluster = clusterer.clusterDensity(allDensities);
+        double[] sdClusterMean = sdCluster[0];
+        double[] sdClusterAssignments = sdCluster[1];
+
+        // Perform clustering the data points based on k-integral
+        double[][] kIntegralCluster = clusterer.clusterKIntegral(allKIntegrals);
+        double[] kIntegralClusterMean = kIntegralCluster[0];
+        double[] kIntegralClusterAssignments = kIntegralCluster[1];
 
         // Find the cluster contains data points with low density
         int sdIdx = 0;
@@ -218,11 +223,6 @@ public class CBOrion {
             }
         }
 
-        // Perform clustering the data points based on k-integral
-        result = clusterer.clusterKIntegral(allKIntegrals);
-        double[] kIntegralClusterMean = result[0];
-        double[] kIntegralClusterAssignments = result[1];
-
         // Find the cluster contains data points with low density
         int kIdx = 0;
         double largestMean = kIntegralClusterMean[0];
@@ -233,20 +233,18 @@ public class CBOrion {
             }
         }
         
-        try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("output1.csv", true)))) {
-            for (int i = 0; i < sdClusterAssignments.length; ++i) {
-                if (((int) kIntegralClusterAssignments[i] == kIdx) && ((int) sdClusterAssignments[i] == sdIdx)) {
-                    out.print("outlier\n");
-                } else {
-                    out.print("non-outlier\n");
-                }
+        // Assign outliers based on cluster result
+        boolean[] result = new boolean[this.window.size()];
+        for (int i = 0; i < sdClusterAssignments.length; ++i) {
+            if (((int) kIntegralClusterAssignments[i] == kIdx) && ((int) sdClusterAssignments[i] == sdIdx)) {
+                result[i] = true;
+            } else {
+                result[i] = false;
             }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
         }
 
         // Read the data points in the window sequentially
-        return null;
+        return result;
     }
 
     /**
