@@ -166,7 +166,7 @@ public class CBOrion {
         A_in = new Dimension[A_inList.size()];
         A_in = A_inList.toArray(A_in);
         A_out = new Dimension[A_outList.size()];
-        A_out = A_outList.toArray(A_in);
+        A_out = A_outList.toArray(A_out);
 
         // Initialize the evolutionary computation module
         this.evolutionEngine = new EvolutionaryEngine(sdEstimator, this.slide);

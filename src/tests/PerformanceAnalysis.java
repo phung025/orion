@@ -26,8 +26,8 @@ public class PerformanceAnalysis {
     public static void main(String[] args) throws Exception {
         int[] w_size = new int[]{500}; // window size
         int[] s_size = new int[]{250, 300, 350, 400}; // slide size
-        double[] k_values = new double[]{0.2, 0.25, 0.3}; // different k values
-        double[] r_values = new double[]{10, 20, 30, 40, 50}; // different r values
+        double[] k_values = new double[]{0.25, 0.3, 0.35}; // different k values
+        double[] r_values = new double[]{20, 30, 40, 50}; // different r values
 
         for (int windowSize : w_size) {
             for (int slideSize : s_size) {
@@ -39,13 +39,13 @@ public class PerformanceAnalysis {
                         List<Double> jaccardCoefficients = new LinkedList<>();
                         List<Double> f1Scores = new LinkedList<>();
 
-                        for (int iteration = 0; iteration < 3; ++iteration) {
+                        for (int iteration = 0; iteration < 1; ++iteration) {
 
                             String datasetName = "mulcross";
                             System.out.println("iteration " + iteration);
                             System.out.println("detecting outliers in " + datasetName + " dataset");
                             System.out.println("window size: " + windowSize);
-                            System.out.println("slide siz: " + slideSize);
+                            System.out.println("slide size: " + slideSize);
                             System.out.println("k: " + k);
                             System.out.println("r " + r);
                             System.out.println("\n\n");
