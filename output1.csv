@@ -1,0 +1,22 @@
+--------------------------Performance Analysis--------------------------
+window size: 500
+slide size: 250
+k: 0.25
+r: 20.0
+precision: 0.21212121212121213
+recall: 0.014042126379137413
+jaccard coefficient: 0.8965
+f1 score: 0.02634054562558796
+--------------------------Performance Analysis--------------------------
+
+--------------------------Performance Analysis--------------------------
+window size: 500
+slide size: 250
+k: 0.25
+r: 30.0
+precision: 0.015384615384615385
+recall: 0.0010030090270812437
+jaccard coefficient: 0.894
+f1 score: 0.001883239171374765
+--------------------------Performance Analysis--------------------------
+

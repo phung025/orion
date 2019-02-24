@@ -10,10 +10,8 @@ import clusteringEngine.CoClusterer;
 import dataStructures.DataPoint;
 import dataStructures.Dimension;
 import dataStructures.Slide;
+import evolutionaryEngine.EvolutionaryComputation;
 import evolutionaryEngine.EvolutionaryEngine;
-import java.io.PrintWriter;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -127,7 +125,7 @@ public class CBOrion {
         this.currentCovariance = Statistics.computeCovarianceMatrix(allPoints);
 
         // Initialize the stream density estimator
-        this.sdEstimator = new StreamDensity("sigmoid", dimension, this.r, this.slide);
+        this.sdEstimator = new StreamDensity("uniform", dimension, this.r, this.slide);
 
         // Initialize the k-integral estimator
         this.kIntegeral = new KIntegral(this.slide);
@@ -198,7 +196,7 @@ public class CBOrion {
                 double[] metrics = computeOutlierMetrics(iter.next());
                 allDensities[i] = metrics[0];
                 allKIntegrals[i] = metrics[1];
-                //System.out.println("Density: " + allDensities[i] + "    k-integral: " + allKIntegrals[i]);
+                System.out.println("Density: " + allDensities[i] + "    k-integral: " + allKIntegrals[i]);
             }
         }
 
@@ -232,7 +230,7 @@ public class CBOrion {
                 kIdx = i;
             }
         }
-        
+
         // Assign outliers based on cluster result
         boolean[] result = new boolean[this.window.size()];
         for (int i = 0; i < sdClusterAssignments.length; ++i) {
@@ -285,57 +283,19 @@ public class CBOrion {
 
             // Revert the mean and variance of the projected dimensions and then update the variance and mean
             // when new data point comes in
-            for (int i = 0; i < A_in.length; ++i) {
-                Dimension p = A_in[i];
+            for (int k = 0; k < 2; ++k) {
+                Dimension[] partition = (k == 0) ? A_in : A_out;
+                for (int i = 0; i < partition.length; ++i) {
+                    Dimension p = partition[i];
 
-                // Revert
-                p.setMean(Statistics.revertMean(
-                        Projector.projectOnDimension(oldestPoint, p.getValues()),
-                        p.getMean(),
-                        slide.size()));
-                p.setVariance(
-                        Statistics.revertVariance(Projector.projectOnDimension(oldestPoint, p.getValues()),
-                                p.getVariance(),
-                                slide.size(),
-                                p.getMean()));
+                    // Revert
+                    p.setMean(Statistics.revertMean(Projector.projectOnDimension(oldestPoint, p.getValues()), p.getMean(), slide.size()));
+                    p.setVariance(Statistics.revertVariance(Projector.projectOnDimension(oldestPoint, p.getValues()), p.getVariance(), slide.size(), p.getMean()));
 
-                // Update
-                p.setVariance(Statistics.computeVarianceOnline2(
-                        slide.size() - 1,
-                        p.getMean(),
-                        p.getVariance(),
-                        Projector.projectOnDimension(dt, p.getValues())));
-                p.setMean(Statistics.computeMeanOnline(
-                        slide.size() - 1,
-                        p.getMean(),
-                        Projector.projectOnDimension(dt, p.getValues())));
-
-            }
-
-            for (int i = 0; i < A_out.length; ++i) {
-                Dimension p = A_out[i];
-
-                // Revert
-                p.setMean(Statistics.revertMean(
-                        Projector.projectOnDimension(oldestPoint, p.getValues()),
-                        p.getMean(),
-                        slide.size()));
-                p.setVariance(Statistics.revertVariance(
-                        Projector.projectOnDimension(oldestPoint, p.getValues()),
-                        p.getVariance(),
-                        slide.size(),
-                        p.getMean()));
-
-                // Update
-                p.setVariance(Statistics.computeVarianceOnline2(
-                        slide.size() - 1,
-                        p.getMean(),
-                        p.getVariance(),
-                        Projector.projectOnDimension(dt, p.getValues())));
-                p.setMean(Statistics.computeMeanOnline(
-                        slide.size() - 1,
-                        p.getMean(),
-                        Projector.projectOnDimension(dt, p.getValues())));
+                    // Update
+                    p.setVariance(Statistics.computeVarianceOnline2(slide.size() - 1, p.getMean(), p.getVariance(), Projector.projectOnDimension(dt, p.getValues())));
+                    p.setMean(Statistics.computeMeanOnline(slide.size() - 1, p.getMean(), Projector.projectOnDimension(dt, p.getValues())));
+                }
             }
         }
 
@@ -366,9 +326,9 @@ public class CBOrion {
         // Perform evolutionary computation to find the p-dimension for the given data point dt
         Dimension pDimension = null;
         if (absoluteNormalizedDeviation > this.meanAbsoluteNormalizedDeviation) {
-            pDimension = evolutionEngine.evolve(A_out, dt, 5);
+            pDimension = evolutionEngine.evolve(A_out, dt, 2);
         } else {
-            pDimension = evolutionEngine.evolve(A_in, dt, 5);
+            pDimension = evolutionEngine.evolve(A_in, dt, 2);
         }
 
         // Update the mean absolute normalized deviation after evolutionary step 

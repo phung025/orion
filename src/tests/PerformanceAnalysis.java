@@ -62,10 +62,15 @@ public class PerformanceAnalysis {
                             // Perform outlier detection
                             ArrayList<Boolean> allResult = new ArrayList<>(windowSize);
                             CBOrion instance = new CBOrion(windowSize, slideSize, 0.2, 50);
+                            int m = 0;
                             while (!stream.isEmpty()) {
                                 LinkedList<DataPoint> window = stream.readFromStream(windowSize);
                                 for (boolean pred : instance.detectOutliers(window)) {
                                     allResult.add(pred);
+                                }
+                                System.out.println("Finished window " + (++m));
+                                if (m == 20) {
+                                    break;
                                 }
                             }
 
@@ -78,7 +83,7 @@ public class PerformanceAnalysis {
                             double falsePositive = 0;
                             double trueNegative = 0;
                             double falseNegative = 0;
-                            for (int i = 0; i < trueClass.length; ++i) {
+                            for (int i = 0; i < allResult.size(); ++i) {
                                 if (((int) trueClass[i][0]) == ((allResult.get(i) == true) ? 1 : 0)) {
                                     if (allResult.get(i) == true) {
                                         ++truePositive;

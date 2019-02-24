@@ -51,7 +51,7 @@ public class EvolutionaryEngine {
         this.fitnessEvaluator = new DimensionEvaluator(null, this.sdEstimator);
 
         // Setup the candidate selection strategy
-        this.selection = new TruncationSelection(0.5);
+        this.selection = new TruncationSelection(0.8);
 
         // Setup the random number generator
         this.rng = new MersenneTwisterRNG();
