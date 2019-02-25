@@ -196,7 +196,7 @@ public class CBOrion {
                 double[] metrics = computeOutlierMetrics(iter.next());
                 allDensities[i] = metrics[0];
                 allKIntegrals[i] = metrics[1];
-                System.out.println("Density: " + allDensities[i] + "    k-integral: " + allKIntegrals[i]);
+                //System.out.println("Density: " + allDensities[i] + "    k-integral: " + allKIntegrals[i]);
             }
         }
 
@@ -319,8 +319,8 @@ public class CBOrion {
                 this.currentMean,
                 this.currentCovariance);
 
-        // Learn parameters for Data Density Function
-        sdEstimator.updateDDFparameters(dt, currentMean, currentCovariance);
+        // Update parameters for Data Density Function
+        // sdEstimator.updateDDFparameters(dt, currentMean, currentCovariance);
 
         // Select the best partition that can reveal the p-dimension for data point dt
         // Perform evolutionary computation to find the p-dimension for the given data point dt
@@ -340,7 +340,7 @@ public class CBOrion {
                 absoluteNormalizedDeviation);
 
         // Compute the stream density and k-integral of data point dt
-        double streamDensity = sdEstimator.estimateStreamDensity(dt, Math.sqrt(pDimension.getVariance()), pDimension.getValues());
+        double streamDensity = sdEstimator.estimateStreamDensity(dt, Math.sqrt(pDimension.getVariance()), pDimension);
         double kIntegral = kIntegeral.computeKIntegral(dt, pDimension, this.k);
 
         return new double[]{streamDensity, kIntegral};

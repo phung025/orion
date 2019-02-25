@@ -19,7 +19,6 @@ import org.uncommons.watchmaker.framework.EvolutionaryOperator;
 import org.uncommons.watchmaker.framework.GenerationalEvolutionEngine;
 import org.uncommons.watchmaker.framework.SelectionStrategy;
 import org.uncommons.watchmaker.framework.operators.EvolutionPipeline;
-import org.uncommons.watchmaker.framework.selection.RouletteWheelSelection;
 import org.uncommons.watchmaker.framework.selection.TruncationSelection;
 import org.uncommons.watchmaker.framework.termination.GenerationCount;
 import outlierMetrics.StreamDensity;
@@ -51,7 +50,7 @@ public class EvolutionaryEngine {
         this.fitnessEvaluator = new DimensionEvaluator(null, this.sdEstimator);
 
         // Setup the candidate selection strategy
-        this.selection = new TruncationSelection(0.8);
+        this.selection = new TruncationSelection(0.5);
 
         // Setup the random number generator
         this.rng = new MersenneTwisterRNG();

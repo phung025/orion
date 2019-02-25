@@ -6,6 +6,7 @@
 package outlierMetrics;
 
 import dataStructures.DataPoint;
+import dataStructures.Dimension;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,9 +24,6 @@ public class StreamDensity {
 
     // Parameters for data density function
     private double forgettingFactor = 0.5; // Forgetting factor, a real number in range (0,1)
-    private double binWidth = 1.0; // bin width for computing the scaled neighbor distance
-    private final double c = Math.E; // A non-zero constant c for computing vector a
-    private DoubleMatrix a = null; // Vector a used for computing the bin width. The vector has same dimension as an incoming data point
     private double r = 0.0; // User-defined distance r for computing the scaled neighbor distance
     private List<DataPoint> allDataPoints;
     private String kernelType = null;
@@ -37,12 +35,13 @@ public class StreamDensity {
     /**
      * Parameterized constructor for initializing a stream density estimator
      *
+     * @param kernelType
      * @param dim
      * @param r
+     * @param slide
      */
     public StreamDensity(String kernelType, int dim, double r, List<DataPoint> slide) {
         this.kernelType = kernelType;
-        this.a = DoubleMatrix.zeros(dim); // Vector a used for computing data density
         this.r = r;
         this.allDataPoints = slide;
     }
@@ -99,11 +98,11 @@ public class StreamDensity {
      * @return double value indicating the neighbors density of the incoming
      * data point
      */
-    public double estimateStreamDensity(DataPoint dt, DoubleMatrix pDimension, String kernelType) {
+    public double estimateStreamDensity(DataPoint dt, Dimension pDimension, String kernelType) {
         // Compute the standard deviation of the data points projected on the p-dimension.
         // All data points are projected on the p-dimension to compute the standard deviation.
         // THIS MIGHT BE FURTHER OPTIMIZED USING AN ONLINE ALGORITHM
-        List<Double> tmp = allDataPoints.parallelStream().map(i -> Projector.projectOnDimension(i, pDimension)).collect(Collectors.toList());
+        List<Double> tmp = allDataPoints.parallelStream().map(i -> Projector.projectOnDimension(i, pDimension.getValues())).collect(Collectors.toList());
         double stdevation = Math.sqrt(Statistics.computeVariance(tmp));
 
         return estimateStreamDensityHelper(dt, stdevation, pDimension);
@@ -116,33 +115,33 @@ public class StreamDensity {
      * @param pDimension
      * @return
      */
-    public double estimateStreamDensity(DataPoint dt, double stdevation, DoubleMatrix pDimension) {
+    public double estimateStreamDensity(DataPoint dt, double stdevation, Dimension pDimension) {
         return estimateStreamDensityHelper(dt, stdevation, pDimension);
     }
 
-    private double estimateStreamDensityHelper(DataPoint dt, double stdevation, DoubleMatrix pDimension) {
-        double scaledNeighborDist = this.r * this.binWidth; // Compute the scaled neighbor distance
-        double projectedDT = Projector.projectOnDimension(dt, pDimension); // Project the incoming data point on the p-dimension
+    private double estimateStreamDensityHelper(DataPoint dt, double stdevation, Dimension pDimension) {
+        double scaledNeighborDist = this.r * (6.0 * stdevation / 400.0); // Compute the scaled neighbor distance
+        double projectedDT = Projector.projectOnDimension(dt, pDimension.getValues()); // Project the incoming data point on the p-dimension
 
         // Within a scaled neighbor distance from the incoming data point dt, approximate the stream density of dt
-        List<DataPoint> neighbors = new LinkedList(); // List of all neighbors within the scaled distance        
+        List<Double> neighbors = new LinkedList(); // List of all neighbors within the scaled distance        
         for (Iterator<DataPoint> iter = allDataPoints.iterator(); iter.hasNext();) {
 
             // Project the data point on the p-dimension            
             DataPoint next = iter.next();
-            double projectedNext = Projector.projectOnDimension(next, pDimension);
+            double projectedNext = Projector.projectOnDimension(next, pDimension.getValues());
 
             // If that projected data point is within a scaled-neighbor distance, proceed to compute the DDF
             if (projectedDT - scaledNeighborDist <= projectedNext && projectedNext <= projectedDT + scaledNeighborDist) {
-                neighbors.add(next);
+                neighbors.add(projectedNext);
             }
         }
 
         double streamDensity = 0.0;
         if (!neighbors.isEmpty()) {
             long T = allDataPoints.get(neighbors.size() - 1).getTimestamp(); // Timestamp of the newest data point in the window        
-            for (Iterator<DataPoint> iter = neighbors.iterator(); iter.hasNext();) {
-                streamDensity += DDF(Projector.projectOnDimension(iter.next(), pDimension), neighbors, T, stdevation);
+            for (Iterator<Double> iter = neighbors.iterator(); iter.hasNext();) {
+                streamDensity += DDF(iter.next(), allDataPoints, pDimension, T, stdevation);
             }
         }
 
@@ -151,14 +150,15 @@ public class StreamDensity {
 
     /**
      *
-     * @param dt
+     * @param z
      * @param allDataPoints
      * @param T
      * @param stdevation
      * @return
      */
-    private double DDF(double dt,
+    private double DDF(double z,
             List<DataPoint> allDataPoints,
+            Dimension pDimension,
             double T,
             double stdevation) {
         double numerator = 0.0;
@@ -172,7 +172,7 @@ public class StreamDensity {
 
             // Compute the projected kernel on the p-dimension along the bandwidth
             double kza = kernelAlongBandwidth(
-                    this.a.transpose().mmul(next.getValues()).sum() - dt,
+                    Projector.projectOnDimension(next, pDimension.getValues()) - z,
                     this.kernelType,
                     computeBandwidth(stdevation, allDataPoints.size()));
 
@@ -180,23 +180,6 @@ public class StreamDensity {
             denominator += ffactor;
         }
         return numerator / denominator;
-    }
-
-    /**
-     * Update the parameters used by the Stream Density function.
-     *
-     * @param dt incoming data point
-     * @param currentMean current mean value of all data points
-     * @param currentCovariance current covariance matrix of all data points
-     */
-    public void updateDDFparameters(DataPoint dt, DoubleMatrix currentMean, DoubleMatrix currentCovariance) {
-
-        // Update the vector parameter a using the formula
-        // a = (cov^-1)*(dt.V - μ)*c
-        this.a = Solve.pinv(currentCovariance).mmul(dt.getValues().sub(currentMean)).mul(this.c);
-
-        // Update the bin width parameter
-        this.binWidth = 6.0 * Math.sqrt(a.transpose().mmul(currentCovariance).mmul(a).sum()) / 400.0;
     }
 
     /**

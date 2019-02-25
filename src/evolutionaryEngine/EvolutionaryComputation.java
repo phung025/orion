@@ -60,8 +60,8 @@ public class EvolutionaryComputation {
     public Dimension evolve(Dimension[] population, DataPoint dt, int epochs) {
 
         Comparator<Dimension> cmp = (Dimension o1, Dimension o2) -> {
-            double o1Density = sdEstimator.estimateStreamDensity(dt, Math.sqrt(o1.getVariance()), o1.getValues());
-            double o2Density = sdEstimator.estimateStreamDensity(dt, Math.sqrt(o2.getVariance()), o2.getValues());
+            double o1Density = sdEstimator.estimateStreamDensity(dt, Math.sqrt(o1.getVariance()), o1);
+            double o2Density = sdEstimator.estimateStreamDensity(dt, Math.sqrt(o2.getVariance()), o2);
 
             // Compare the stream density of data point when projected on 2 different dimensions
             int res = 0;

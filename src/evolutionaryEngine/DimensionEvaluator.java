@@ -35,7 +35,7 @@ public class DimensionEvaluator implements FitnessEvaluator<Dimension> {
      */
     @Override
     public double getFitness(Dimension candidate, List<? extends Dimension> population) {
-        return densityEstimator.estimateStreamDensity(dt, Math.sqrt(candidate.getVariance()), candidate.getValues());
+        return densityEstimator.estimateStreamDensity(dt, Math.sqrt(candidate.getVariance()), candidate);
     }
 
     @Override

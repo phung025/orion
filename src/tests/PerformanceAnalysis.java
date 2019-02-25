@@ -24,10 +24,10 @@ import utils.Statistics;
 public class PerformanceAnalysis {
 
     public static void main(String[] args) throws Exception {
-        int[] w_size = new int[]{500}; // window size
-        int[] s_size = new int[]{250, 300, 350, 400}; // slide size
+        int[] w_size = new int[]{1000}; // window size
+        int[] s_size = new int[]{500}; // slide size
         double[] k_values = new double[]{0.25, 0.3, 0.35}; // different k values
-        double[] r_values = new double[]{20, 30, 40, 50}; // different r values
+        double[] r_values = new double[]{22, 24, 26, 39, 45, 60}; // different r values
 
         for (int windowSize : w_size) {
             for (int slideSize : s_size) {
