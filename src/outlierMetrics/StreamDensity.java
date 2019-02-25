@@ -7,13 +7,12 @@ package outlierMetrics;
 
 import dataStructures.DataPoint;
 import dataStructures.Dimension;
+import dataStructures.Slide;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 import utils.Statistics;
 import org.jblas.DoubleMatrix;
-import org.jblas.Solve;
 import utils.Projector;
 
 /**
@@ -25,7 +24,7 @@ public class StreamDensity {
     // Parameters for data density function
     private double forgettingFactor = 0.5; // Forgetting factor, a real number in range (0,1)
     private double r = 0.0; // User-defined distance r for computing the scaled neighbor distance
-    private List<DataPoint> allDataPoints;
+    private Slide slide;
     private String kernelType = null;
     
     private StreamDensity() {
@@ -40,10 +39,10 @@ public class StreamDensity {
      * @param r
      * @param slide
      */
-    public StreamDensity(String kernelType, int dim, double r, List<DataPoint> slide) {
+    public StreamDensity(String kernelType, int dim, double r, Slide slide) {
         this.kernelType = kernelType;
         this.r = r;
-        this.allDataPoints = slide;
+        this.slide = slide;
     }
 
     /**
@@ -102,7 +101,10 @@ public class StreamDensity {
         // Compute the standard deviation of the data points projected on the p-dimension.
         // All data points are projected on the p-dimension to compute the standard deviation.
         // THIS MIGHT BE FURTHER OPTIMIZED USING AN ONLINE ALGORITHM
-        List<Double> tmp = allDataPoints.parallelStream().map(i -> Projector.projectOnDimension(i, pDimension.getValues())).collect(Collectors.toList());
+        List<Double> tmp = new LinkedList<>();
+        for (int i = 0; i < slide.size(); ++i) {
+            tmp.add(Projector.projectOnDimension(slide.points()[i], pDimension.getValues()));
+        }
         double stdevation = Math.sqrt(Statistics.computeVariance(tmp));
 
         return estimateStreamDensityHelper(dt, stdevation, pDimension);
@@ -125,10 +127,10 @@ public class StreamDensity {
 
         // Within a scaled neighbor distance from the incoming data point dt, approximate the stream density of dt
         List<Double> neighbors = new LinkedList(); // List of all neighbors within the scaled distance        
-        for (Iterator<DataPoint> iter = allDataPoints.iterator(); iter.hasNext();) {
+        for (int i = 0; i < this.slide.size(); ++i) {
 
             // Project the data point on the p-dimension            
-            DataPoint next = iter.next();
+            DataPoint next = this.slide.points()[i];
             double projectedNext = Projector.projectOnDimension(next, pDimension.getValues());
 
             // If that projected data point is within a scaled-neighbor distance, proceed to compute the DDF
@@ -139,9 +141,9 @@ public class StreamDensity {
 
         double streamDensity = 0.0;
         if (!neighbors.isEmpty()) {
-            long T = allDataPoints.get(neighbors.size() - 1).getTimestamp(); // Timestamp of the newest data point in the window        
+            long T = this.slide.points()[(neighbors.size() - 1)].getTimestamp(); // Timestamp of the newest data point in the window        
             for (Iterator<Double> iter = neighbors.iterator(); iter.hasNext();) {
-                streamDensity += DDF(iter.next(), allDataPoints, pDimension, T, stdevation);
+                streamDensity += DDF(iter.next(), pDimension, T, stdevation);
             }
         }
 
@@ -157,15 +159,14 @@ public class StreamDensity {
      * @return
      */
     private double DDF(double z,
-            List<DataPoint> allDataPoints,
             Dimension pDimension,
             double T,
             double stdevation) {
         double numerator = 0.0;
         double denominator = 0.0;
 
-        for (Iterator<DataPoint> iter = allDataPoints.iterator(); iter.hasNext();) {
-            DataPoint next = iter.next();
+        for (int i = 0; i < this.slide.size(); ++i) {
+            DataPoint next = this.slide.points()[i];
 
             // Compute the weight of the data point
             double ffactor = Math.pow(this.forgettingFactor, T - next.getTimestamp());
@@ -174,7 +175,7 @@ public class StreamDensity {
             double kza = kernelAlongBandwidth(
                     Projector.projectOnDimension(next, pDimension.getValues()) - z,
                     this.kernelType,
-                    computeBandwidth(stdevation, allDataPoints.size()));
+                    computeBandwidth(stdevation, slide.size()));
 
             numerator += ffactor * kza;
             denominator += ffactor;

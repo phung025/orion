@@ -59,7 +59,7 @@ public class CBOrion {
     // The slide containing all active data points, every data points not
     // in this slide are considered expired & shall not be used to determine
     // outlierness of an incoming data point
-    private Slide<DataPoint> slide = null;
+    private Slide slide = null;
     private LinkedList<DataPoint> window = null;
 
     private CBOrion() {
@@ -253,7 +253,7 @@ public class CBOrion {
     public double[] computeOutlierMetrics(DataPoint dt) {
 
         // Add incoming data point to the slide
-        DataPoint oldestPoint = this.slide.peekFirst(); // The data point that will be removed if the slide is full
+        DataPoint oldestPoint = this.slide.oldest(); // The data point that will be removed if the slide is full
         this.slide.add(dt);
 
         /**

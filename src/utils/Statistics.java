@@ -22,7 +22,7 @@ public class Statistics {
      * @return
      */
     public static double computeMean(List<Double> values) {
-        return values.stream().mapToDouble(i -> i).sum() / values.size();
+        return values.parallelStream().mapToDouble(i -> i).sum() / values.size();
     }
 
     /**
@@ -46,7 +46,7 @@ public class Statistics {
     public static double computeVariance(List<Double> values) {
         Double mean = Statistics.computeMean(values);
         Double variance = 0.0;
-        variance = values.stream().map((v) -> Math.pow(v - mean, 2.0) / (values.size() - 1)).reduce(variance, (accumulator, _item) -> accumulator + _item);
+        variance = values.parallelStream().map((v) -> Math.pow(v - mean, 2.0) / (values.size() - 1)).reduce(variance, (accumulator, _item) -> accumulator + _item);
         return variance;
     }
 

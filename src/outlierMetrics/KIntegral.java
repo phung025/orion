@@ -46,11 +46,8 @@ public class KIntegral {
 
         // Project the data points onto dimension p
         double[] allProjectedPoints = new double[this.slide.size()];
-        {
-            int i = 0;
-            for (Iterator<DataPoint> iter = slide.iterator(); iter.hasNext(); ++i) {
-                allProjectedPoints[i] = Projector.projectOnDimension(iter.next(), p.getValues());
-            }
+        for (int i = 0; i < this.slide.size(); ++i) {
+            allProjectedPoints[i] = Projector.projectOnDimension(slide.points()[i], p.getValues());
         }
 
         // Project dt onto dimension p
@@ -66,7 +63,7 @@ public class KIntegral {
         // Scale the k-integral value with respect to the maximum dispersion along the p-dimension
         double kintegral = projectedDT - leftBound;
         double maximumDispersion = rightBound - leftBound;
-        
+
         // Return the scaled k-integral
         return (maximumDispersion == 0) ? 0 : kintegral / maximumDispersion;
     }

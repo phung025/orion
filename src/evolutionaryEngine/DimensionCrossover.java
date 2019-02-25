@@ -49,13 +49,19 @@ public class DimensionCrossover extends AbstractCrossover<Dimension> {
                 d2[i] = (random.nextDouble() - 1.0) + (random.nextDouble());
             }
         }
+        
         DoubleMatrix dimension1 = new DoubleMatrix(d1);
-        DoubleMatrix dimension2 = new DoubleMatrix(d2);
-
-        List<Double> projected1 =  ((List<DataPoint>) slide).parallelStream().map(x -> Projector.projectOnDimension(x, dimension1)).collect(Collectors.toList());
+        List<Double> projected1 = new LinkedList<>();
+        for (int i = 0; i < this.slide.size(); ++i) {
+            projected1.add(Projector.projectOnDimension(slide.points()[i], dimension1));
+        }
         Dimension offspring1 = new Dimension(dimension1, Statistics.computeMean(projected1), Statistics.computeVariance(projected1));
         
-        List<Double> projected2 = ((List<DataPoint>) slide).parallelStream().map(x -> Projector.projectOnDimension(x, dimension2)).collect(Collectors.toList());
+        DoubleMatrix dimension2 = new DoubleMatrix(d2);
+        List<Double> projected2 = new LinkedList<>();
+        for (int i = 0; i < this.slide.size(); ++i) {
+            projected2.add(Projector.projectOnDimension(slide.points()[i], dimension2));
+        }
         Dimension offspring2 = new Dimension(dimension2, Statistics.computeMean(projected2), Statistics.computeVariance(projected2));
 
         List<Dimension> offsprings = new LinkedList();

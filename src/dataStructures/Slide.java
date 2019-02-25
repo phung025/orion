@@ -12,9 +12,12 @@ import java.util.LinkedList;
  * @author Nam Phung
  * @param <E>
  */
-public class Slide<E> extends LinkedList<E> {
+public class Slide {
 
     private int slideSize = 0;
+    private DataPoint[] container = null;
+    private int insertionIndex = 0;
+    private int count = 0;
 
     /**
      *
@@ -22,6 +25,12 @@ public class Slide<E> extends LinkedList<E> {
      */
     public Slide(int size) {
         this.slideSize = size;
+        
+        this.container = new DataPoint[this.slideSize];
+        this.count = 0;
+        for (int i = 0; i < this.container.length; ++i) {
+            container[i] = null;
+        }
     }
 
     /**
@@ -30,46 +39,33 @@ public class Slide<E> extends LinkedList<E> {
      * @param p
      * @return true if the data point was added successfully, else return false.
      */
-    @Override
-    public boolean add(E p) {
+    public boolean add(DataPoint p) {
 
-        // If the slide is full, remove the oldest data point from the slide
-        // then add the new incoming data point. Else, add the incoming data
-        // point to the slide
-        try {
-            if (this.isFull()) {
-                super.remove();
-                super.add(p);
-            } else {
-                super.add(p);
-            }
-        } catch (Exception e) {
-            return false;
-        }
+        // Add data point to the slide, if full, wraps around
+        this.container[insertionIndex] = p;
+        insertionIndex = (insertionIndex + 1) % this.slideSize;
 
+        // Increment the count
+        this.count = (this.count == this.slideSize) ? this.slideSize : (this.count + 1);
+        
         return true;
     }
 
     /**
-     * Get the data point that has the arrival time closest to the current time
-     * in the slide
+     * Get the latest data point
      *
      * @return the head of this slide, or null if this slide is empty
      */
-    @Override
-    public E peek() {
-        return (super.isEmpty()) ? null : super.getLast();
+    public DataPoint newest() {
+        return this.isEmpty() ? null : (this.isFull() ? this.container[(insertionIndex - 1) % this.slideSize] : this.container[insertionIndex - 1]);
     }
-
-    /**
-     * Retrieves and removes the data point that has the arrival time closest to the
-     * current time in the slide.
-     *
-     * @return the head of this slide, or null if this slide is empty
-     */
-    @Override
-    public E poll() {
-        return (super.isEmpty()) ? null : super.removeLast();
+    
+    public DataPoint oldest() {
+        return this.isEmpty() ? null : (this.isFull() ? this.container[insertionIndex] : this.container[0]);
+    }
+    
+    public int size() {
+        return this.count;
     }
 
     /**
@@ -78,7 +74,15 @@ public class Slide<E> extends LinkedList<E> {
      * @return true if the slide is full else false
      */
     public boolean isFull() {
-        return super.size() == this.slideSize;
+        return this.count == this.slideSize;
+    }
+    
+    public boolean isEmpty() {
+        return this.count == 0;
+    }
+    
+    public DataPoint[] points() {
+        return this.container;
     }
     
     /**

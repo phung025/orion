@@ -24,10 +24,10 @@ import utils.Statistics;
 public class PerformanceAnalysis {
 
     public static void main(String[] args) throws Exception {
-        int[] w_size = new int[]{1000}; // window size
-        int[] s_size = new int[]{500}; // slide size
-        double[] k_values = new double[]{0.25, 0.3, 0.35}; // different k values
-        double[] r_values = new double[]{22, 24, 26, 39, 45, 60}; // different r values
+        int[] w_size = new int[]{2000}; // window size
+        int[] s_size = new int[]{50, 75, 100, 125, 150, 175, 200}; // slide size
+        double[] k_values = new double[]{0.2, 0.25}; // different k values
+        double[] r_values = new double[]{26, 28, 31, 34, 39}; // different r values
 
         for (int windowSize : w_size) {
             for (int slideSize : s_size) {
@@ -39,17 +39,17 @@ public class PerformanceAnalysis {
                         List<Double> jaccardCoefficients = new LinkedList<>();
                         List<Double> f1Scores = new LinkedList<>();
 
-                        for (int iteration = 0; iteration < 1; ++iteration) {
+                        String datasetName = "mulcross";
+                        System.out.println("detecting outliers in " + datasetName + " dataset");
+                        System.out.println("window size: " + windowSize);
+                        System.out.println("slide size: " + slideSize);
+                        System.out.println("k: " + k);
+                        System.out.println("r " + r);
 
-                            String datasetName = "mulcross";
-                            System.out.println("iteration " + iteration);
-                            System.out.println("detecting outliers in " + datasetName + " dataset");
-                            System.out.println("window size: " + windowSize);
-                            System.out.println("slide size: " + slideSize);
-                            System.out.println("k: " + k);
-                            System.out.println("r " + r);
-                            System.out.println("\n\n");
-                            
+                        for (int fold = 1; fold <= 10; ++fold) {
+
+                            System.out.println("fold " + fold);
+
                             String inputFilePath = System.getProperty("user.dir") + "/datasets/" + datasetName + ".csv";
                             char separator = ',';
                             boolean hasHeader = false;
@@ -62,14 +62,15 @@ public class PerformanceAnalysis {
                             // Perform outlier detection
                             ArrayList<Boolean> allResult = new ArrayList<>(windowSize);
                             CBOrion instance = new CBOrion(windowSize, slideSize, 0.2, 50);
-                            int m = 0;
+                            int window_count = 0;
                             while (!stream.isEmpty()) {
                                 LinkedList<DataPoint> window = stream.readFromStream(windowSize);
                                 for (boolean pred : instance.detectOutliers(window)) {
                                     allResult.add(pred);
                                 }
-                                System.out.println("Finished window " + (++m));
-                                if (m == 20) {
+                                
+                                ++window_count;
+                                if (window_count == (fold * 10)) { // At fold 10, it would compute outliers in 200,000 data points
                                     break;
                                 }
                             }
@@ -104,6 +105,8 @@ public class PerformanceAnalysis {
                             jaccardCoefficients.add((truePositive + trueNegative) / (truePositive + trueNegative + falsePositive + falseNegative));
                             f1Scores.add((2 * precisions.get(precisions.size() - 1) * recalls.get(recalls.size() - 1)) / (precisions.get(precisions.size() - 1) + recalls.get(recalls.size() - 1)));
                         }
+                        
+                        System.out.println("\n\n");
 
                         // Save the statistics to file
                         try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("output1.csv", true)))) {

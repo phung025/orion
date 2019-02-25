@@ -10,6 +10,7 @@ import dataStructures.Dimension;
 import dataStructures.Slide;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -83,7 +84,10 @@ public class EvolutionaryComputation {
             // Create the offspring dimension using crossover and compute the projected mean and variance
             // of the values on that projected dimension
             DoubleMatrix dimension = this.crossover(candidateX.getValues(), candidateY.getValues());
-            List<Double> projected = ((List<DataPoint>) slide).parallelStream().map(k -> Projector.projectOnDimension(k, dimension)).collect(Collectors.toList());
+            List<Double> projected = new LinkedList<>();
+            for (int j = 0; j < this.slide.size(); ++j) {
+                projected.add(Projector.projectOnDimension(this.slide.points()[j], dimension));
+            }
             Dimension offspring = new Dimension(dimension, Statistics.computeMean(projected), Statistics.computeVariance(projected));
 
             // Add the new off-spring to the population and then remove the
