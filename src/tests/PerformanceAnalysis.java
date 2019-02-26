@@ -27,7 +27,9 @@ public class PerformanceAnalysis {
     public static void main(String[] args) throws Exception {
 
         /**
-         * window size: 2000 slide size: 50 75 100 125 150 175 200 k: 0.2 0.25
+         * window size: 2000 
+         * slide size: 50 75 100 125 150 175 200 
+         * k: 0.25
          * r: 26 28 31 34 39
          */
         String datasetName = null;
