@@ -141,7 +141,7 @@ public class StreamDensity {
 
         double streamDensity = 0.0;
         if (!neighbors.isEmpty()) {
-            long T = this.slide.points()[(neighbors.size() - 1)].getTimestamp(); // Timestamp of the newest data point in the window        
+            long T = this.slide.size(); // Timestamp of the newest data point in the window        
             for (Iterator<Double> iter = neighbors.iterator(); iter.hasNext();) {
                 streamDensity += DDF(iter.next(), pDimension, T, stdevation);
             }
@@ -169,7 +169,7 @@ public class StreamDensity {
             DataPoint next = this.slide.points()[i];
 
             // Compute the weight of the data point
-            double ffactor = Math.pow(this.forgettingFactor, T - next.getTimestamp());
+            double ffactor = Math.pow(this.forgettingFactor, T - i);
 
             // Compute the projected kernel on the p-dimension along the bandwidth
             double kza = kernelAlongBandwidth(
