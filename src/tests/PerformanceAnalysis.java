@@ -30,7 +30,7 @@ public class PerformanceAnalysis {
          * window size: 2000 
          * slide size: 50 75 100 125 150 175 200 
          * k: 0.25
-         * r: 26 28 31 34 39
+         * r: 2 16 27 39 56 70
          */
         String datasetName = null;
         Integer windowSize = null;
@@ -86,71 +86,54 @@ public class PerformanceAnalysis {
         System.out.println("k: " + k);
         System.out.println("r " + r);
 
-        for (int j = 1; j <= fold; ++j) {
+        String inputFilePath = System.getProperty("user.dir") + "/datasets/" + datasetName + ".csv";
+        char separator = ',';
+        boolean hasHeader = false;
+        double[][] incomingData = FileReader.readCSV(inputFilePath, separator, hasHeader);
 
-            System.out.println("fold " + j + "...");
+        // Data stream
+        Stream stream = new Stream(false); // Create a count-based timestamp stream
+        stream.writeToStream(incomingData);
 
-            String inputFilePath = System.getProperty("user.dir") + "/datasets/" + datasetName + ".csv";
-            char separator = ',';
-            boolean hasHeader = false;
-            double[][] incomingData = FileReader.readCSV(inputFilePath, separator, hasHeader);
-
-            // Data stream
-            Stream stream = new Stream(false); // Create a count-based timestamp stream
-            stream.writeToStream(incomingData);
-
-            // Perform outlier detection
-            ArrayList<Boolean> allResult = new ArrayList<>(windowSize);
-            CBOrion instance = new CBOrion(windowSize, slideSize, k, r);
-            int window_count = 0;
-            while (!stream.isEmpty()) {
-                LinkedList<DataPoint> window = stream.readFromStream(windowSize);
-                for (boolean pred : instance.detectOutliers(window)) {
-                    allResult.add(pred);
-                }
-
-                ++window_count;
-                if (window_count == (j * 10)) { // At fold 10, it would compute outliers in 200,000 data points
-                    break;
-                }
+        // Perform outlier detection
+        ArrayList<Boolean> allResult = new ArrayList<>(windowSize);
+        CBOrion instance = new CBOrion(windowSize, slideSize, k, r);
+        while (!stream.isEmpty()) {
+            LinkedList<DataPoint> window = stream.readFromStream(windowSize);
+            for (boolean pred : instance.detectOutliers(window)) {
+                allResult.add(pred);
             }
-
-            // Read the true output class
-            String classFilePath = System.getProperty("user.dir") + "/datasets/" + datasetName + "_true.csv";
-            double[][] trueClass = FileReader.readCSV(classFilePath, separator, hasHeader);
-
-            // Compute the statistics
-            double truePositive = 0;
-            double falsePositive = 0;
-            double trueNegative = 0;
-            double falseNegative = 0;
-            for (int i = 0; i < allResult.size(); ++i) {
-                if (((int) trueClass[i][0]) == ((allResult.get(i) == true) ? 1 : 0)) {
-                    if (allResult.get(i) == true) {
-                        ++truePositive;
-                    } else {
-                        ++trueNegative;
-                    }
-                } else {
-                    if ((((int) trueClass[i][0]) == 1) && (allResult.get(i) == false)) {
-                        ++falseNegative;
-                    } else {
-                        ++falsePositive;
-                    }
-                }
-            }
-
-            precisions.add(truePositive / (truePositive + falsePositive));
-            recalls.add(truePositive / (truePositive + falseNegative));
-            jaccardCoefficients.add((truePositive + trueNegative) / (truePositive + trueNegative + falsePositive + falseNegative));
-            f1Scores.add((2 * precisions.get(precisions.size() - 1) * recalls.get(recalls.size() - 1)) / (precisions.get(precisions.size() - 1) + recalls.get(recalls.size() - 1)));
-
-            System.out.println("precision: " + precisions.get(precisions.size()-1));
-            System.out.println("recall: " + recalls.get(recalls.size()-1));
-            System.out.println("jaccard coefficient: " + jaccardCoefficients.get(jaccardCoefficients.size()-1));
-            System.out.println("f1 score: " + f1Scores.get(f1Scores.size()-1));
-            System.out.println("\n\n");
         }
+
+        // Read the true output class
+        String classFilePath = System.getProperty("user.dir") + "/datasets/" + datasetName + "_true.csv";
+        double[][] trueClass = FileReader.readCSV(classFilePath, separator, hasHeader);
+
+        // Compute the statistics
+        double truePositive = 0;
+        double falsePositive = 0;
+        double trueNegative = 0;
+        double falseNegative = 0;
+        for (int i = 0; i < allResult.size(); ++i) {
+            if (((int) trueClass[i][0]) == ((allResult.get(i) == true) ? 1 : 0)) {
+                if (allResult.get(i) == true) {
+                    ++truePositive;
+                } else {
+                    ++trueNegative;
+                }
+            } else {
+                if ((((int) trueClass[i][0]) == 1) && (allResult.get(i) == false)) {
+                    ++falseNegative;
+                } else {
+                    ++falsePositive;
+                }
+            }
+        }
+
+        precisions.add(truePositive / (truePositive + falsePositive));
+        recalls.add(truePositive / (truePositive + falseNegative));
+        jaccardCoefficients.add((truePositive + trueNegative) / (truePositive + trueNegative + falsePositive + falseNegative));
+        f1Scores.add((2 * precisions.get(precisions.size() - 1) * recalls.get(recalls.size() - 1)) / (precisions.get(precisions.size() - 1) + recalls.get(recalls.size() - 1)));
 
         // Save the statistics to file
         try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(Arrays.toString(args) + ".txt", true)))) {
