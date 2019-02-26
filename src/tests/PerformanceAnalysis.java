@@ -27,9 +27,7 @@ public class PerformanceAnalysis {
     public static void main(String[] args) throws Exception {
 
         /**
-         * window size: 2000
-         * slide size: 50 75 100 125 150 175 200
-         * k: 0.2 0.25
+         * window size: 2000 slide size: 50 75 100 125 150 175 200 k: 0.2 0.25
          * r: 26 28 31 34 39
          */
         String datasetName = null;
@@ -38,7 +36,7 @@ public class PerformanceAnalysis {
         Double k = null;
         Double r = null;
         Integer fold = null;
-        
+
         if (args.length == 1 && "-help".equals(args[0])) {
             System.out.println("to execute the orion outlier detection algorithm, specify all of these parameters:");
             System.out.println("-dataset        the file name of the dataset. The input dataset must be put in a folder named datasets");
@@ -144,10 +142,14 @@ public class PerformanceAnalysis {
             recalls.add(truePositive / (truePositive + falseNegative));
             jaccardCoefficients.add((truePositive + trueNegative) / (truePositive + trueNegative + falsePositive + falseNegative));
             f1Scores.add((2 * precisions.get(precisions.size() - 1) * recalls.get(recalls.size() - 1)) / (precisions.get(precisions.size() - 1) + recalls.get(recalls.size() - 1)));
+
+            System.out.println("precision: " + precisions.get(precisions.size()-1));
+            System.out.println("recall: " + recalls.get(recalls.size()-1));
+            System.out.println("jaccard coefficient: " + jaccardCoefficients.get(jaccardCoefficients.size()-1));
+            System.out.println("f1 score: " + f1Scores.get(f1Scores.size()-1));
+            System.out.println("\n\n");
         }
 
-        System.out.println("\n\n");
-        
         // Save the statistics to file
         try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(Arrays.toString(args) + ".txt", true)))) {
             out.println("--------------------------Performance Analysis--------------------------");
