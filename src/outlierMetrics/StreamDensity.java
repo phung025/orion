@@ -124,7 +124,7 @@ public class StreamDensity {
     }
 
     private double estimateStreamDensityHelper(DataPoint dt, double mean, double stdevation, Dimension pDimension) {
-        double scaledNeighborDist =  /*this.r **/ stdevation; // Compute the scaled neighbor distance
+        double scaledNeighborDist = this.r * (6.0 * stdevation / 400.0); // Compute the scaled neighbor distance
         double projectedDT = Projector.projectOnDimension(dt, pDimension.getValues()); // Project the incoming data point on the p-dimension
 
         // Within a scaled neighbor distance from the incoming data point dt, approximate the stream density of dt

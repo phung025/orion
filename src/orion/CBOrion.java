@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 import utils.Statistics;
 import org.jblas.DoubleMatrix;
 import org.jblas.Eigen;
-import outlierMetrics.KIntegral;
 import utils.Projector;
 
 /**
@@ -294,9 +293,9 @@ public class CBOrion {
         
         double stdevation = Math.sqrt(pDimension.getVariance());
         
-        if (projectedDT < q1 - (this.r * (6.0 * stdevation / 400.0) * iqr)) {
+        if (projectedDT < q1 - 1.5 * iqr) {
             return true;
-        } else if (projectedDT > q3 +  (this.r * (6.0 * stdevation / 400.0) * iqr)) {
+        } else if (projectedDT > q3 + 1.5 * iqr) {
             return true;
         }
         
