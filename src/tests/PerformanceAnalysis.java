@@ -101,7 +101,7 @@ public class PerformanceAnalysis {
 
             // Perform outlier detection
             ArrayList<Boolean> allResult = new ArrayList<>(windowSize);
-            CBOrion instance = new CBOrion(windowSize, slideSize, 0.2, 50);
+            CBOrion instance = new CBOrion(windowSize, slideSize, k, r);
             int window_count = 0;
             while (!stream.isEmpty()) {
                 LinkedList<DataPoint> window = stream.readFromStream(windowSize);
