@@ -26,7 +26,7 @@ public class StreamDensity {
     private double r = 0.0; // User-defined distance r for computing the scaled neighbor distance
     private Slide slide;
     private String kernelType = null;
-    
+
     private StreamDensity() {
 
     }
@@ -105,9 +105,11 @@ public class StreamDensity {
         for (int i = 0; i < slide.size(); ++i) {
             tmp.add(Projector.projectOnDimension(slide.points()[i], pDimension.getValues()));
         }
+
+        double mean = Statistics.computeMean(tmp);
         double stdevation = Math.sqrt(Statistics.computeVariance(tmp));
 
-        return estimateStreamDensityHelper(dt, stdevation, pDimension);
+        return estimateStreamDensityHelper(dt, mean, stdevation, pDimension);
     }
 
     /**
@@ -117,12 +119,12 @@ public class StreamDensity {
      * @param pDimension
      * @return
      */
-    public double estimateStreamDensity(DataPoint dt, double stdevation, Dimension pDimension) {
-        return estimateStreamDensityHelper(dt, stdevation, pDimension);
+    public double estimateStreamDensity(DataPoint dt, double mean, double stdevation, Dimension pDimension) {
+        return estimateStreamDensityHelper(dt, mean, stdevation, pDimension);
     }
 
-    private double estimateStreamDensityHelper(DataPoint dt, double stdevation, Dimension pDimension) {
-        double scaledNeighborDist = this.r * (6.0 * stdevation / 400.0); // Compute the scaled neighbor distance
+    private double estimateStreamDensityHelper(DataPoint dt, double mean, double stdevation, Dimension pDimension) {
+        double scaledNeighborDist =  /*this.r **/ stdevation; // Compute the scaled neighbor distance
         double projectedDT = Projector.projectOnDimension(dt, pDimension.getValues()); // Project the incoming data point on the p-dimension
 
         // Within a scaled neighbor distance from the incoming data point dt, approximate the stream density of dt
@@ -135,15 +137,15 @@ public class StreamDensity {
 
             // If that projected data point is within a scaled-neighbor distance, proceed to compute the DDF
             if (projectedDT - scaledNeighborDist <= projectedNext && projectedNext <= projectedDT + scaledNeighborDist) {
-                neighbors.add(projectedNext);
+                neighbors.add((projectedNext - mean) / stdevation);
             }
         }
 
         double streamDensity = 0.0;
         if (!neighbors.isEmpty()) {
-            long T = this.slide.points()[(neighbors.size() - 1)].getTimestamp(); // Timestamp of the newest data point in the window        
+            long T = this.slide.size(); // Timestamp of the newest data point in the window        
             for (Iterator<Double> iter = neighbors.iterator(); iter.hasNext();) {
-                streamDensity += DDF(iter.next(), pDimension, T, stdevation);
+                streamDensity += DDF(iter.next(), pDimension, T, mean, stdevation);
             }
         }
 
@@ -161,6 +163,7 @@ public class StreamDensity {
     private double DDF(double z,
             Dimension pDimension,
             double T,
+            double mean,
             double stdevation) {
         double numerator = 0.0;
         double denominator = 0.0;
@@ -169,11 +172,11 @@ public class StreamDensity {
             DataPoint next = this.slide.points()[i];
 
             // Compute the weight of the data point
-            double ffactor = Math.pow(this.forgettingFactor, T - next.getTimestamp());
+            double ffactor = Math.pow(this.forgettingFactor, T - i);
 
             // Compute the projected kernel on the p-dimension along the bandwidth
             double kza = kernelAlongBandwidth(
-                    Projector.projectOnDimension(next, pDimension.getValues()) - z,
+                    ((Projector.projectOnDimension(next, pDimension.getValues()) - mean) / stdevation) - z,
                     this.kernelType,
                     computeBandwidth(stdevation, slide.size()));
 

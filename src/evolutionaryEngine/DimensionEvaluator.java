@@ -26,8 +26,8 @@ public class DimensionEvaluator implements FitnessEvaluator<Dimension> {
     }
 
     /**
-     * Get fitness of a dimension based on the stream density of the data point dt in that
-     * dimension
+     * Get fitness of a dimension based on the stream density of the data point
+     * dt in that dimension
      *
      * @param candidate
      * @param population
@@ -35,7 +35,7 @@ public class DimensionEvaluator implements FitnessEvaluator<Dimension> {
      */
     @Override
     public double getFitness(Dimension candidate, List<? extends Dimension> population) {
-        return densityEstimator.estimateStreamDensity(dt, Math.sqrt(candidate.getVariance()), candidate);
+        return densityEstimator.estimateStreamDensity(dt, candidate.getMean(), Math.sqrt(candidate.getVariance()), candidate);
     }
 
     @Override
@@ -43,7 +43,6 @@ public class DimensionEvaluator implements FitnessEvaluator<Dimension> {
 
         // Natural fitness scores are those in which the fittest individual in a population has the highest fitness value. 
         // In this case the algorithm is attempting to maximise fitness scores. There need not be a specified maximum possible value.
-        
         // In contrast, non-natural fitness evaluation results in fitter individuals being assigned lower scores than weaker individuals. 
         // In the case of non-natural fitness, the algorithm is attempting to minimise fitness scores.
         return false;

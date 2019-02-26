@@ -6,12 +6,11 @@
 package orion;
 
 import outlierMetrics.StreamDensity;
-import clusteringEngine.CoClusterer;
 import dataStructures.DataPoint;
 import dataStructures.Dimension;
 import dataStructures.Slide;
-import evolutionaryEngine.EvolutionaryComputation;
 import evolutionaryEngine.EvolutionaryEngine;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -32,7 +31,6 @@ import utils.Projector;
 public class CBOrion {
 
     // Class attributes used for setting up the Orion algorithm
-    private double k = 0; // Percentage of neighbor k
     private double r = 0.0; // User-defined distance r
     private int W = 0; // Capacity of the window
     private int S = 0; // Capacity of the slide
@@ -43,7 +41,6 @@ public class CBOrion {
     // Stream density estimator and k-integral estimator computing
     // outlier metrics
     private StreamDensity sdEstimator = null;
-    private KIntegral kIntegeral = null;
 
     // Statistical variables for helping choosing set of p-dimensions
     private DoubleMatrix currentMean = null;
@@ -77,22 +74,16 @@ public class CBOrion {
      *
      * @param W window size.
      * @param S slide size.
-     * @param k minimum amount of neighbors for a data point to not be an
      * outlier.
      * @param r radius distance r of a data point. If data point has fewer than
      * k neighbors within the distance r, it is potentially an outlier.
      *
      */
-    public CBOrion(int W, int S, double k, double r) {
+    public CBOrion(int W, int S, double r) {
 
         // Slide size cannot be greater than the window size
         if (S > W) {
             throw new IllegalArgumentException("Slide size must not be greater than the window size.");
-        }
-
-        // K value must be in range (0,1)
-        if ((k <= 0) || (k > 1)) {
-            throw new IllegalArgumentException("k value must be in range (0, 1]");
         }
 
         // Assign all variables
@@ -103,7 +94,6 @@ public class CBOrion {
         this.window = new LinkedList<>(); // Window containing the incoming data points
         this.initializationThreshold = S; // Initialization threshold for first stage of algorithm
 
-        this.k = k; // K-neighbor of a data point
         this.r = r; // Maximum distance r of a data point
     }
 
@@ -126,9 +116,6 @@ public class CBOrion {
 
         // Initialize the stream density estimator
         this.sdEstimator = new StreamDensity("uniform", dimension, this.r, this.slide);
-
-        // Initialize the k-integral estimator
-        this.kIntegeral = new KIntegral(this.slide);
 
         // Learn the forgetting factor λ once Orion has received enough data points
         // THIS NEEDS TO BE CHECKED
@@ -188,56 +175,12 @@ public class CBOrion {
         }
 
         // Compute stream density of all data points in the incoming window
-        double[] allDensities = new double[this.window.size()];
-        double[] allKIntegrals = new double[this.window.size()];
+        boolean[] result = new boolean[this.window.size()];
         {
             int i = 0;
             for (Iterator<DataPoint> iter = this.window.iterator(); iter.hasNext(); ++i) {
-                double[] metrics = computeOutlierMetrics(iter.next());
-                allDensities[i] = metrics[0];
-                allKIntegrals[i] = metrics[1];
-                //System.out.println("Density: " + allDensities[i] + "    k-integral: " + allKIntegrals[i]);
-            }
-        }
-
-        // Perform clustering the data points based on stream density
-        CoClusterer clusterer = new CoClusterer();
-        double[][] sdCluster = clusterer.clusterDensity(allDensities);
-        double[] sdClusterMean = sdCluster[0];
-        double[] sdClusterAssignments = sdCluster[1];
-
-        // Perform clustering the data points based on k-integral
-        double[][] kIntegralCluster = clusterer.clusterKIntegral(allKIntegrals);
-        double[] kIntegralClusterMean = kIntegralCluster[0];
-        double[] kIntegralClusterAssignments = kIntegralCluster[1];
-
-        // Find the cluster contains data points with low density
-        int sdIdx = 0;
-        double smallestMean = sdClusterMean[0];
-        for (int i = 0; i < sdClusterMean.length; ++i) {
-            smallestMean = Math.min(smallestMean, sdClusterMean[i]);
-            if (sdClusterMean[i] == smallestMean) {
-                sdIdx = i;
-            }
-        }
-
-        // Find the cluster contains data points with low density
-        int kIdx = 0;
-        double largestMean = kIntegralClusterMean[0];
-        for (int i = 0; i < kIntegralClusterMean.length; ++i) {
-            largestMean = Math.max(largestMean, kIntegralClusterMean[i]);
-            if (kIntegralClusterMean[i] == largestMean) {
-                kIdx = i;
-            }
-        }
-
-        // Assign outliers based on cluster result
-        boolean[] result = new boolean[this.window.size()];
-        for (int i = 0; i < sdClusterAssignments.length; ++i) {
-            if (((int) kIntegralClusterAssignments[i] == kIdx) && ((int) sdClusterAssignments[i] == sdIdx)) {
-                result[i] = true;
-            } else {
-                result[i] = false;
+                boolean isOutlier = detectOutlier(iter.next());
+                result[i] = isOutlier;
             }
         }
 
@@ -250,7 +193,7 @@ public class CBOrion {
      * @param dt
      * @return
      */
-    public double[] computeOutlierMetrics(DataPoint dt) {
+    public boolean detectOutlier(DataPoint dt) {
 
         // Add incoming data point to the slide
         DataPoint oldestPoint = this.slide.oldest(); // The data point that will be removed if the slide is full
@@ -321,7 +264,6 @@ public class CBOrion {
 
         // Update parameters for Data Density Function
         // sdEstimator.updateDDFparameters(dt, currentMean, currentCovariance);
-
         // Select the best partition that can reveal the p-dimension for data point dt
         // Perform evolutionary computation to find the p-dimension for the given data point dt
         Dimension pDimension = null;
@@ -339,11 +281,26 @@ public class CBOrion {
                 this.meanAbsoluteNormalizedDeviation,
                 absoluteNormalizedDeviation);
 
-        // Compute the stream density and k-integral of data point dt
-        double streamDensity = sdEstimator.estimateStreamDensity(dt, Math.sqrt(pDimension.getVariance()), pDimension);
-        double kIntegral = kIntegeral.computeKIntegral(dt, pDimension, this.k);
-
-        return new double[]{streamDensity, kIntegral};
+        double projectedDT = Projector.projectOnDimension(dt, pDimension.getValues());
+        double[] projectedPoints = new double[slide.size()];        
+        for (int i = 0; i < projectedPoints.length; ++i) {
+            projectedPoints[i] = Projector.projectOnDimension(slide.points()[i], pDimension.getValues());
+        }
+        Arrays.parallelSort(projectedPoints);
+        
+        double iqr = projectedPoints[projectedPoints.length / 2];
+        double q1 = projectedPoints[projectedPoints.length / 4];
+        double q3 = projectedPoints[3 * projectedPoints.length / 4];
+        
+        double stdevation = Math.sqrt(pDimension.getVariance());
+        
+        if (projectedDT < q1 - (this.r * (6.0 * stdevation / 400.0) * iqr)) {
+            return true;
+        } else if (projectedDT > q3 +  (this.r * (6.0 * stdevation / 400.0) * iqr)) {
+            return true;
+        }
+        
+        return false;
     }
 
 }

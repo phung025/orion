@@ -9,7 +9,6 @@ import dataStructures.DataPoint;
 import dataStructures.Dimension;
 import dataStructures.Slide;
 import java.util.Arrays;
-import java.util.Iterator;
 import utils.Projector;
 
 /**
@@ -42,16 +41,16 @@ public class KIntegral {
      * @param k
      * @return
      */
-    public double computeKIntegral(DataPoint dt, Dimension p, double k) {
+    public double computeKIntegral(DataPoint dt, Dimension p, double k, double mean, double stddeviation) {
 
         // Project the data points onto dimension p
         double[] allProjectedPoints = new double[this.slide.size()];
         for (int i = 0; i < this.slide.size(); ++i) {
-            allProjectedPoints[i] = Projector.projectOnDimension(slide.points()[i], p.getValues());
+            allProjectedPoints[i] = (Projector.projectOnDimension(slide.points()[i], p.getValues()) - mean) / stddeviation;
         }
 
         // Project dt onto dimension p
-        double projectedDT = Projector.projectOnDimension(dt, p.getValues());
+        double projectedDT = (Projector.projectOnDimension(dt, p.getValues()) - mean) / stddeviation;
 
         // Compute the left and right boundary of data point dt
         Arrays.parallelSort(allProjectedPoints); // sort the projected points

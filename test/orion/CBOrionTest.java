@@ -90,7 +90,7 @@ public class CBOrionTest {
 
                             // Perform outlier detection
                             ArrayList<Boolean> allResult = new ArrayList<>(windowSize);
-                            CBOrion instance = new CBOrion(windowSize, slideSize, 0.2, 50);
+                            CBOrion instance = new CBOrion(windowSize, slideSize, 50);
                             while (!stream.isEmpty()) {
                                 LinkedList<DataPoint> window = stream.readFromStream(windowSize);
                                 for (boolean pred : instance.detectOutliers(window)) {
