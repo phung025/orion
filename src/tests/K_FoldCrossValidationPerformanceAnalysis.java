@@ -90,7 +90,7 @@ public class K_FoldCrossValidationPerformanceAnalysis {
         System.out.println("k: " + k);
         System.out.println("r " + r);
 
-        for (int j = fold; j >= 1; --j) {
+        for (int j = 1; j <= fold; ++j) {
 
             System.out.println("fold " + j + "...");
 

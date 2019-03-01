@@ -28,16 +28,15 @@ public class PerformanceAnalysis {
     public static void main(String[] args) throws Exception {
 
         /**
-         * window size: 2000 
-         * slide size: 50 75 100 125 150 175 200 
-         * k: 0.25
-         * r: 2 16 27 39 56 70
+         * window size: 2000 slide size: 50 75 100 125 150 175 200 k: 0.25 r: 2
+         * 16 27 39 56 70
          */
         String datasetName = null;
         Integer windowSize = null;
         Integer slideSize = null;
         Double k = null;
         Double r = null;
+        char hasOutput = ' ';
 
         if (args.length == 1 && "-help".equals(args[0])) {
             System.out.println("to execute the orion outlier detection algorithm, specify all of these parameters:");
@@ -46,6 +45,7 @@ public class PerformanceAnalysis {
             System.out.println("-slide          size of the slide. Must be smaller than or equal to the size of the window");
             System.out.println("-r              distance r");
             System.out.println("-k              k metric for the k-integral");
+            System.out.println("-output         determines if an output file will be created (t/f)");
             return;
         }
 
@@ -65,6 +65,9 @@ public class PerformanceAnalysis {
                     break;
                 case "-r":
                     r = Double.parseDouble(args[i + 1]);
+                    break;
+                case "-output":
+                    hasOutput = args[i + 1].charAt(0);
                     break;
                 default:
                     break;
@@ -137,25 +140,27 @@ public class PerformanceAnalysis {
         f1Scores.add((2 * precisions.get(precisions.size() - 1) * recalls.get(recalls.size() - 1)) / (precisions.get(precisions.size() - 1) + recalls.get(recalls.size() - 1)));
 
         // Save the statistics to file
-        try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(Arrays.toString(args) + ".txt", true)))) {
-            out.println("--------------------------Performance Analysis--------------------------");
-            out.println("dataset: " + datasetName);
-            out.println("window size: " + windowSize);
-            out.println("slide size: " + slideSize);
-            out.println("k: " + k);
-            out.println("r: " + r);
-            out.println("");
-            out.println("precision: " + Statistics.computeMean(precisions));
-            out.println("recall: " + Statistics.computeMean(recalls));
-            out.println("jaccard coefficient: " + Statistics.computeMean(jaccardCoefficients));
-            out.println("f1 score: " + Statistics.computeMean(f1Scores));
-            out.println("--------------------------Performance Analysis--------------------------");
-            out.println("\n\n\n\n");
-            allProbability.stream().forEach(x -> {
-                out.println(x.toString());
-            });
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        if (hasOutput == 't') {
+            try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(Arrays.toString(args) + ".txt", true)))) {
+                out.println("--------------------------Performance Analysis--------------------------");
+                out.println("dataset: " + datasetName);
+                out.println("window size: " + windowSize);
+                out.println("slide size: " + slideSize);
+                out.println("k: " + k);
+                out.println("r: " + r);
+                out.println("");
+                out.println("precision: " + Statistics.computeMean(precisions));
+                out.println("recall: " + Statistics.computeMean(recalls));
+                out.println("jaccard coefficient: " + Statistics.computeMean(jaccardCoefficients));
+                out.println("f1 score: " + Statistics.computeMean(f1Scores));
+                out.println("--------------------------Performance Analysis--------------------------");
+                out.println("\n\n\n\n");
+                allProbability.stream().forEach(x -> {
+                    out.println(x.toString());
+                });
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
 }

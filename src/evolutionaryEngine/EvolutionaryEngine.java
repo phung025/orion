@@ -14,9 +14,12 @@ import java.util.Random;
 import org.uncommons.maths.random.MersenneTwisterRNG;
 import org.uncommons.maths.random.Probability;
 import org.uncommons.watchmaker.framework.CandidateFactory;
+import org.uncommons.watchmaker.framework.EvaluatedCandidate;
 import org.uncommons.watchmaker.framework.EvolutionEngine;
+import org.uncommons.watchmaker.framework.EvolutionObserver;
 import org.uncommons.watchmaker.framework.EvolutionaryOperator;
 import org.uncommons.watchmaker.framework.GenerationalEvolutionEngine;
+import org.uncommons.watchmaker.framework.PopulationData;
 import org.uncommons.watchmaker.framework.SelectionStrategy;
 import org.uncommons.watchmaker.framework.operators.EvolutionPipeline;
 import org.uncommons.watchmaker.framework.selection.TruncationSelection;
@@ -36,7 +39,7 @@ public class EvolutionaryEngine {
     DimensionEvaluator fitnessEvaluator = null; // Fitness evaluator of a candidate dimension
     SelectionStrategy<Object> selection = null; // Strategy for selecting a candidade
     Random rng = null; // Random number generator
-
+    
     public EvolutionaryEngine(StreamDensity estimator, Slide slide) {
         this.sdEstimator = estimator;
         this.slide = slide;
@@ -58,7 +61,7 @@ public class EvolutionaryEngine {
 
     /**
      *
-     * @param population
+     * @param partition
      * @param dt
      * @param epochs
      * @return
@@ -73,7 +76,12 @@ public class EvolutionaryEngine {
 
         // Evolutionary engine
         EvolutionEngine<Dimension> engine = new GenerationalEvolutionEngine<>(factory, this.pipeline, this.fitnessEvaluator, this.selection, this.rng);
-
-        return engine.evolve(population.length, 0, new GenerationCount(epochs));
+        List<EvaluatedCandidate<Dimension>> newPopulation = engine.evolvePopulation(50, 5, new GenerationCount(epochs));
+        
+        // Update the population set
+        Dimension bestCandidate = newPopulation.get(0).getCandidate();
+        population[new Random().nextInt(population.length)] = bestCandidate;
+        
+        return bestCandidate;
     }
 }

@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 import utils.Statistics;
 import org.jblas.DoubleMatrix;
@@ -132,7 +133,6 @@ public class CBOrion {
         // Learn the forgetting factor λ once Orion has received enough data points
         // THIS NEEDS TO BE CHECKED
         // this.sdEstimator.updateForgettingFactor(samples);
-
         // Compute the initial set of p-dimensions (population set)
         // The set of candidate p-dimenion has size of at least 10
         List<Dimension> dimensions = new LinkedList();
@@ -337,9 +337,11 @@ public class CBOrion {
         // Perform evolutionary computation to find the p-dimension for the given data point dt
         Dimension pDimension = null;
         if (absoluteNormalizedDeviation > this.meanAbsoluteNormalizedDeviation) {
-            pDimension = evolutionEngine.evolve(A_out, dt, 2);
+            pDimension = evolutionEngine.evolve(A_out, dt, 1);
+//            pDimension = A_out[new Random().nextInt(A_out.length)];
         } else {
-            pDimension = evolutionEngine.evolve(A_in, dt, 2);
+            pDimension = evolutionEngine.evolve(A_in, dt, 1);
+//            pDimension = A_in[new Random().nextInt(A_in.length)];
         }
 
         // Update the mean absolute normalized deviation after evolutionary step 
