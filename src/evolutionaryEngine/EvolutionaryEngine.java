@@ -15,8 +15,10 @@ import org.uncommons.maths.random.MersenneTwisterRNG;
 import org.uncommons.maths.random.Probability;
 import org.uncommons.watchmaker.framework.CandidateFactory;
 import org.uncommons.watchmaker.framework.EvolutionEngine;
+import org.uncommons.watchmaker.framework.EvolutionObserver;
 import org.uncommons.watchmaker.framework.EvolutionaryOperator;
 import org.uncommons.watchmaker.framework.GenerationalEvolutionEngine;
+import org.uncommons.watchmaker.framework.PopulationData;
 import org.uncommons.watchmaker.framework.SelectionStrategy;
 import org.uncommons.watchmaker.framework.operators.EvolutionPipeline;
 import org.uncommons.watchmaker.framework.selection.TruncationSelection;
@@ -37,7 +39,10 @@ public class EvolutionaryEngine {
     SelectionStrategy<Object> selection = null; // Strategy for selecting a candidade
     Random rng = null; // Random number generator
 
-    public EvolutionaryEngine(StreamDensity estimator, Slide slide) {
+    CandidateFactory<Dimension> factory1 = null;
+    CandidateFactory<Dimension> factory2 = null;
+    
+    public EvolutionaryEngine(StreamDensity estimator, Slide slide, Dimension[] p1, Dimension[] p2) {
         this.sdEstimator = estimator;
         this.slide = slide;
 
@@ -54,26 +59,34 @@ public class EvolutionaryEngine {
 
         // Setup the random number generator
         this.rng = new MersenneTwisterRNG();
+        
+        factory1 = new DimensionFactory(p1);
+        factory2 = new DimensionFactory(p2);
     }
 
     /**
      *
-     * @param population
+     * @param partition
      * @param dt
      * @param epochs
      * @return
      */
-    public Dimension evolve(Dimension[] population, DataPoint dt, int epochs) {
+    public Dimension evolve(String partition, DataPoint dt, int epochs) {
 
         // Factory for candidate dimensions to choose from for performing mutation, crossover, etc
-        CandidateFactory<Dimension> factory = new DimensionFactory(population);
+        CandidateFactory<Dimension> factory = factory1;
+        if (partition.equals("A_out")) {
+            factory = factory2;
+        }
 
         // Setup the fitness evaluator
         fitnessEvaluator.setDataPoint(dt);
 
         // Evolutionary engine
         EvolutionEngine<Dimension> engine = new GenerationalEvolutionEngine<>(factory, this.pipeline, this.fitnessEvaluator, this.selection, this.rng);
-
-        return engine.evolve(population.length, 0, new GenerationCount(epochs));
+//        engine.addEvolutionObserver((PopulationData<? extends Dimension> data) -> {
+//            System.out.println(data.getBestCandidateFitness());
+//        });
+        return engine.evolve(100, 5, new GenerationCount(epochs));
     }
 }

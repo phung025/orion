@@ -153,7 +153,7 @@ public class CBOrion {
         A_out = A_outList.toArray(A_out);
 
         // Initialize the evolutionary computation module
-        this.evolutionEngine = new EvolutionaryEngine(sdEstimator, this.slide);
+        this.evolutionEngine = new EvolutionaryEngine(sdEstimator, this.slide, A_in, A_out);
     }
 
     public boolean[] detectOutliers(LinkedList<DataPoint> batch) throws Exception {
@@ -173,7 +173,7 @@ public class CBOrion {
             isInitialized = true; // Finish the initialization stage
         }
 
-        // Compute stream density of all data points in the incoming window
+        // Detect outliers in the current window
         boolean[] result = new boolean[this.window.size()];
         {
             int i = 0;
@@ -206,40 +206,40 @@ public class CBOrion {
         // in the slide, the oldest data point will be removed from the slide, the mean and
         // covariance matrix will be revert back to the state where that oldest point has
         // not arrived at the slide
-        if (this.slide.isFull()) {
-
-            // Revert the mean absolute normalized deviation (meanAD) to when the oldest point is removed from
-            // First, get the absolute normalized deviation (AD) of the oldest point, then exclude
-            // the contribution of the AD of the oldest point from the meanAD
-            double oldestAD = Statistics.computeAbsoluteNormalizedDevitation(
-                    oldestPoint.getValues(),
-                    currentMean,
-                    currentCovariance);
-            this.meanAbsoluteNormalizedDeviation = Statistics.revertMean(oldestAD, this.meanAbsoluteNormalizedDeviation, slide.size());
-
-            // New mean after the oldest point removed from the slide
-            this.currentMean = Statistics.revertVectorMean(oldestPoint.getValues(), currentMean, slide.size());
-
-            // Revert the covariance matrix to exclude the oldest point
-            this.currentCovariance = Statistics.revertCovarianceMatrix(oldestPoint.getValues(), currentCovariance, currentMean, slide.size());
-
-            // Revert the mean and variance of the projected dimensions and then update the variance and mean
-            // when new data point comes in
-            for (int k = 0; k < 2; ++k) {
-                Dimension[] partition = (k == 0) ? A_in : A_out;
-                for (int i = 0; i < partition.length; ++i) {
-                    Dimension p = partition[i];
-
-                    // Revert
-                    p.setMean(Statistics.revertMean(Projector.projectOnDimension(oldestPoint, p.getValues()), p.getMean(), slide.size()));
-                    p.setVariance(Statistics.revertVariance(Projector.projectOnDimension(oldestPoint, p.getValues()), p.getVariance(), slide.size(), p.getMean()));
-
-                    // Update
-                    p.setVariance(Statistics.computeVarianceOnline2(slide.size() - 1, p.getMean(), p.getVariance(), Projector.projectOnDimension(dt, p.getValues())));
-                    p.setMean(Statistics.computeMeanOnline(slide.size() - 1, p.getMean(), Projector.projectOnDimension(dt, p.getValues())));
-                }
-            }
-        }
+//        if (this.slide.isFull()) {
+//
+//            // Revert the mean absolute normalized deviation (meanAD) to when the oldest point is removed from
+//            // First, get the absolute normalized deviation (AD) of the oldest point, then exclude
+//            // the contribution of the AD of the oldest point from the meanAD
+//            double oldestAD = Statistics.computeAbsoluteNormalizedDevitation(
+//                    oldestPoint.getValues(),
+//                    currentMean,
+//                    currentCovariance);
+//            this.meanAbsoluteNormalizedDeviation = Statistics.revertMean(oldestAD, this.meanAbsoluteNormalizedDeviation, slide.size());
+//
+//            // New mean after the oldest point removed from the slide
+//            this.currentMean = Statistics.revertVectorMean(oldestPoint.getValues(), currentMean, slide.size());
+//
+//            // Revert the covariance matrix to exclude the oldest point
+//            this.currentCovariance = Statistics.revertCovarianceMatrix(oldestPoint.getValues(), currentCovariance, currentMean, slide.size());
+//
+//            // Revert the mean and variance of the projected dimensions and then update the variance and mean
+//            // when new data point comes in
+//            for (int k = 0; k < 2; ++k) {
+//                Dimension[] partition = (k == 0) ? A_in : A_out;
+//                for (int i = 0; i < partition.length; ++i) {
+//                    Dimension p = partition[i];
+//
+//                    // Revert
+//                    p.setMean(Statistics.revertMean(Projector.projectOnDimension(oldestPoint, p.getValues()), p.getMean(), slide.size()));
+//                    p.setVariance(Statistics.revertVariance(Projector.projectOnDimension(oldestPoint, p.getValues()), p.getVariance(), slide.size(), p.getMean()));
+//
+//                    // Update
+//                    p.setVariance(Statistics.computeVarianceOnline2(slide.size() - 1, p.getMean(), p.getVariance(), Projector.projectOnDimension(dt, p.getValues())));
+//                    p.setMean(Statistics.computeMeanOnline(slide.size() - 1, p.getMean(), Projector.projectOnDimension(dt, p.getValues())));
+//                }
+//            }
+//        }
 
         // Update covariance matrix when data point arrives
         this.currentCovariance = Statistics.computeCovarianceMatrixOnline(
@@ -267,11 +267,11 @@ public class CBOrion {
         // Perform evolutionary computation to find the p-dimension for the given data point dt
         Dimension pDimension = null;
         if (absoluteNormalizedDeviation > this.meanAbsoluteNormalizedDeviation) {
-            pDimension = evolutionEngine.evolve(A_out, dt, 2);
+            pDimension = evolutionEngine.evolve("A_out", dt, 5);
         } else {
-            pDimension = evolutionEngine.evolve(A_in, dt, 2);
+            pDimension = evolutionEngine.evolve("A_in", dt, 5);
         }
-
+        
         // Update the mean absolute normalized deviation after evolutionary step 
         // to find a candidate p-dimension for the incoming data point and the stream 
         // density around that data point on the selected p-dimension
@@ -293,9 +293,10 @@ public class CBOrion {
         
         double stdevation = Math.sqrt(pDimension.getVariance());
         
-        if (projectedDT < q1 - 1.5 * iqr) {
+        double scaledNeighborDist = this.r * (6.0 * stdevation / 400.0);
+        if (projectedDT < q1 - scaledNeighborDist * iqr) {
             return true;
-        } else if (projectedDT > q3 + 1.5 * iqr) {
+        } else if (projectedDT > q3 + scaledNeighborDist * iqr) {
             return true;
         }
         
