@@ -10,7 +10,6 @@ import clusteringEngine.CoClusterer;
 import dataStructures.DataPoint;
 import dataStructures.Dimension;
 import dataStructures.Slide;
-import evolutionaryEngine.EvolutionaryComputation;
 import evolutionaryEngine.EvolutionaryEngine;
 import java.util.Collections;
 import java.util.Iterator;
@@ -132,7 +131,7 @@ public class CBOrion {
 
         // Learn the forgetting factor λ once Orion has received enough data points
         // THIS NEEDS TO BE CHECKED
-        this.sdEstimator.updateForgettingFactor(samples);
+        // this.sdEstimator.updateForgettingFactor(samples);
 
         // Compute the initial set of p-dimensions (population set)
         // The set of candidate p-dimenion has size of at least 10
@@ -170,7 +169,16 @@ public class CBOrion {
         this.evolutionEngine = new EvolutionaryEngine(sdEstimator, this.slide);
     }
 
-    public boolean[] detectOutliers(LinkedList<DataPoint> batch) throws Exception {
+    /**
+     * Detect outliers within a window. Return ordered list of array containing
+     * boolean variable that indicate if a data point is outlier or not and the
+     * probability that the point is an outlier
+     *
+     * @param batch
+     * @return
+     * @throws Exception
+     */
+    public List<Object[]> detectOutliers(LinkedList<DataPoint> batch) throws Exception {
 
         // Reference to the current window
         this.window = batch;
@@ -202,14 +210,16 @@ public class CBOrion {
 
         // Perform clustering the data points based on stream density
         CoClusterer clusterer = new CoClusterer();
-        double[][] sdCluster = clusterer.clusterDensity(allDensities);
-        double[] sdClusterMean = sdCluster[0];
-        double[] sdClusterAssignments = sdCluster[1];
+        Object[] sdCluster = clusterer.clusterDensity(allDensities);
+        double[] sdClusterMean = (double[]) sdCluster[0];
+        double[] sdClusterAssignments = (double[]) sdCluster[1];
+        double[][] sdClusterDistribution = (double[][]) sdCluster[2];
 
         // Perform clustering the data points based on k-integral
-        double[][] kIntegralCluster = clusterer.clusterKIntegral(allKIntegrals);
-        double[] kIntegralClusterMean = kIntegralCluster[0];
-        double[] kIntegralClusterAssignments = kIntegralCluster[1];
+        Object[] kIntegralCluster = clusterer.clusterKIntegral(allKIntegrals);
+        double[] kIntegralClusterMean = (double[]) kIntegralCluster[0]; // Array contain the mean of the clusters
+        double[] kIntegralClusterAssignments = (double[]) kIntegralCluster[1];
+        double[][] kIntegralClusterDistribution = (double[][]) kIntegralCluster[2];
 
         // Find the cluster contains data points with low density
         int sdIdx = 0;
@@ -221,7 +231,7 @@ public class CBOrion {
             }
         }
 
-        // Find the cluster contains data points with low density
+        // Find the cluster contains data points with high k-integral
         int kIdx = 0;
         double largestMean = kIntegralClusterMean[0];
         for (int i = 0; i < kIntegralClusterMean.length; ++i) {
@@ -232,12 +242,14 @@ public class CBOrion {
         }
 
         // Assign outliers based on cluster result
-        boolean[] result = new boolean[this.window.size()];
+        List<Object[]> result = new LinkedList<>();
         for (int i = 0; i < sdClusterAssignments.length; ++i) {
+            // Probability that the data point falls into the outlier cluster
+            double probability = sdClusterDistribution[i][sdIdx] * kIntegralClusterDistribution[i][kIdx];
             if (((int) kIntegralClusterAssignments[i] == kIdx) && ((int) sdClusterAssignments[i] == sdIdx)) {
-                result[i] = true;
+                result.add(new Object[]{true, probability});
             } else {
-                result[i] = false;
+                result.add(new Object[]{false, probability});
             }
         }
 
@@ -264,40 +276,40 @@ public class CBOrion {
         // in the slide, the oldest data point will be removed from the slide, the mean and
         // covariance matrix will be revert back to the state where that oldest point has
         // not arrived at the slide
-        if (this.slide.isFull()) {
-
-            // Revert the mean absolute normalized deviation (meanAD) to when the oldest point is removed from
-            // First, get the absolute normalized deviation (AD) of the oldest point, then exclude
-            // the contribution of the AD of the oldest point from the meanAD
-            double oldestAD = Statistics.computeAbsoluteNormalizedDevitation(
-                    oldestPoint.getValues(),
-                    currentMean,
-                    currentCovariance);
-            this.meanAbsoluteNormalizedDeviation = Statistics.revertMean(oldestAD, this.meanAbsoluteNormalizedDeviation, slide.size());
-
-            // New mean after the oldest point removed from the slide
-            this.currentMean = Statistics.revertVectorMean(oldestPoint.getValues(), currentMean, slide.size());
-
-            // Revert the covariance matrix to exclude the oldest point
-            this.currentCovariance = Statistics.revertCovarianceMatrix(oldestPoint.getValues(), currentCovariance, currentMean, slide.size());
-
-            // Revert the mean and variance of the projected dimensions and then update the variance and mean
-            // when new data point comes in
-            for (int k = 0; k < 2; ++k) {
-                Dimension[] partition = (k == 0) ? A_in : A_out;
-                for (int i = 0; i < partition.length; ++i) {
-                    Dimension p = partition[i];
-
-                    // Revert
-                    p.setMean(Statistics.revertMean(Projector.projectOnDimension(oldestPoint, p.getValues()), p.getMean(), slide.size()));
-                    p.setVariance(Statistics.revertVariance(Projector.projectOnDimension(oldestPoint, p.getValues()), p.getVariance(), slide.size(), p.getMean()));
-
-                    // Update
-                    p.setVariance(Statistics.computeVarianceOnline2(slide.size() - 1, p.getMean(), p.getVariance(), Projector.projectOnDimension(dt, p.getValues())));
-                    p.setMean(Statistics.computeMeanOnline(slide.size() - 1, p.getMean(), Projector.projectOnDimension(dt, p.getValues())));
-                }
-            }
-        }
+//        if (this.slide.isFull()) {
+//
+//            // Revert the mean absolute normalized deviation (meanAD) to when the oldest point is removed from
+//            // First, get the absolute normalized deviation (AD) of the oldest point, then exclude
+//            // the contribution of the AD of the oldest point from the meanAD
+//            double oldestAD = Statistics.computeAbsoluteNormalizedDevitation(
+//                    oldestPoint.getValues(),
+//                    currentMean,
+//                    currentCovariance);
+//            this.meanAbsoluteNormalizedDeviation = Statistics.revertMean(oldestAD, this.meanAbsoluteNormalizedDeviation, slide.size());
+//
+//            // New mean after the oldest point removed from the slide
+//            this.currentMean = Statistics.revertVectorMean(oldestPoint.getValues(), currentMean, slide.size());
+//
+//            // Revert the covariance matrix to exclude the oldest point
+//            this.currentCovariance = Statistics.revertCovarianceMatrix(oldestPoint.getValues(), currentCovariance, currentMean, slide.size());
+//
+//            // Revert the mean and variance of the projected dimensions and then update the variance and mean
+//            // when new data point comes in
+//            for (int k = 0; k < 2; ++k) {
+//                Dimension[] partition = (k == 0) ? A_in : A_out;
+//                for (int i = 0; i < partition.length; ++i) {
+//                    Dimension p = partition[i];
+//
+//                    // Revert
+//                    p.setMean(Statistics.revertMean(Projector.projectOnDimension(oldestPoint, p.getValues()), p.getMean(), slide.size()));
+//                    p.setVariance(Statistics.revertVariance(Projector.projectOnDimension(oldestPoint, p.getValues()), p.getVariance(), slide.size(), p.getMean()));
+//
+//                    // Update
+//                    p.setVariance(Statistics.computeVarianceOnline2(slide.size() - 1, p.getMean(), p.getVariance(), Projector.projectOnDimension(dt, p.getValues())));
+//                    p.setMean(Statistics.computeMeanOnline(slide.size() - 1, p.getMean(), Projector.projectOnDimension(dt, p.getValues())));
+//                }
+//            }
+//        }
 
         // Update covariance matrix when data point arrives
         this.currentCovariance = Statistics.computeCovarianceMatrixOnline(
@@ -321,7 +333,6 @@ public class CBOrion {
 
         // Update parameters for Data Density Function
         // sdEstimator.updateDDFparameters(dt, currentMean, currentCovariance);
-
         // Select the best partition that can reveal the p-dimension for data point dt
         // Perform evolutionary computation to find the p-dimension for the given data point dt
         Dimension pDimension = null;

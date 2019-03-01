@@ -13,6 +13,7 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import orion.CBOrion;
@@ -37,7 +38,6 @@ public class PerformanceAnalysis {
         Integer slideSize = null;
         Double k = null;
         Double r = null;
-        Integer fold = null;
 
         if (args.length == 1 && "-help".equals(args[0])) {
             System.out.println("to execute the orion outlier detection algorithm, specify all of these parameters:");
@@ -46,7 +46,6 @@ public class PerformanceAnalysis {
             System.out.println("-slide          size of the slide. Must be smaller than or equal to the size of the window");
             System.out.println("-r              distance r");
             System.out.println("-k              k metric for the k-integral");
-            System.out.println("-fold           number of folds for the k-fold cross validation");
             return;
         }
 
@@ -66,9 +65,6 @@ public class PerformanceAnalysis {
                     break;
                 case "-r":
                     r = Double.parseDouble(args[i + 1]);
-                    break;
-                case "-fold":
-                    fold = Integer.parseInt(args[i + 1]);
                     break;
                 default:
                     break;
@@ -97,11 +93,16 @@ public class PerformanceAnalysis {
 
         // Perform outlier detection
         ArrayList<Boolean> allResult = new ArrayList<>(windowSize);
+        ArrayList<Double> allProbability = new ArrayList<>(windowSize);
         CBOrion instance = new CBOrion(windowSize, slideSize, k, r);
+        int window_count = 0;
         while (!stream.isEmpty()) {
+            System.out.println("Detecting outliers in window " + ++window_count + "...");
             LinkedList<DataPoint> window = stream.readFromStream(windowSize);
-            for (boolean pred : instance.detectOutliers(window)) {
-                allResult.add(pred);
+            for (Iterator<Object[]> iter = instance.detectOutliers(window).iterator(); iter.hasNext();) {
+                Object[] pred = iter.next();
+                allResult.add((boolean) pred[0]);
+                allProbability.add((double) pred[1]);
             }
         }
 
@@ -143,14 +144,16 @@ public class PerformanceAnalysis {
             out.println("slide size: " + slideSize);
             out.println("k: " + k);
             out.println("r: " + r);
-            out.println("folds: " + fold);
             out.println("");
             out.println("precision: " + Statistics.computeMean(precisions));
             out.println("recall: " + Statistics.computeMean(recalls));
             out.println("jaccard coefficient: " + Statistics.computeMean(jaccardCoefficients));
             out.println("f1 score: " + Statistics.computeMean(f1Scores));
             out.println("--------------------------Performance Analysis--------------------------");
-            out.println("");
+            out.println("\n\n\n\n");
+            allProbability.stream().forEach(x -> {
+                out.println(x.toString());
+            });
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

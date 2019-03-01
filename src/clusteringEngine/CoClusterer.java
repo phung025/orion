@@ -6,6 +6,7 @@
 package clusteringEngine;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 import org.uncommons.maths.random.MersenneTwisterRNG;
 import weka.clusterers.ClusterEvaluation;
@@ -57,7 +58,7 @@ public class CoClusterer {
 
     }
 
-    public double[][] clusterDensity(double[] densities) throws Exception {
+    public Object[] clusterDensity(double[] densities) throws Exception {
 
         // List of all attributes in the clustering process
         ArrayList<Attribute> attributes = new ArrayList<>();
@@ -85,10 +86,20 @@ public class CoClusterer {
             clusterDensities[i] = densityClusterer.getClusterModelsNumericAtts()[i][0][0];
         }
 
-        return new double[][]{clusterDensities, evaluator.getClusterAssignments()};
+        // The probability that of the point in a cluster
+        double[][] allDistributions = new double[densities.length][];
+        {
+            int i = 0;
+            for (Iterator<Instance> iter = dataset.iterator(); iter.hasNext(); ++i) {
+                double[] distribution = densityClusterer.distributionForInstance(iter.next());
+                allDistributions[i] = distribution;
+            }
+        }
+
+        return new Object[]{clusterDensities, evaluator.getClusterAssignments(), allDistributions};
     }
 
-    public double[][] clusterKIntegral(double[] kIntegrals) throws Exception {
+    public Object[] clusterKIntegral(double[] kIntegrals) throws Exception {
 
         // List of all attributes in the clustering process
         ArrayList<Attribute> attributes = new ArrayList<>();
@@ -116,7 +127,17 @@ public class CoClusterer {
             clusterKIntegrals[i] = kIntegralClusterer.getClusterModelsNumericAtts()[i][0][0];
         }
 
-        return new double[][]{clusterKIntegrals, evaluator.getClusterAssignments()};
+        // The probability that of the point in a cluster
+        double[][] allDistributions = new double[kIntegrals.length][];
+        {
+            int i = 0;
+            for (Iterator<Instance> iter = dataset.iterator(); iter.hasNext(); ++i) {
+                double[] distribution = kIntegralClusterer.distributionForInstance(iter.next());
+                allDistributions[i] = distribution;
+            }
+        }
+
+        return new Object[]{clusterKIntegrals, evaluator.getClusterAssignments(), allDistributions};
     }
 
 }

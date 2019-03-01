@@ -5,12 +5,9 @@
  */
 package dataStructures;
 
-import java.util.LinkedList;
-
 /**
  *
  * @author Nam Phung
- * @param <E>
  */
 public class Slide {
 
@@ -77,10 +74,18 @@ public class Slide {
         return this.count == this.slideSize;
     }
     
+    /**
+     * Check if the slide is empty
+     * @return true if the slide is empty else false
+     */
     public boolean isEmpty() {
         return this.count == 0;
     }
     
+    /**
+     * Return all ordered data points in the slide
+     * @return array of data points
+     */
     public DataPoint[] points() {
         return this.container;
     }

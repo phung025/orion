@@ -8,21 +8,16 @@ package tests;
 import dataStructures.DataPoint;
 import dataStructures.Stream;
 import fileIO.FileReader;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Random;
 import orion.CBOrion;
-import utils.Statistics;
 
 /**
  *
  * @author phung
  */
-public class K_FoldCrossValidationPerformanceAnalysis {
+public class IncrementingR_PerformanceAnalysis {
 
     public static void main(String[] args) throws Exception {
 
@@ -34,19 +29,17 @@ public class K_FoldCrossValidationPerformanceAnalysis {
         Integer windowSize = null;
         Integer slideSize = null;
         Double k = null;
-        Double r = null;
-        Integer fold = null;
-        char hasOutput = ' ';
+        Double r = 0.0;
+        
+        Double bestR = 0.0;
+        Double bestF1 = 0.0;
 
         if (args.length == 1 && "-help".equals(args[0])) {
             System.out.println("to execute the orion outlier detection algorithm, specify all of these parameters:");
             System.out.println("-dataset        the file name of the dataset. The input dataset must be put in a folder named datasets");
             System.out.println("-window         size of the window");
             System.out.println("-slide          size of the slide. Must be smaller than or equal to the size of the window");
-            System.out.println("-r              distance r");
             System.out.println("-k              k metric for the k-integral");
-            System.out.println("-fold           number of folds for the k-fold cross validation");
-            System.out.println("-output         specify whether an output file will be created or not (t/f)");
             return;
         }
 
@@ -64,35 +57,15 @@ public class K_FoldCrossValidationPerformanceAnalysis {
                 case "-k":
                     k = Double.parseDouble(args[i + 1]);
                     break;
-                case "-r":
-                    r = Double.parseDouble(args[i + 1]);
-                    break;
-                case "-fold":
-                    fold = Integer.parseInt(args[i + 1]);
-                    break;
-                case "-output":
-                    hasOutput = args[i + 1].charAt(0);
-                    break;
-
                 default:
                     break;
             }
         }
 
-        List<Double> precisions = new LinkedList<>();
-        List<Double> recalls = new LinkedList<>();
-        List<Double> jaccardCoefficients = new LinkedList<>();
-        List<Double> f1Scores = new LinkedList<>();
-
-        System.out.println("detecting outliers in " + datasetName + " dataset");
-        System.out.println("window size: " + windowSize);
-        System.out.println("slide size: " + slideSize);
-        System.out.println("k: " + k);
-        System.out.println("r " + r);
-
-        for (int j = fold; j >= 1; --j) {
-
-            System.out.println("fold " + j + "...");
+        while (true) {
+            
+            // Increment r
+            r += new Random().nextDouble();
 
             String inputFilePath = System.getProperty("user.dir") + "/datasets/" + datasetName + ".csv";
             char separator = ',';
@@ -107,17 +80,11 @@ public class K_FoldCrossValidationPerformanceAnalysis {
             ArrayList<Boolean> allResult = new ArrayList<>(windowSize);
             ArrayList<Double> allProbability = new ArrayList<>(windowSize);
             CBOrion instance = new CBOrion(windowSize, slideSize, k, r);
-            int window_count = 0;
             while (!stream.isEmpty()) {
                 LinkedList<DataPoint> window = stream.readFromStream(windowSize);
                 for (Object[] pred : instance.detectOutliers(window)) {
                     allResult.add((boolean) pred[0]);
                     allProbability.add((double) pred[1]);
-                }
-
-                ++window_count;
-                if (window_count == (j * 10)) { // At fold 10, it would compute outliers in 200,000 data points
-                    break;
                 }
             }
 
@@ -146,39 +113,20 @@ public class K_FoldCrossValidationPerformanceAnalysis {
                 }
             }
 
-            precisions.add(truePositive / (truePositive + falsePositive));
-            recalls.add(truePositive / (truePositive + falseNegative));
-            jaccardCoefficients.add((truePositive + trueNegative) / (truePositive + trueNegative + falsePositive + falseNegative));
-            f1Scores.add((2 * precisions.get(precisions.size() - 1) * recalls.get(recalls.size() - 1)) / (precisions.get(precisions.size() - 1) + recalls.get(recalls.size() - 1)));
+            double precision = truePositive / (truePositive + falsePositive);
+            double recall = truePositive / (truePositive + falseNegative);
+            double jaccardCoefficient = (truePositive + trueNegative) / (truePositive + trueNegative + falsePositive + falseNegative);
+            double f1Score = (2 * precision * recall) / (precision + recall);
 
-            System.out.println("precision: " + precisions.get(precisions.size() - 1));
-            System.out.println("recall: " + recalls.get(recalls.size() - 1));
-            System.out.println("jaccard coefficient: " + jaccardCoefficients.get(jaccardCoefficients.size() - 1));
-            System.out.println("f1 score: " + f1Scores.get(f1Scores.size() - 1));
-            System.out.println("\n\n");
-        }
-
-        // Save the statistics to file
-        if (hasOutput == 't') {
-            try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(Arrays.toString(args) + ".txt", true)))) {
-                out.println("--------------------------Performance Analysis--------------------------");
-                out.println("dataset: " + datasetName);
-                out.println("window size: " + windowSize);
-                out.println("slide size: " + slideSize);
-                out.println("k: " + k);
-                out.println("r: " + r);
-                out.println("folds: " + fold);
-                out.println("");
-                out.println("precision: " + Statistics.computeMean(precisions));
-                out.println("recall: " + Statistics.computeMean(recalls));
-                out.println("jaccard coefficient: " + Statistics.computeMean(jaccardCoefficients));
-                out.println("f1 score: " + Statistics.computeMean(f1Scores));
-                out.println("--------------------------Performance Analysis--------------------------");
-                out.println("");
-
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
+            bestF1 = Math.max(f1Score, bestF1);
+            if (f1Score == bestF1) {
+                bestR = r;
             }
+            
+            System.out.println("window: " + windowSize + "\tslide: " + slideSize + "\tk: " + k + "\tr: " + r);
+            System.out.println("precision: " + precision + "\trecall: " + recall + "\tjc: " + jaccardCoefficient + "\tf1 score: " + f1Score);
+            System.out.println("best f1 score so far: " + bestF1 + "\tbest r: " + bestR);
+            System.out.println("\n\n");
         }
     }
 }

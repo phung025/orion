@@ -22,7 +22,7 @@ import utils.Projector;
 public class StreamDensity {
 
     // Parameters for data density function
-    private double forgettingFactor = 0.5; // Forgetting factor, a real number in range (0,1)
+    private double forgettingFactor = 0.75; // Forgetting factor, a real number in range (0,1)
     private double r = 0.0; // User-defined distance r for computing the scaled neighbor distance
     private Slide slide;
     private String kernelType = null;
